@@ -267,7 +267,7 @@
             try {
                 // Load CSV data
                 console.log('Loading CSV data...');
-                const csvData = await d3.csv('data/dummy/dummy_data.csv');
+                const csvData = await d3.csv('data/dummy/dummy_data_sampled.csv');
                 rawData = csvData.map(d => ({
                     month: d.month,
                     uc: +d.uc,
