@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T&D Loss and Property Tax Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        /* Disclaimer Bar */
+        .disclaimer-bar {
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A5A 100%);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95em;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+            letter-spacing: 0.3px;
+            margin-bottom: 15px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px 20px 60px 20px;
+            background: linear-gradient(135deg, #f1f8f4 0%, #e8f5e9 100%);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            justify-content: flex-start;
+        }
+        .header-logo {
+            flex-shrink: 0;
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .header-logo img {
+            width: 85px;
+            height: 85px;
+        }
+        .header-content {
+            flex: 1;
+            text-align: left;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9em;
+        }
+        select, input {
+            padding: 8px 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 5px;
+            font-size: 1em;
+            min-width: 150px;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #2E7D32;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .map-container {
+            grid-column: 1 / -1;
+            height: 600px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        #map {
+            height: 100%;
+            border-radius: 5px;
+        }
+        #feederMap {
+            height: 100%;
+            border-radius: 5px;
+        }
+        #overlayMap {
+            height: 100%;
+            border-radius: 5px;
+        }
+        .metric-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2E7D32;
+            margin: 10px 0;
+        }
+        .metric-label {
+            color: #666;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        .error {
+            text-align: center;
+            padding: 50px;
+            color: red;
+        }
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+        .footnotes {
+            background: #fffbf0;
+            border: 2px solid #2E7D32;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 20px 0 40px 0;
+            clear: both;
+            width: 100%;
+            position: relative;
+            z-index: 1000;
+        }
+        .footnotes h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 1.2em;
+            border-bottom: 2px solid #2E7D32;
+            padding-bottom: 10px;
+        }
+        .footnotes p {
+            margin: 8px 0;
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        .footnotes a {
+            color: #2E7D32;
+            text-decoration: none;
+        }
+        .footnotes a:hover {
+            text-decoration: underline;
+        }
+        /* Tab Styles */
+        .tab-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .tab-header {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-button:hover {
+            background: #e9ecef;
+        }
+        .tab-button.active {
+            color: #2E7D32;
+            border-bottom-color: #2E7D32;
+            background: white;
+        }
+        .tab-content {
+            padding: 20px;
+            min-height: 600px;
+        }
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+        
+        .overlay-map-container {
+            height: 700px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        #overlayMap {
+            height: 100%;
+            border-radius: 5px;
+        }
+        
+        /* Overlay Controls */
+        .overlay-controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .overlay-section {
+            margin-bottom: 15px;
+        }
+        .overlay-section h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1em;
+        }
+        .overlay-options {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            min-width: auto;
+            width: auto;
+        }
+        .opacity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .opacity-slider {
+            width: 120px;
+        }
+        
+        /* Legend */
+        .map-legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: 250px;
+        }
+        .legend-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        .legend-color {
+            width: 20px;
+            height: 15px;
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .controls, .overlay-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .tab-header {
+                flex-direction: column;
+            }
+            .overlay-options {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Disclaimer Bar -->
+    <div class="disclaimer-bar">
+            ⚠️ Disclaimer: This product is a conceptual mockup based on fictitious data. It does not reflect official information and is not endorsed by the Government of Pakistan    </div>
+
+    <div style="background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; color: white; margin-bottom: 20px; border-radius: 5px;">
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="index.html" style="color: white; text-decoration: none; padding: 8px 15px; background: rgba(255,255,255,0.1); border-radius: 5px; transition: all 0.3s; font-weight: 500;">Home</a>
+            <a href="td_loss_dashboard.html" style="color: white; text-decoration: none; padding: 8px 15px; background: rgba(255,255,255,0.2); border-radius: 5px; transition: all 0.3s; font-weight: 500;">T&D Loss Dashboard</a>
+        </div>
+    </div>
+
+    <div class="header">
+        <div style="display: flex; align-items: center; gap: 30px; max-width: 1200px; margin: 0 auto;">
+            <div style="width: 80px; height: 80px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); flex-shrink: 0;">
+                <img src="https://crystalpng.com/wp-content/uploads/2025/04/government-of-pakistan-logo.png" alt="Government of Pakistan" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
+            <div>
+                <h1>Reform Tracking</h1>
+                <p>Comprehensive analysis of transmission & distribution losses, recovery losses, and property tax data across administrative levels</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-container">
+        <div class="tab-header">
+            <button class="tab-button active" onclick="showTab('overview')">Dashboard Overview</button>
+            <button class="tab-button" onclick="showTab('overlay')">T&D vs Property Tax Overlay</button>
+            <button class="tab-button" onclick="showTab('feeder')">Feeder Analytics</button>
+        </div>
+        
+        <div class="tab-content">
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-panel active">
+                <div class="controls">
+        <div class="control-group">
+            <label for="adminLevel">Administrative Level:</label>
+            <select id="adminLevel">
+                <option value="uc">Union Council (UC)</option>
+                <option value="district">District</option>
+                <option value="province">Province</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="metric">Metric:</label>
+            <select id="metric">
+                <option value="td_loss_dummy">T&D Loss (%)</option>
+                <option value="recovery_loss_dummy">Recovery Loss (%)</option>
+                <option value="mth_unit_recieved_dummy">Units Received</option>
+                <option value="assessment_dummy">Assessment</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="monthFilter">Month:</label>
+            <select id="monthFilter">
+                <option value="">All Months</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="provinceFilter">Province:</label>
+            <select id="provinceFilter">
+                <option value="">All Provinces</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="metric-cards" id="metricCards">
+        <div class="loading">Loading data...</div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="chart-container">
+            <div id="barChart"></div>
+        </div>
+        <div class="chart-container">
+            <div id="scatterPlot"></div>
+        </div>
+        <div class="chart-container">
+            <div id="timeSeriesChart"></div>
+        </div>
+        <div class="chart-container">
+            <div id="distributionChart"></div>
+        </div>
+    </div>
+
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+            </div>
+            
+            <!-- Overlay Tab -->
+            <div id="overlay" class="tab-panel">
+                <div class="overlay-controls">
+                    <div class="overlay-section">
+                        <h4>Data Layers</h4>
+                        <div class="overlay-options">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="showTDLoss" checked>
+                                <label for="showTDLoss">T&D Loss Data</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="showPropertyTax" checked>
+                                <label for="showPropertyTax">Property Tax Data</label>
+                            </div>
+                            <div class="control-group">
+                                <label for="overlayAdminLevel">Administrative Level:</label>
+                                <select id="overlayAdminLevel">
+                                    <option value="uc">Union Council (UC)</option>
+                                    <option value="district">District</option>
+                                    <option value="province">Province</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overlay-section">
+                        <h4>Layer Opacity</h4>
+                        <div class="overlay-options">
+                            <div class="opacity-control">
+                                <label for="tdLossOpacity">T&D Loss:</label>
+                                <input type="range" id="tdLossOpacity" class="opacity-slider" min="0" max="1" step="0.1" value="0.7">
+                                <span id="tdLossOpacityValue">70%</span>
+                            </div>
+                            <div class="opacity-control">
+                                <label for="propertyTaxOpacity">Property Tax:</label>
+                                <input type="range" id="propertyTaxOpacity" class="opacity-slider" min="0" max="1" step="0.1" value="0.7">
+                                <span id="propertyTaxOpacityValue">70%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overlay-section">
+                        <h4>Analysis Type</h4>
+                        <div class="overlay-options">
+                            <div class="control-group">
+                                <label for="analysisType">Analysis:</label>
+                                <select id="analysisType">
+                                    <option value="correlation">Correlation Analysis</option>
+                                    <option value="ratio">T&D Loss to Property Tax Ratio</option>
+                                    <option value="efficiency">Collection Efficiency</option>
+                                    <option value="propertyTypes">Property Types Analysis</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overlay-section">
+                        <h4>Property Type Filter</h4>
+                        <div class="overlay-options">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="showHousehold" checked>
+                                <label for="showHousehold">Household Properties</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="showIndustrial" checked>
+                                <label for="showIndustrial">Industrial Properties</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="showCommercial" checked>
+                                <label for="showCommercial">Commercial Properties</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overlay-map-container">
+                    <div id="overlayMap"></div>
+                    <div id="overlayMapLegend" class="map-legend" style="display: none;">
+                        <div class="legend-title">Map Legend</div>
+                        <div id="legendContent"></div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="chart-container">
+                        <div id="correlationChart"></div>
+                    </div>
+                    <div class="chart-container">
+                        <div id="analysisChart"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feeder Analytics Tab -->
+            <div id="feeder" class="tab-panel">
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="feederAdminLevel">Administrative Level:</label>
+                        <select id="feederAdminLevel">
+                            <option value="uc">Union Council (UC)</option>
+                            <option value="district">District</option>
+                            <option value="province">Province</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="feederMetric">Feeder Metric:</label>
+                        <select id="feederMetric">
+                            <option value="line_count">Number of Feeder Lines</option>
+                            <option value="avg_length">Average Line Length</option>
+                            <option value="total_length">Total Network Length</option>
+                            <option value="density">Line Density</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="metric-cards" id="feederMetricCards">
+                    <div class="loading">Loading feeder data...</div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="chart-container">
+                        <div id="feederBarChart"></div>
+                    </div>
+                    <div class="chart-container">
+                        <div id="feederDistributionChart"></div>
+                    </div>
+                    <div class="chart-container">
+                        <div id="feederMapChart"></div>
+                    </div>
+                    <div class="chart-container">
+                        <div id="feederStatsChart"></div>
+                    </div>
+                </div>
+
+                <div class="map-container">
+                    <div id="feederMap"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footnotes">
+        <h3>Data Sources & Notes</h3>
+        <p><strong>*</strong> Feeder data used in this dashboard is dummy data for demonstration purposes only.</p>
+        <p><strong>**</strong> UC (Union Council) shapefile source: <a href="https://data.humdata.org/dataset/pakistan-union-council-boundaries-along-with-other-admin-boundaries-dataset" target="_blank">Pakistan Union Council Boundaries - Humanitarian Data Exchange</a></p>
+        <p><strong>***</strong> Property tax data is simulated for demonstration purposes and may not reflect actual property tax collections.</p>
+    </div>
+
+    <script>
+        // Global variables
+        let rawData = [];
+        let propertyTaxData = [];
+        let aggregatedData = [];
+        let feederData = [];
+        let map, overlayMap, feederMap;
+        let geoData = {};
+        let currentLayer, tdLossLayer, propertyTaxLayer;
+        let currentTab = 'overview';
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMaps();
+            loadData();
+            setupEventListeners();
+            generateDummyPropertyTaxData();
+        });
+
+        function showTab(tabName) {
+            // Hide all tab panels
+            const panels = document.querySelectorAll('.tab-panel');
+            panels.forEach(panel => panel.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to the clicked button
+            const targetButton = Array.from(buttons).find(button => 
+                button.textContent.includes(tabName === 'overview' ? 'Dashboard Overview' : 
+                                          tabName === 'overlay' ? 'T&D vs Property Tax Overlay' : 
+                                          'Feeder Analytics')
+            );
+            if (targetButton) {
+                targetButton.classList.add('active');
+            }
+            
+            currentTab = tabName;
+            
+            // Initialize overlay map if switching to overlay tab
+            if (tabName === 'overlay' && overlayMap) {
+                setTimeout(() => {
+                    overlayMap.invalidateSize();
+                    updateOverlayMap();
+                }, 100);
+            }
+            
+            // Initialize feeder map if switching to feeder tab
+            if (tabName === 'feeder') {
+                setTimeout(() => {
+                    if (!feederMap) {
+                        initializeFeederMap();
+                    } else {
+                        feederMap.invalidateSize();
+                    }
+                    updateFeederAnalytics();
+                }, 100);
+            }
+        }
+
+        function setupEventListeners() {
+            // Overview tab event listeners
+            document.getElementById('adminLevel').addEventListener('change', updateDashboard);
+            document.getElementById('metric').addEventListener('change', updateDashboard);
+            document.getElementById('monthFilter').addEventListener('change', updateDashboard);
+            document.getElementById('provinceFilter').addEventListener('change', updateDashboard);
+            
+            // Overlay tab event listeners
+            document.getElementById('overlayAdminLevel').addEventListener('change', updateOverlayMap);
+            document.getElementById('showTDLoss').addEventListener('change', updateOverlayMap);
+            document.getElementById('showPropertyTax').addEventListener('change', updateOverlayMap);
+            document.getElementById('analysisType').addEventListener('change', updateOverlayMap);
+            document.getElementById('showHousehold').addEventListener('change', updateOverlayMap);
+            document.getElementById('showIndustrial').addEventListener('change', updateOverlayMap);
+            document.getElementById('showCommercial').addEventListener('change', updateOverlayMap);
+            
+            // Opacity sliders
+            document.getElementById('tdLossOpacity').addEventListener('input', function() {
+                document.getElementById('tdLossOpacityValue').textContent = Math.round(this.value * 100) + '%';
+                updateOverlayMap();
+            });
+            
+            document.getElementById('propertyTaxOpacity').addEventListener('input', function() {
+                document.getElementById('propertyTaxOpacityValue').textContent = Math.round(this.value * 100) + '%';
+                updateOverlayMap();
+            });
+            
+            // Feeder analytics event listeners
+            document.getElementById('feederAdminLevel').addEventListener('change', updateFeederAnalytics);
+            document.getElementById('feederMetric').addEventListener('change', updateFeederAnalytics);
+        }
+
+        function initializeMaps() {
+            // Initialize overview map
+            map = L.map('map').setView([30.3753, 69.3451], 6); // Pakistan center
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            // Initialize overlay map
+            overlayMap = L.map('overlayMap').setView([30.3753, 69.3451], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(overlayMap);
+        }
+
+        // Generate dummy property tax data with property types
+        function generateDummyPropertyTaxData() {
+            if (rawData.length === 0) return;
+            
+            propertyTaxData = rawData.map(d => {
+                // Household properties (70% of total)
+                const householdCount = Math.floor(Math.random() * 3000) + 300;
+                const householdAssessment = Math.random() * 300000000 + 50000000;
+                const householdTaxRate = Math.random() * 0.15 + 0.08;
+                const householdCollected = householdAssessment * householdTaxRate;
+                
+                // Industrial properties (15% of total)
+                const industrialCount = Math.floor(Math.random() * 500) + 20;
+                const industrialAssessment = Math.random() * 200000000 + 30000000;
+                const industrialTaxRate = Math.random() * 0.25 + 0.15;
+                const industrialCollected = industrialAssessment * industrialTaxRate;
+                
+                // Commercial properties (15% of total)
+                const commercialCount = Math.floor(Math.random() * 800) + 50;
+                const commercialAssessment = Math.random() * 150000000 + 20000000;
+                const commercialTaxRate = Math.random() * 0.2 + 0.12;
+                const commercialCollected = commercialAssessment * commercialTaxRate;
+                
+                const totalProperties = householdCount + industrialCount + commercialCount;
+                const totalAssessment = householdAssessment + industrialAssessment + commercialAssessment;
+                const totalCollected = householdCollected + industrialCollected + commercialCollected;
+                
+                return {
+                    month: d.month,
+                    uc: d.uc,
+                    PROVINCE: d.PROVINCE,
+                    DISTRICT: d.DISTRICT,
+                    TEHSIL: d.TEHSIL,
+                    mth_unit_recieved_dummy: d.mth_unit_recieved_dummy,
+                    mth_unit_billed_dummy: d.mth_unit_billed_dummy,
+                    assessment_dummy: d.assessment_dummy,
+                    payment_dummy: d.payment_dummy,
+                    td_loss_dummy: d.td_loss_dummy,
+                    recovery_loss_dummy: d.recovery_loss_dummy,
+                    // Property tax totals
+                    property_tax_collected: totalCollected,
+                    property_tax_assessment: totalAssessment,
+                    collection_efficiency: totalCollected / totalAssessment,
+                    properties_count: totalProperties,
+                    // Household properties
+                    household_count: householdCount,
+                    household_assessment: householdAssessment,
+                    household_collected: householdCollected,
+                    household_tax_rate: householdTaxRate,
+                    // Industrial properties
+                    industrial_count: industrialCount,
+                    industrial_assessment: industrialAssessment,
+                    industrial_collected: industrialCollected,
+                    industrial_tax_rate: industrialTaxRate,
+                    // Commercial properties
+                    commercial_count: commercialCount,
+                    commercial_assessment: commercialAssessment,
+                    commercial_collected: commercialCollected,
+                    commercial_tax_rate: commercialTaxRate
+                };
+            });
+            
+            console.log('Generated property tax data for', propertyTaxData.length, 'records');
+        }
+
+        async function loadData() {
+            try {
+                // Load CSV data
+                console.log('Loading CSV data...');
+                const csvData = await d3.csv('data/dummy/dummy_data.csv');
+                rawData = csvData.map(d => ({
+                    month: d.month,
+                    uc: +d.uc,
+                    PROVINCE: d.PROVINCE,
+                    DISTRICT: d.DISTRICT,
+                    TEHSIL: d.TEHSIL,
+                    mth_unit_recieved_dummy: +d.mth_unit_recieved_dummy || 0,
+                    mth_unit_billed_dummy: +d.mth_unit_billed_dummy || 0,
+                    assessment_dummy: +d.assessment_dummy || 0,
+                    payment_dummy: +d.payment_dummy || 0,
+                    td_loss_dummy: +d.td_loss_dummy || 0,
+                    recovery_loss_dummy: +d.recovery_loss_dummy || 0
+                }));
+
+                console.log('Loaded', rawData.length, 'records');
+
+                // Load GeoJSON data
+                console.log('Loading GeoJSON data...');
+                await loadGeoData();
+                
+                // Load feeder data
+                console.log('Loading feeder data...');
+                await loadFeederData();
+                
+                // Generate property tax data after loading main data
+                generateDummyPropertyTaxData();
+
+                populateFilters();
+                updateDashboard();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('metricCards').innerHTML = '<div class="error">Error loading data. Please check console and file paths.</div>';
+            }
+        }
+
+        async function loadGeoData() {
+            try {
+                // Load geographic boundaries
+                const [ucData, districtData, provinceData] = await Promise.all([
+                    d3.json('data/geo/geojson/union_councils.geojson'),
+                    d3.json('data/geo/geojson/districts.geojson'),
+                    d3.json('data/geo/geojson/provinces.geojson')
+                ]);
+
+                geoData = {
+                    uc: ucData,
+                    district: districtData,
+                    province: provinceData
+                };
+
+                console.log('Loaded geographic data:', {
+                    ucs: ucData.features.length,
+                    districts: districtData.features.length,
+                    provinces: provinceData.features.length
+                });
+
+            } catch (error) {
+                console.error('Error loading geographic data:', error);
+                console.log('Dashboard will work without map functionality');
+            }
+        }
+
+        async function loadFeederData() {
+            try {
+                // Try to load feeder GeoJSON data with LineStrings
+                const feederGeoJSON = await d3.json('data/geo/geojson/feeders.geojson').catch(() => null);
+                
+                if (feederGeoJSON && feederGeoJSON.features) {
+                    feederData = feederGeoJSON.features.map(feature => {
+                        const props = feature.properties;
+                        const geom = feature.geometry;
+                        const coords = geom.type === 'LineString' ? geom.coordinates : [[props.lon || 0, props.lat || 0]];
+                        
+                        // Calculate line length
+                        let lineLength = 0;
+                        if (coords.length > 1) {
+                            lineLength = calculateLineLength(coords);
+                        }
+                        
+                        // Get first point as reference for popup
+                        const firstPoint = coords[0] || [0, 0];
+                        
+                        return {
+                            id: props.feeder_id,
+                            name: props.feeder_name,
+                            uc_id: props.uc_id || 0,
+                            uc_name: props.uc_name,
+                            province: props.province,
+                            district: props.district,
+                            coordinates: coords,
+                            lat: firstPoint[1],
+                            lon: firstPoint[0],
+                            td_loss_percent: +props.td_loss_percent || 0,
+                            technical_loss_percent: +props.technical_loss_percent || 0,
+                            non_technical_loss_percent: +props.non_technical_loss_percent || 0,
+                            recovery_percent: +props.recovery_percent || 0,
+                            peak_load_mw: +props.peak_load_mw || 0,
+                            circuit_length_km: +props.circuit_length_km || 0,
+                            maintenance_status: props.maintenance_status || 'Unknown',
+                            line_type: props.line_type || 'Unknown',
+                            consumers: +props.consumers || 0,
+                            calculated_length: lineLength
+                        };
+                    });
+                    
+                    console.log('Loaded', feederData.length, 'feeder lines with T&D loss data');
+                } else {
+                    console.log('Feeder data not available, generating sample data');
+                    generateSampleFeederData();
+                }
+                
+            } catch (error) {
+                console.error('Error loading feeder data:', error);
+                console.log('Generating sample feeder data');
+                generateSampleFeederData();
+            }
+        }
+
+        function calculateLineLength(coordinates) {
+            // Calculate distance between points using Haversine formula
+            let distance = 0;
+            const R = 6371; // Earth's radius in km
+            
+            for (let i = 0; i < coordinates.length - 1; i++) {
+                const [lon1, lat1] = coordinates[i];
+                const [lon2, lat2] = coordinates[i + 1];
+                
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                         Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                         Math.sin(dLon/2) * Math.sin(dLon/2);
+                
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                distance += R * c;
+            }
+            
+            return distance;
+        }
+
+        function generateSampleFeederData() {
+            // Generate sample feeder data if file doesn't exist
+            feederData = [];
+            
+            if (geoData && geoData.uc && geoData.uc.features) {
+                geoData.uc.features.forEach((feature, index) => {
+                    const ucId = feature.properties.uc_id || feature.properties.UC_C || index;
+                    const ucName = feature.properties.uc_name || feature.properties.UC || `UC ${ucId}`;
+                    
+                    // Generate 3-5 random feeder lines per UC
+                    const lineCount = Math.floor(Math.random() * 3) + 3;
+                    
+                    for (let i = 0; i < lineCount; i++) {
+                        const coords = feature.geometry.coordinates[0];
+                        if (coords && coords.length > 1) {
+                            const startIdx = Math.floor(Math.random() * (coords.length - 1));
+                            const endIdx = Math.floor(Math.random() * (coords.length - 1));
+                            
+                            const line = {
+                                id: `${ucId}_${i}`,
+                                uc_id: ucId,
+                                uc_name: ucName,
+                                line_number: i,
+                                coordinates: [coords[startIdx], coords[endIdx]],
+                                length: calculateLineLength([coords[startIdx], coords[endIdx]])
+                            };
+                            
+                            feederData.push(line);
+                        }
+                    }
+                });
+            }
+            
+            console.log('Generated', feederData.length, 'sample feeder lines');
+        }
+
+        function populateFilters() {
+            // Populate month filter
+            const months = [...new Set(rawData.map(d => d.month))].sort();
+            const monthSelect = document.getElementById('monthFilter');
+            monthSelect.innerHTML = '<option value="">All Months</option>';
+            months.forEach(month => {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = month;
+                monthSelect.appendChild(option);
+            });
+
+            // Populate province filter
+            const provinces = [...new Set(rawData.map(d => d.PROVINCE))].filter(p => p).sort();
+            const provinceSelect = document.getElementById('provinceFilter');
+            provinceSelect.innerHTML = '<option value="">All Provinces</option>';
+            provinces.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            });
+        }
+
+        function getFilteredData() {
+            let filtered = [...rawData];
+
+            const monthFilter = document.getElementById('monthFilter').value;
+            const provinceFilter = document.getElementById('provinceFilter').value;
+
+            if (monthFilter) {
+                filtered = filtered.filter(d => d.month === monthFilter);
+            }
+
+            if (provinceFilter) {
+                filtered = filtered.filter(d => d.PROVINCE === provinceFilter);
+            }
+
+            return filtered;
+        }
+
+        function aggregateData(data, level) {
+            const groupBy = {
+                uc: d => d.uc,
+                district: d => `${d.PROVINCE}-${d.DISTRICT}`,
+                province: d => d.PROVINCE
+            };
+
+            const grouped = d3.group(data, groupBy[level]);
+            
+            return Array.from(grouped, ([key, values]) => {
+                const first = values[0];
+                return {
+                    id: key,
+                    name: level === 'uc' ? `UC ${key}` : 
+                          level === 'district' ? first.DISTRICT : 
+                          first.PROVINCE,
+                    province: first.PROVINCE,
+                    district: first.DISTRICT,
+                    tehsil: first.TEHSIL,
+                    count: values.length,
+                    mth_unit_recieved_dummy: d3.mean(values, d => d.mth_unit_recieved_dummy),
+                    mth_unit_billed_dummy: d3.mean(values, d => d.mth_unit_billed_dummy),
+                    assessment_dummy: d3.mean(values, d => d.assessment_dummy),
+                    payment_dummy: d3.mean(values, d => d.payment_dummy),
+                    td_loss_dummy: d3.mean(values, d => d.td_loss_dummy),
+                    recovery_loss_dummy: d3.mean(values, d => d.recovery_loss_dummy)
+                };
+            });
+        }
+
+        function updateDashboard() {
+            const filteredData = getFilteredData();
+            const adminLevel = document.getElementById('adminLevel').value;
+            aggregatedData = aggregateData(filteredData, adminLevel);
+
+            updateMetricCards();
+            updateCharts();
+            updateMap();
+        }
+
+        function updateMetricCards() {
+            const metric = document.getElementById('metric').value;
+            const data = aggregatedData;
+
+            if (data.length === 0) {
+                document.getElementById('metricCards').innerHTML = '<div class="loading">No data available for current filters</div>';
+                return;
+            }
+
+            const values = data.map(d => d[metric]).filter(v => !isNaN(v));
+            const mean = d3.mean(values);
+            const max = d3.max(values);
+            const min = d3.min(values);
+
+            const formatValue = (value) => {
+                if (metric.includes('loss')) {
+                    return `${(value * 100).toFixed(1)}%`;
+                }
+                return value.toLocaleString();
+            };
+
+            document.getElementById('metricCards').innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-label">Average</div>
+                    <div class="metric-value">${formatValue(mean)}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Maximum</div>
+                    <div class="metric-value">${formatValue(max)}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Minimum</div>
+                    <div class="metric-value">${formatValue(min)}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Total Records</div>
+                    <div class="metric-value">${data.length}</div>
+                </div>
+            `;
+        }
+
+        function updateCharts() {
+            updateBarChart();
+            updateScatterPlot();
+            updateTimeSeriesChart();
+            updateDistributionChart();
+        }
+
+        function updateBarChart() {
+            const metric = document.getElementById('metric').value;
+            const adminLevel = document.getElementById('adminLevel').value;
+            
+            // Get top 15 for visualization
+            const topData = aggregatedData
+                .sort((a, b) => b[metric] - a[metric])
+                .slice(0, 15);
+
+            const trace = {
+                x: topData.map(d => d.name),
+                y: topData.map(d => d[metric]),
+                type: 'bar',
+                marker: {
+                    color: '#2E7D32',
+                    opacity: 0.8
+                }
+            };
+
+            const layout = {
+                title: `Top 15 ${adminLevel.toUpperCase()}s by ${metric.replace('_', ' ')}`,
+                xaxis: { tickangle: -45 },
+                margin: { b: 100 }
+            };
+
+            Plotly.newPlot('barChart', [trace], layout, {responsive: true});
+        }
+
+        function updateScatterPlot() {
+            const trace = {
+                x: aggregatedData.map(d => d.td_loss_dummy),
+                y: aggregatedData.map(d => d.recovery_loss_dummy),
+                mode: 'markers',
+                type: 'scatter',
+                text: aggregatedData.map(d => d.name),
+                marker: {
+                    color: '#2E7D32',
+                    size: 8,
+                    opacity: 0.7
+                }
+            };
+
+            const layout = {
+                title: 'T&D Loss vs Recovery Loss',
+                xaxis: { title: 'T&D Loss (%)' },
+                yaxis: { title: 'Recovery Loss (%)' }
+            };
+
+            Plotly.newPlot('scatterPlot', [trace], layout, {responsive: true});
+        }
+
+        function updateTimeSeriesChart() {
+            const monthFilter = document.getElementById('monthFilter').value;
+            
+            if (monthFilter) {
+                // Show current vs all time if filtered
+                const allData = aggregateData(rawData, document.getElementById('adminLevel').value);
+                const metric = document.getElementById('metric').value;
+                
+                const allValues = allData.map(d => d[metric]);
+                const currentValues = aggregatedData.map(d => d[metric]);
+                
+                const trace1 = {
+                    y: allValues,
+                    type: 'box',
+                    name: 'All Time',
+                    marker: { color: '#2E7D32' }
+                };
+                
+                const trace2 = {
+                    y: currentValues,
+                    type: 'box',
+                    name: monthFilter,
+                    marker: { color: '#1B5E20' }
+                };
+
+                const layout = {
+                    title: `${metric.replace('_', ' ')} Distribution: ${monthFilter} vs All Time`,
+                    yaxis: { title: metric.replace('_', ' ') }
+                };
+
+                Plotly.newPlot('timeSeriesChart', [trace1, trace2], layout, {responsive: true});
+            } else {
+                // Show monthly trends
+                const monthlyData = d3.group(rawData, d => d.month);
+                const months = Array.from(monthlyData.keys()).sort();
+                const metric = document.getElementById('metric').value;
+
+                const monthlyAvgs = months.map(month => {
+                    const monthData = monthlyData.get(month);
+                    return d3.mean(monthData, d => d[metric]);
+                });
+
+                const trace = {
+                    x: months,
+                    y: monthlyAvgs,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    line: { color: '#2E7D32', width: 3 },
+                    marker: { size: 8 }
+                };
+
+                const layout = {
+                    title: `Monthly Trend: ${metric.replace('_', ' ')}`,
+                    xaxis: { title: 'Month' },
+                    yaxis: { title: metric.replace('_', ' ') }
+                };
+
+                Plotly.newPlot('timeSeriesChart', [trace], layout, {responsive: true});
+            }
+        }
+
+        function updateDistributionChart() {
+            const metric = document.getElementById('metric').value;
+            const values = aggregatedData.map(d => d[metric]).filter(v => !isNaN(v));
+
+            const trace = {
+                x: values,
+                type: 'histogram',
+                nbinsx: 20,
+                marker: {
+                    color: '#2E7D32',
+                    opacity: 0.7
+                }
+            };
+
+            const layout = {
+                title: `Distribution of ${metric.replace('_', ' ')}`,
+                xaxis: { title: metric.replace('_', ' ') },
+                yaxis: { title: 'Frequency' }
+            };
+
+            Plotly.newPlot('distributionChart', [trace], layout, {responsive: true});
+        }
+
+        function updateMap() {
+            // Clear existing layers
+            if (currentLayer) {
+                map.removeLayer(currentLayer);
+            }
+
+            const adminLevel = document.getElementById('adminLevel').value;
+            const metric = document.getElementById('metric').value;
+
+            if (!geoData[adminLevel]) {
+                console.log('No geographic data available for', adminLevel);
+                return;
+            }
+
+            // Create a lookup for our data
+            const dataLookup = new Map();
+            aggregatedData.forEach(d => {
+                if (adminLevel === 'uc') {
+                    dataLookup.set(d.id.toString(), d);
+                } else if (adminLevel === 'district') {
+                    dataLookup.set(`${d.province}-${d.district}`, d);
+                } else if (adminLevel === 'province') {
+                    dataLookup.set(d.province, d);
+                }
+            });
+
+            // Get value range for color scaling
+            const values = aggregatedData.map(d => d[metric]).filter(v => !isNaN(v));
+            const minValue = d3.min(values);
+            const maxValue = d3.max(values);
+
+            function getColor(value) {
+                if (isNaN(value) || value === null) return '#ccc';
+                const normalized = (value - minValue) / (maxValue - minValue);
+                const intensity = Math.round(normalized * 255);
+                return `rgba(102, 126, 234, ${0.2 + normalized * 0.8})`;
+            }
+
+            function getFeatureKey(feature) {
+                const props = feature.properties;
+                if (adminLevel === 'uc') {
+                    return props.uc_id || props.UC_C?.toString();
+                } else if (adminLevel === 'district') {
+                    return `${props.PROVINCE}-${props.DISTRICT}`;
+                } else if (adminLevel === 'province') {
+                    return props.PROVINCE;
+                }
+            }
+
+            currentLayer = L.geoJSON(geoData[adminLevel], {
+                style: function(feature) {
+                    const key = getFeatureKey(feature);
+                    const data = dataLookup.get(key);
+                    const value = data ? data[metric] : null;
+
+                    return {
+                        fillColor: getColor(value),
+                        weight: 1,
+                        opacity: 1,
+                        color: '#333',
+                        fillOpacity: 0.7
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    const key = getFeatureKey(feature);
+                    const data = dataLookup.get(key);
+                    const props = feature.properties;
+
+                    let popupContent = `<strong>${props.uc_name || props.DISTRICT || props.PROVINCE}</strong><br>`;
+                    
+                    if (data) {
+                        popupContent += `${metric.replace('_', ' ')}: `;
+                        if (metric.includes('loss')) {
+                            popupContent += `${(data[metric] * 100).toFixed(2)}%`;
+                        } else {
+                            popupContent += data[metric].toLocaleString();
+                        }
+                        
+                        popupContent += `<br>Records: ${data.count}`;
+                    } else {
+                        popupContent += 'No data available';
+                    }
+
+                    layer.bindPopup(popupContent);
+                    
+                    layer.on({
+                        mouseover: function(e) {
+                            e.target.setStyle({
+                                weight: 3,
+                                color: '#666',
+                                fillOpacity: 0.9
+                            });
+                        },
+                        mouseout: function(e) {
+                            currentLayer.resetStyle(e.target);
+                        }
+                    });
+                }
+            }).addTo(map);
+
+            // Fit map to layer bounds
+            if (currentLayer.getBounds().isValid()) {
+                map.fitBounds(currentLayer.getBounds());
+            }
+        }
+
+        // Overlay Map Functions
+        function updateOverlayMap() {
+            if (currentTab !== 'overlay') return;
+            
+            // Clear existing layers
+            if (tdLossLayer) {
+                overlayMap.removeLayer(tdLossLayer);
+            }
+            if (propertyTaxLayer) {
+                overlayMap.removeLayer(propertyTaxLayer);
+            }
+
+            const adminLevel = document.getElementById('overlayAdminLevel').value;
+            const showTDLoss = document.getElementById('showTDLoss').checked;
+            const showPropertyTax = document.getElementById('showPropertyTax').checked;
+            const analysisType = document.getElementById('analysisType').value;
+            const tdLossOpacity = parseFloat(document.getElementById('tdLossOpacity').value);
+            const propertyTaxOpacity = parseFloat(document.getElementById('propertyTaxOpacity').value);
+
+            if (!geoData[adminLevel]) {
+                console.log('No geographic data available for', adminLevel);
+                return;
+            }
+
+            // Aggregate property tax data
+            const propertyTaxAggregated = aggregatePropertyTaxData(propertyTaxData, adminLevel);
+            const tdLossAggregated = aggregateData(rawData, adminLevel);
+
+            // Create data lookups
+            const propertyTaxLookup = new Map();
+            propertyTaxAggregated.forEach(d => {
+                const key = adminLevel === 'uc' ? d.id.toString() :
+                           adminLevel === 'district' ? `${d.province}-${d.district}` :
+                           d.province;
+                propertyTaxLookup.set(key, d);
+            });
+
+            const tdLossLookup = new Map();
+            tdLossAggregated.forEach(d => {
+                const key = adminLevel === 'uc' ? d.id.toString() :
+                           adminLevel === 'district' ? `${d.province}-${d.district}` :
+                           d.province;
+                tdLossLookup.set(key, d);
+            });
+
+            // Create layers
+            if (showTDLoss) {
+                createTDLossLayer(adminLevel, tdLossLookup, tdLossOpacity);
+            }
+
+            if (showPropertyTax) {
+                createPropertyTaxLayer(adminLevel, propertyTaxLookup, propertyTaxOpacity);
+            }
+
+            // Update legend
+            updateMapLegend(showTDLoss, showPropertyTax);
+            
+            // Update analysis charts
+            updateOverlayCharts(tdLossAggregated, propertyTaxAggregated, analysisType);
+        }
+
+        function aggregatePropertyTaxData(data, level) {
+            const groupBy = {
+                uc: d => d.uc,
+                district: d => `${d.PROVINCE}-${d.DISTRICT}`,
+                province: d => d.PROVINCE
+            };
+
+            const grouped = d3.group(data, groupBy[level]);
+            
+            return Array.from(grouped, ([key, values]) => {
+                const first = values[0];
+                return {
+                    id: key,
+                    name: level === 'uc' ? `UC ${key}` : 
+                          level === 'district' ? first.DISTRICT : 
+                          first.PROVINCE,
+                    province: first.PROVINCE,
+                    district: first.DISTRICT,
+                    tehsil: first.TEHSIL,
+                    count: values.length,
+                    property_tax_collected: d3.mean(values, d => d.property_tax_collected),
+                    property_tax_assessment: d3.mean(values, d => d.property_tax_assessment),
+                    collection_efficiency: d3.mean(values, d => d.collection_efficiency),
+                    properties_count: d3.sum(values, d => d.properties_count),
+                    // Household properties
+                    household_count: d3.sum(values, d => d.household_count || 0),
+                    household_assessment: d3.mean(values, d => d.household_assessment || 0),
+                    household_collected: d3.mean(values, d => d.household_collected || 0),
+                    household_tax_rate: d3.mean(values, d => d.household_tax_rate || 0),
+                    // Industrial properties
+                    industrial_count: d3.sum(values, d => d.industrial_count || 0),
+                    industrial_assessment: d3.mean(values, d => d.industrial_assessment || 0),
+                    industrial_collected: d3.mean(values, d => d.industrial_collected || 0),
+                    industrial_tax_rate: d3.mean(values, d => d.industrial_tax_rate || 0),
+                    // Commercial properties
+                    commercial_count: d3.sum(values, d => d.commercial_count || 0),
+                    commercial_assessment: d3.mean(values, d => d.commercial_assessment || 0),
+                    commercial_collected: d3.mean(values, d => d.commercial_collected || 0),
+                    commercial_tax_rate: d3.mean(values, d => d.commercial_tax_rate || 0)
+                };
+            });
+        }
+
+        function createTDLossLayer(adminLevel, dataLookup, opacity) {
+            const values = Array.from(dataLookup.values()).map(d => d.td_loss_dummy);
+            const minValue = d3.min(values);
+            const maxValue = d3.max(values);
+
+            function getTDLossColor(value) {
+                if (isNaN(value) || value === null) return '#ccc';
+                const normalized = (value - minValue) / (maxValue - minValue);
+                return `rgba(220, 53, 69, ${normalized})`;
+            }
+
+            tdLossLayer = L.geoJSON(geoData[adminLevel], {
+                style: function(feature) {
+                    const key = getFeatureKey(feature, adminLevel);
+                    const data = dataLookup.get(key);
+                    const value = data ? data.td_loss_dummy : null;
+
+                    return {
+                        fillColor: getTDLossColor(value),
+                        weight: 1,
+                        opacity: 0.8,
+                        color: '#fff',
+                        fillOpacity: opacity
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    const key = getFeatureKey(feature, adminLevel);
+                    const data = dataLookup.get(key);
+                    const props = feature.properties;
+
+                    let popupContent = `<strong>${props.uc_name || props.DISTRICT || props.PROVINCE}</strong><br>`;
+                    
+                    if (data) {
+                        popupContent += `T&D Loss: ${(data.td_loss_dummy * 100).toFixed(2)}%<br>`;
+                        popupContent += `Recovery Loss: ${(data.recovery_loss_dummy * 100).toFixed(2)}%`;
+                    } else {
+                        popupContent += 'No T&D Loss data available';
+                    }
+
+                    layer.bindPopup(popupContent);
+                }
+            }).addTo(overlayMap);
+        }
+
+        function createPropertyTaxLayer(adminLevel, dataLookup, opacity) {
+            const values = Array.from(dataLookup.values()).map(d => d.collection_efficiency);
+            const minValue = d3.min(values);
+            const maxValue = d3.max(values);
+
+            function getPropertyTaxColor(value) {
+                if (isNaN(value) || value === null) return '#ccc';
+                const normalized = (value - minValue) / (maxValue - minValue);
+                return `rgba(40, 167, 69, ${normalized})`;
+            }
+
+            propertyTaxLayer = L.geoJSON(geoData[adminLevel], {
+                style: function(feature) {
+                    const key = getFeatureKey(feature, adminLevel);
+                    const data = dataLookup.get(key);
+                    const value = data ? data.collection_efficiency : null;
+
+                    return {
+                        fillColor: getPropertyTaxColor(value),
+                        weight: 1,
+                        opacity: 0.8,
+                        color: '#fff',
+                        fillOpacity: opacity
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    const key = getFeatureKey(feature, adminLevel);
+                    const data = dataLookup.get(key);
+                    const props = feature.properties;
+
+                    let popupContent = `<strong>${props.uc_name || props.DISTRICT || props.PROVINCE}</strong><br>`;
+                    
+                    if (data) {
+                        popupContent += `Property Tax Collected: ${(data.property_tax_collected / 1000000).toFixed(1)}M<br>`;
+                        popupContent += `Collection Efficiency: ${(data.collection_efficiency * 100).toFixed(1)}%<br>`;
+                        popupContent += `Properties: ${data.properties_count.toLocaleString()}`;
+                    } else {
+                        popupContent += 'No property tax data available';
+                    }
+
+                    layer.bindPopup(popupContent);
+                }
+            }).addTo(overlayMap);
+        }
+
+        function getFeatureKey(feature, adminLevel) {
+            const props = feature.properties;
+            if (adminLevel === 'uc') {
+                return props.uc_id || props.UC_C?.toString();
+            } else if (adminLevel === 'district') {
+                return `${props.PROVINCE}-${props.DISTRICT}`;
+            } else if (adminLevel === 'province') {
+                return props.PROVINCE;
+            }
+        }
+
+        function updateMapLegend(showTDLoss, showPropertyTax) {
+            const legend = document.getElementById('overlayMapLegend');
+            const content = document.getElementById('legendContent');
+            
+            if (!showTDLoss && !showPropertyTax) {
+                legend.style.display = 'none';
+                return;
+            }
+
+            legend.style.display = 'block';
+            content.innerHTML = '';
+
+            if (showTDLoss) {
+                content.innerHTML += `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(to right, rgba(220, 53, 69, 0.2), rgba(220, 53, 69, 1));"></div>
+                        T&D Loss (Low → High)
+                    </div>
+                `;
+            }
+
+            if (showPropertyTax) {
+                content.innerHTML += `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(to right, rgba(40, 167, 69, 0.2), rgba(40, 167, 69, 1));"></div>
+                        Property Tax Collection Efficiency (Low → High)
+                    </div>
+                `;
+            }
+        }
+
+        function updateOverlayCharts(tdLossData, propertyTaxData, analysisType) {
+            // Merge data for analysis
+            const mergedData = [];
+            const tdLossMap = new Map();
+            
+            tdLossData.forEach(d => {
+                const key = d.name;
+                tdLossMap.set(key, d);
+            });
+
+            propertyTaxData.forEach(d => {
+                const key = d.name;
+                const tdLoss = tdLossMap.get(key);
+                if (tdLoss) {
+                    mergedData.push({
+                        ...d,
+                        td_loss_dummy: tdLoss.td_loss_dummy,
+                        recovery_loss_dummy: tdLoss.recovery_loss_dummy
+                    });
+                }
+            });
+
+            // Correlation Chart
+            const correlationTrace = {
+                x: mergedData.map(d => d.td_loss_dummy * 100),
+                y: mergedData.map(d => d.collection_efficiency * 100),
+                mode: 'markers',
+                type: 'scatter',
+                text: mergedData.map(d => d.name),
+                marker: {
+                    color: '#667eea',
+                    size: 8,
+                    opacity: 0.7
+                }
+            };
+
+            const correlationLayout = {
+                title: 'T&D Loss vs Property Tax Collection Efficiency',
+                xaxis: { title: 'T&D Loss (%)' },
+                yaxis: { title: 'Collection Efficiency (%)' }
+            };
+
+            Plotly.newPlot('correlationChart', [correlationTrace], correlationLayout, {responsive: true});
+
+            // Analysis Chart based on selected analysis type
+            updateAnalysisChart(mergedData, analysisType);
+        }
+
+        function updateAnalysisChart(data, analysisType) {
+            let trace, layout;
+
+            switch (analysisType) {
+                case 'correlation':
+                    // Calculate correlation coefficient
+                    const xVals = data.map(d => d.td_loss_dummy);
+                    const yVals = data.map(d => d.collection_efficiency);
+                    const correlation = calculateCorrelation(xVals, yVals);
+
+                    trace = {
+                        x: data.map(d => d.td_loss_dummy * 100),
+                        y: data.map(d => (d.property_tax_collected / d.property_tax_assessment) * 100),
+                        mode: 'markers',
+                        type: 'scatter',
+                        text: data.map(d => `${d.name}<br>Correlation: ${correlation.toFixed(3)}`),
+                        marker: {
+                            color: '#28a745',
+                            size: 10,
+                            opacity: 0.7
+                        }
+                    };
+
+                    layout = {
+                        title: `Correlation Analysis (r = ${correlation.toFixed(3)})`,
+                        xaxis: { title: 'T&D Loss (%)' },
+                        yaxis: { title: 'Tax Collection Rate (%)' }
+                    };
+                    break;
+
+                case 'ratio':
+                    const ratios = data.map(d => (d.td_loss_dummy * 100) / (d.collection_efficiency * 100));
+                    
+                    trace = {
+                        x: data.map(d => d.name).slice(0, 15),
+                        y: ratios.slice(0, 15),
+                        type: 'bar',
+                        marker: {
+                            color: '#ffc107',
+                            opacity: 0.8
+                        }
+                    };
+
+                    layout = {
+                        title: 'T&D Loss to Property Tax Collection Efficiency Ratio',
+                        xaxis: { tickangle: -45 },
+                        yaxis: { title: 'Ratio' },
+                        margin: { b: 100 }
+                    };
+                    break;
+
+                case 'efficiency':
+                    trace = {
+                        x: data.map(d => d.properties_count),
+                        y: data.map(d => d.collection_efficiency * 100),
+                        mode: 'markers',
+                        type: 'scatter',
+                        text: data.map(d => d.name),
+                        marker: {
+                            color: data.map(d => d.td_loss_dummy * 100),
+                            size: 8,
+                            opacity: 0.7,
+                            colorscale: 'Reds',
+                            colorbar: { title: 'T&D Loss (%)' }
+                        }
+                    };
+
+                    layout = {
+                        title: 'Collection Efficiency vs Property Count (colored by T&D Loss)',
+                        xaxis: { title: 'Number of Properties' },
+                        yaxis: { title: 'Collection Efficiency (%)' }
+                    };
+                    break;
+            }
+
+            Plotly.newPlot('analysisChart', [trace], layout, {responsive: true});
+        }
+
+        function calculateCorrelation(x, y) {
+            const n = x.length;
+            const sumX = d3.sum(x);
+            const sumY = d3.sum(y);
+            const sumXY = d3.sum(x.map((xi, i) => xi * y[i]));
+            const sumX2 = d3.sum(x.map(xi => xi * xi));
+            const sumY2 = d3.sum(y.map(yi => yi * yi));
+
+            const numerator = n * sumXY - sumX * sumY;
+            const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+
+            return denominator === 0 ? 0 : numerator / denominator;
+        }
+
+        // Feeder Analytics Functions
+        function initializeFeederMap() {
+            feederMap = L.map('feederMap').setView([30.3753, 69.3451], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(feederMap);
+        }
+
+        function updateFeederAnalytics() {
+            const adminLevel = document.getElementById('feederAdminLevel').value;
+            const metric = document.getElementById('feederMetric').value;
+
+            // Aggregate feeder data by admin level
+            const aggregatedFeeders = aggregateFeederData(adminLevel);
+
+            // Update metric cards
+            updateFeederMetricCards(aggregatedFeeders);
+
+            // Update charts
+            updateFeederBarChart(aggregatedFeeders, metric);
+            updateFeederDistributionChart(aggregatedFeeders);
+            updateFeederStatsChart(aggregatedFeeders);
+
+            // Update map
+            if (feederMap) {
+                updateFeederMapDisplay(aggregatedFeeders);
+            }
+        }
+
+        function aggregateFeederData(adminLevel) {
+            if (feederData.length === 0) {
+                return {};
+            }
+
+            const aggregated = {};
+
+            feederData.forEach(line => {
+                let key;
+                const ucData = geoData.uc ? geoData.uc.features.find(f => 
+                    (f.properties.uc_id === line.uc_id || f.properties.UC_C === line.uc_id)
+                ) : null;
+
+                if (adminLevel === 'uc') {
+                    key = line.uc_id;
+                } else if (adminLevel === 'district' && ucData) {
+                    key = ucData.properties.DISTRICT || 'Unknown';
+                } else if (adminLevel === 'province' && ucData) {
+                    key = ucData.properties.PROVINCE || 'Unknown';
+                } else {
+                    key = 'Unknown';
+                }
+
+                if (!aggregated[key]) {
+                    aggregated[key] = {
+                        name: key,
+                        lines: [],
+                        line_count: 0,
+                        total_length: 0,
+                        avg_length: 0,
+                        total_td_loss: 0,
+                        avg_td_loss: 0,
+                        max_td_loss: 0,
+                        min_td_loss: 100,
+                        total_peak_load: 0,
+                        high_loss_count: 0
+                    };
+                }
+
+                aggregated[key].lines.push(line);
+                aggregated[key].line_count += 1;
+                aggregated[key].total_length += line.circuit_length_km || 0;
+                aggregated[key].total_td_loss += line.td_loss_percent || 0;
+                aggregated[key].total_peak_load += line.peak_load_mw || 0;
+                aggregated[key].max_td_loss = Math.max(aggregated[key].max_td_loss, line.td_loss_percent || 0);
+                aggregated[key].min_td_loss = Math.min(aggregated[key].min_td_loss, line.td_loss_percent || 0);
+                
+                // Count high loss lines (> 25%)
+                if ((line.td_loss_percent || 0) > 25) {
+                    aggregated[key].high_loss_count += 1;
+                }
+            });
+
+            // Calculate averages
+            Object.values(aggregated).forEach(group => {
+                group.avg_length = group.total_length / group.line_count;
+                group.avg_td_loss = group.total_td_loss / group.line_count;
+                if (group.min_td_loss === 100) group.min_td_loss = 0;
+            });
+
+            return aggregated;
+        }
+
+        function updateFeederMetricCards(aggregatedFeeders) {
+            const metricsContainer = document.getElementById('feederMetricCards');
+            const groups = Object.values(aggregatedFeeders);
+
+            if (groups.length === 0) {
+                metricsContainer.innerHTML = '<div class="metric-card"><div class="metric-label">No feeder data available</div></div>';
+                return;
+            }
+
+            const totalLines = groups.reduce((sum, g) => sum + g.line_count, 0);
+            const totalLength = groups.reduce((sum, g) => sum + g.total_length, 0);
+            const avgLineLength = totalLength / totalLines;
+            const maxLinesPerArea = Math.max(...groups.map(g => g.line_count));
+            const avgTDLoss = groups.reduce((sum, g) => sum + g.avg_td_loss, 0) / groups.length;
+            const highLossLines = groups.reduce((sum, g) => sum + g.high_loss_count, 0);
+
+            metricsContainer.innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-label">Total Feeder Lines</div>
+                    <div class="metric-value">${totalLines}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Total Network Length</div>
+                    <div class="metric-value">${totalLength.toFixed(1)} km</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Avg Line Length</div>
+                    <div class="metric-value">${avgLineLength.toFixed(2)} km</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Avg T&D Loss</div>
+                    <div class="metric-value" style="color: ${avgTDLoss > 20 ? '#FF6B6B' : '#4CAF50'}">${avgTDLoss.toFixed(2)}%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">High Loss Lines (>25%)</div>
+                    <div class="metric-value" style="color: #FF0000">${highLossLines}</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Max Lines/Area</div>
+                    <div class="metric-value">${maxLinesPerArea}</div>
+                </div>
+            `;
+        }
+
+        function updateFeederBarChart(aggregatedFeeders, metric) {
+            const groups = Object.values(aggregatedFeeders).sort((a, b) => {
+                if (metric === 'line_count') return b.line_count - a.line_count;
+                if (metric === 'total_length') return b.total_length - a.total_length;
+                if (metric === 'avg_length') return b.avg_length - a.avg_length;
+                return 0;
+            }).slice(0, 15);
+
+            let metricLabel, metricValues, markerColors;
+
+            switch (metric) {
+                case 'line_count':
+                    metricLabel = 'Number of Feeder Lines';
+                    metricValues = groups.map(g => g.line_count);
+                    markerColors = '#4CAF50';
+                    break;
+                case 'total_length':
+                    metricLabel = 'Total Network Length (km)';
+                    metricValues = groups.map(g => g.total_length);
+                    markerColors = '#2196F3';
+                    break;
+                case 'avg_length':
+                    metricLabel = 'Average Line Length (km)';
+                    metricValues = groups.map(g => g.avg_length);
+                    markerColors = '#FF9800';
+                    break;
+                case 'density':
+                    metricLabel = 'Line Density';
+                    metricValues = groups.map(g => g.line_count / (g.total_length || 1));
+                    markerColors = '#9C27B0';
+                    break;
+                default:
+                    metricLabel = 'Feeder Metric';
+                    metricValues = groups.map(g => g.line_count);
+                    markerColors = '#4CAF50';
+            }
+
+            // Add trace for average T&D loss
+            const trace1 = {
+                x: groups.map(g => g.name),
+                y: metricValues,
+                type: 'bar',
+                name: metricLabel,
+                marker: {
+                    color: markerColors,
+                    opacity: 0.8
+                }
+            };
+
+            const trace2 = {
+                x: groups.map(g => g.name),
+                y: groups.map(g => g.avg_td_loss),
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Avg T&D Loss (%)',
+                yaxis: 'y2',
+                line: { color: '#FF0000', width: 2 },
+                marker: { size: 6, color: '#FF0000' }
+            };
+
+            const layout = {
+                title: `${metricLabel} by Area (Top 15) with Average T&D Losses`,
+                xaxis: { tickangle: -45 },
+                yaxis: { title: metricLabel },
+                yaxis2: {
+                    title: 'Avg T&D Loss (%)',
+                    overlaying: 'y',
+                    side: 'right'
+                },
+                margin: { b: 100, l: 50, r: 80 },
+                hovermode: 'x unified'
+            };
+
+            Plotly.newPlot('feederBarChart', [trace1, trace2], layout, {responsive: true});
+        }
+
+        function updateFeederDistributionChart(aggregatedFeeders) {
+            const groups = Object.values(aggregatedFeeders);
+            const lineCounts = groups.map(g => g.line_count).sort((a, b) => a - b);
+
+            const trace = {
+                x: lineCounts,
+                type: 'histogram',
+                nbinsx: 20,
+                marker: {
+                    color: '#2196F3',
+                    opacity: 0.8
+                }
+            };
+
+            const layout = {
+                title: 'Distribution of Feeder Lines per Area',
+                xaxis: { title: 'Number of Lines' },
+                yaxis: { title: 'Frequency' }
+            };
+
+            Plotly.newPlot('feederDistributionChart', [trace], layout, {responsive: true});
+        }
+
+        function updateFeederStatsChart(aggregatedFeeders) {
+            const groups = Object.values(aggregatedFeeders);
+            const stats = {
+                'Avg Lines': d3.mean(groups, g => g.line_count),
+                'Median Lines': d3.median(groups, g => g.line_count),
+                'Avg Length': d3.mean(groups, g => g.avg_length),
+                'Max Length': d3.max(groups, g => g.avg_length)
+            };
+
+            const trace = {
+                x: Object.keys(stats),
+                y: Object.values(stats),
+                type: 'bar',
+                marker: {
+                    color: ['#FF9800', '#9C27B0', '#00BCD4', '#E91E63'],
+                    opacity: 0.8
+                }
+            };
+
+            const layout = {
+                title: 'Feeder Network Statistics',
+                yaxis: { title: 'Value' }
+            };
+
+            Plotly.newPlot('feederStatsChart', [trace], layout, {responsive: true});
+        }
+
+        function getColorByTDLoss(tdLossPercent) {
+            // Color scale: Green (low loss) -> Yellow -> Orange -> Red (high loss)
+            if (tdLossPercent < 10) return '#00B050'; // Green - Very Low
+            if (tdLossPercent < 15) return '#92D050'; // Light Green - Low
+            if (tdLossPercent < 20) return '#FFC000'; // Yellow - Medium
+            if (tdLossPercent < 25) return '#FF8C00'; // Orange - High
+            return '#FF0000'; // Red - Very High
+        }
+
+        function updateFeederMapDisplay(aggregatedFeeders) {
+            if (!feederMap) return;
+            
+            // Clear existing feeder markers and lines
+            feederMap.eachLayer(layer => {
+                if (layer instanceof L.Marker || (layer instanceof L.Polyline && !(layer instanceof L.TileLayer))) {
+                    feederMap.removeLayer(layer);
+                }
+            });
+
+            // Draw feeder LINES on map colored by T&D loss
+            feederData.forEach(feeder => {
+                const color = getColorByTDLoss(feeder.td_loss_percent);
+                const weight = feeder.td_loss_percent > 25 ? 4 : feeder.td_loss_percent > 20 ? 3 : 2;
+                
+                // Create polyline for each feeder with coordinates [lat, lon]
+                const latLngCoords = feeder.coordinates.map(coord => [coord[1], coord[0]]);
+                
+                L.polyline(latLngCoords, {
+                    color: color,
+                    weight: weight,
+                    opacity: 0.8,
+                    dashArray: feeder.maintenance_status === 'Poor' ? '5, 5' : 'none'
+                }).bindPopup(`
+                    <strong>${feeder.uc_name}</strong><br>
+                    Feeder: ${feeder.name}<br>
+                    <span style="color: ${color}; font-weight: bold;">T&D Loss: ${feeder.td_loss_percent.toFixed(2)}%</span><br>
+                    Technical Loss: ${feeder.technical_loss_percent.toFixed(2)}%<br>
+                    Non-Technical Loss: ${feeder.non_technical_loss_percent.toFixed(2)}%<br>
+                    Recovery: ${feeder.recovery_percent.toFixed(2)}%<br>
+                    Peak Load: ${feeder.peak_load_mw.toFixed(2)} MW<br>
+                    Circuit Length: ${feeder.circuit_length_km.toFixed(2)} km<br>
+                    Status: ${feeder.maintenance_status}<br>
+                    Line Type: ${feeder.line_type}<br>
+                    Consumers: ${feeder.consumers}
+                `).addTo(feederMap);
+            });
+
+            // Add legend
+            const legend = L.control({ position: 'bottomleft' });
+            legend.onAdd = function(map) {
+                const div = L.DomUtil.create('div', 'map-legend');
+                div.innerHTML = `
+                    <div style="background: white; padding: 15px; border-radius: 5px; box-shadow: 0 0 15px rgba(0,0,0,0.2); font-size: 12px; max-width: 220px;">
+                        <strong style="display: block; margin-bottom: 8px;">T&D Loss Levels (Color Coded)</strong>
+                        <div style="margin-bottom: 3px;"><i style="background: #00B050; width: 20px; height: 4px; display: inline-block; margin-right: 8px;"></i> < 10% (Green)</div>
+                        <div style="margin-bottom: 3px;"><i style="background: #92D050; width: 20px; height: 4px; display: inline-block; margin-right: 8px;"></i> 10-15% (Light Green)</div>
+                        <div style="margin-bottom: 3px;"><i style="background: #FFC000; width: 20px; height: 4px; display: inline-block; margin-right: 8px;"></i> 15-20% (Yellow)</div>
+                        <div style="margin-bottom: 3px;"><i style="background: #FF8C00; width: 20px; height: 4px; display: inline-block; margin-right: 8px;"></i> 20-25% (Orange)</div>
+                        <div style="margin-bottom: 8px;"><i style="background: #FF0000; width: 20px; height: 4px; display: inline-block; margin-right: 8px;"></i> > 25% (Red - HIGH)</div>
+                        <hr style="margin: 8px 0;">
+                        <strong style="display: block; font-size: 11px;">Line Width</strong>
+                        <div style="font-size: 11px;">Thicker lines = Higher T&D Loss</div>
+                        <strong style="display: block; font-size: 11px; margin-top: 5px;">Line Style</strong>
+                        <div style="font-size: 11px;">Dashed lines = Poor Maintenance</div>
+                    </div>
+                `;
+                return div;
+            };
+            legend.addTo(feederMap);
+
+            // Fit map to bounds if feeder data exists
+            if (feederData.length > 0) {
+                const allCoordinates = [];
+                feederData.forEach(feeder => {
+                    feeder.coordinates.forEach(coord => {
+                        allCoordinates.push([coord[1], coord[0]]); // Convert to [lat, lon]
+                    });
+                });
+                
+                if (allCoordinates.length > 0) {
+                    const group = L.featureGroup(
+                        allCoordinates.map(coord => L.marker(coord))
+                    );
+                    feederMap.fitBounds(group.getBounds().pad(0.1));
+                }
+            }
+        }
+    </script>
+</body>
+</html>

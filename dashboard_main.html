@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pakistan Dashboard - Main</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f1f8f4 0%, #e8f5e9 100%);
+            min-height: 100vh;
+            color: #333;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        /* Header Section */
+        .header {
+            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+            color: white;
+            padding: 40px 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container svg {
+            width: 85px;
+            height: 85px;
+        }
+
+        .header-text h1 {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .header-text p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Main Dashboard Grid */
+        .dashboard-main {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 16px;
+            padding: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+            border-color: #2E7D32;
+        }
+
+        .dashboard-card h2 {
+            font-size: 2.5em;
+            color: #1B5E20;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card p {
+            font-size: 1.1em;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        /* Reform Tracking Page */
+        .reform-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .reform-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            border-left: 5px solid transparent;
+        }
+
+        .reform-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-left-color: #2E7D32;
+        }
+
+        .reform-card h3 {
+            font-size: 2em;
+            color: #1B5E20;
+            margin-bottom: 15px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        .reform-card p {
+            color: #666;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .reform-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+        }
+
+        /* Navigation Buttons */
+        .nav-button {
+            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(27, 94, 32, 0.3);
+        }
+
+        .nav-button.back {
+            background: linear-gradient(135deg, #666 0%, #444 100%);
+        }
+
+        .nav-button.back:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Page Title */
+        .page-title {
+            font-size: 2.5em;
+            color: #1B5E20;
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1B5E20;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .header-text h1 {
+                font-size: 2em;
+            }
+
+            .dashboard-main {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .dashboard-card {
+                padding: 35px;
+            }
+
+            .dashboard-card h2 {
+                font-size: 1.8em;
+            }
+
+            .page-title {
+                font-size: 1.8em;
+            }
+
+            .reform-nav {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-container">
+                    <img src="https://crystalpng.com/wp-content/uploads/2025/04/government-of-pakistan-logo.png" alt="Government of Pakistan" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="header-text">
+                    <h1>Government of Pakistan</h1>
+                    <p>Dashboard Portal</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Main Dashboard Page -->
+        <div id="mainPage" class="page active">
+            <div style="text-align: center; margin-bottom: 50px;">
+                <h1 style="font-size: 2.5em; color: #1B5E20; margin-bottom: 20px;">Select a Dashboard</h1>
+                <p style="font-size: 1.1em; color: #666; max-width: 600px; margin: 0 auto;">Choose from available dashboards to track reforms and research initiatives</p>
+            </div>
+
+            <div class="dashboard-main">
+                <!-- Reform Tracking Card -->
+                <div class="dashboard-card" onclick="navigateTo('reformPage')">
+                    <div class="card-icon">📊</div>
+                    <h2>Reform Tracking</h2>
+                    <p>Monitor government initiatives and reform programs across various sectors including Power, Tax, and more</p>
+                </div>
+
+                <!-- AI Research Card -->
+                <div class="dashboard-card" onclick="navigateTo('aiPage')">
+                    <div class="card-icon">🤖</div>
+                    <h2>AI Research Summary</h2>
+                    <p>Track active research projects, deployed AI models, and performance metrics across different research areas</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reform Tracking Page -->
+        <div id="reformPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('mainPage')">← Back to Main</button>
+            <div class="page-title">Reform Tracking Sectors</div>
+
+            <div class="reform-nav">
+                <!-- Power Sector -->
+                <div class="reform-card" onclick="navigateToPowerDashboard()">
+                    <div class="reform-icon">⚡</div>
+                    <h3>Power Sector</h3>
+                    <p>T&D Losses, Recovery Rates, Circular Debt Management, and Power Reform Initiatives</p>
+                </div>
+
+                <!-- Tax Sector -->
+                <div class="reform-card" onclick="navigateTo('taxPage')">
+                    <div class="reform-icon">💰</div>
+                    <h3>Tax Reforms</h3>
+                    <p>Property Tax Collection, Assessment Rates, and Tax Policy Implementation</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tax Page -->
+        <div id="taxPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('reformPage')">← Back to Reform Tracking</button>
+            <div class="page-title">Tax Reforms Dashboard</div>
+            <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <p style="font-size: 1.2em; color: #666;">Tax Reforms Dashboard Content</p>
+                <p style="color: #999; margin-top: 20px;">This page will display tax collection data, assessment rates, and policy implementation metrics</p>
+            </div>
+        </div>
+
+        <!-- AI Research Page -->
+        <div id="aiPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('mainPage')">← Back to Main</button>
+            <div class="page-title">AI Research Summary - Select Sector</div>
+            
+            <div class="reform-nav">
+                <!-- Power Sector AI Research -->
+                <div class="reform-card" onclick="navigateTo('aiPowerPage')">
+                    <div class="reform-icon">⚡</div>
+                    <h3>Power Sector AI</h3>
+                    <p>Literature reviews and research on AI applications in power systems including T&D optimization</p>
+                </div>
+
+                <!-- Tax Sector AI Research -->
+                <div class="reform-card" onclick="navigateTo('aiTaxPage')">
+                    <div class="reform-icon">🤖</div>
+                    <h3>Tax Technology AI</h3>
+                    <p>Machine learning applications in tax collection and property assessment optimization</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Research - Power Sector Page -->
+        <div id="aiPowerPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('aiPage')">← Back to AI Research</button>
+            <div class="page-title">Power Sector AI Research</div>
+
+            <div class="reform-nav">
+                <div class="reform-card" onclick="navigateTo('aiTDLossPage')">
+                    <div class="reform-icon">📉</div>
+                    <h3>T&D Losses Optimization</h3>
+                    <p>AI and ML techniques for reducing transmission & distribution losses</p>
+                </div>
+
+                <div class="reform-card" onclick="navigateTo('aiRecoveryPage')">
+                    <div class="reform-icon">📈</div>
+                    <h3>Recovery Enhancement</h3>
+                    <p>Predictive analytics for improving collection rates</p>
+                </div>
+
+                <div class="reform-card" onclick="navigateTo('aiCircularDebtPage')">
+                    <div class="reform-icon">💳</div>
+                    <h3>Circular Debt Analysis</h3>
+                    <p>Data-driven approaches to circular debt management</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI T&D Losses Page -->
+        <div id="aiTDLossPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('aiPowerPage')">← Back to Power AI</button>
+            <div class="page-title">AI Research: T&D Losses Optimization</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📚 Literature Review Summary</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>Overview:</strong> T&D losses in South Asian power systems average 15-25%, with Pakistan experiencing significant distribution losses. Recent research emphasizes machine learning applications for anomaly detection in grid networks.</p>
+                    <br/>
+                    <p><strong>Key Research Areas:</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li><strong>Smart Grid Monitoring:</strong> IoT sensors combined with real-time ML models detect unusual consumption patterns indicating theft or equipment failure (Ahmed et al., 2024)</li>
+                        <li><strong>Predictive Maintenance:</strong> Neural networks predict transformer failures 15-30 days in advance, reducing emergency downtime by 40% (Chen & Kumar, 2023)</li>
+                        <li><strong>Loss Disaggregation:</strong> Deep learning models separate technical losses from non-technical losses (theft/metering fraud) with 87% accuracy (Sharma et al., 2024)</li>
+                        <li><strong>Grid Optimization:</strong> Reinforcement learning algorithms optimize power routing to minimize losses by 3-8% (Wilson et al., 2023)</li>
+                    </ul>
+                    <br/>
+                    <p><strong>Latest Findings:</strong> A 2024 study by the International Energy Agency highlights that AI-powered grid management reduces T&D losses by 2-5% annually when combined with physical infrastructure upgrades. Pakistan's National Transmission & Dispatch Company is piloting such systems in 3 provinces.</p>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📰 Recent Newspaper Articles</h3>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Pakistan Plans AI-Based Power Grid Management System</p>
+                    <p style="color: #999; font-size: 0.9em;">Dawn News | November 28, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">NTDC announces plans to deploy machine learning models across 5 major distribution centers to curb T&D losses. Estimated savings: 15 billion PKR annually by 2026.</p>
+                </div>
+
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Smart Meters Detect 40% More Power Theft in Pilot Project</p>
+                    <p style="color: #999; font-size: 0.9em;">The Nation | November 15, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">Three-month pilot in Lahore detected unauthorized connections and meter tampering 40% more effectively with IoT-enabled real-time monitoring. Rollout planned for Q1 2025.</p>
+                </div>
+
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">World Bank Supports Pakistan's T&D Loss Reduction Initiative</p>
+                    <p style="color: #999; font-size: 0.9em;">Business Recorder | October 22, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">World Bank allocates $250M for AI and infrastructure modernization. Target: reduce T&D losses from 17% to 12% by 2027 through combined technology and governance reforms.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Recovery Rate Page -->
+        <div id="aiRecoveryPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('aiPowerPage')">← Back to Power AI</button>
+            <div class="page-title">AI Research: Recovery Enhancement</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📚 Literature Review Summary</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>Overview:</strong> Collection recovery rates in Pakistan's power sector remain below 90%, with significant regional variations. AI-driven approaches targeting high-risk defaulters and predicting payment behavior show promise.</p>
+                    <br/>
+                    <p><strong>Key Research Areas:</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li><strong>Predictive Defaulter Identification:</strong> Classification algorithms identify likely defaulters with 84% accuracy 2-3 months before delinquency (Pakistan Bureau of Statistics, 2024)</li>
+                        <li><strong>Dynamic Pricing Strategies:</strong> ML models optimize billing cycles and tariff structures to improve willingness-to-pay by 12-18% (Malik & Hassan, 2023)</li>
+                        <li><strong>Automated Collection Routing:</strong> Route optimization for field collectors reduces collection costs by 25% while increasing recovery by 8% (Karachi Electric Research, 2024)</li>
+                        <li><strong>SMS/WhatsApp Nudging:</strong> NLP-optimized payment reminder messages increase voluntary payment by 22% vs traditional notices (Digital Pakistan Initiative, 2024)</li>
+                    </ul>
+                    <br/>
+                    <p><strong>Latest Findings:</strong> A comprehensive study by K-Electric shows that integrated AI systems can increase recovery rates by 15-20% annually, with payback period under 2 years. Early intervention programs targeting customers at-risk show highest ROI.</p>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📰 Recent Newspaper Articles</h3>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">K-Electric Uses AI to Boost Collection Rate to 94%</p>
+                    <p style="color: #999; font-size: 0.9em;">Dawn News | November 20, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">K-Electric's machine learning platform for identifying payment defaulters and optimizing collection strategies results in 94% recovery rate - highest in South Asia. Model now being studied for national implementation.</p>
+                </div>
+
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">PEPCO Launches SMS-Based Bill Reminder Campaign Using AI</p>
+                    <p style="color: #999; font-size: 0.9em;">The Nation | October 30, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">PEPCO deploys NLP-powered personalized payment reminder system. Early results show 18% increase in voluntary compliance within first 45 days. Expansion to 8 million customers planned.</p>
+                </div>
+
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Digital Payment Infrastructure Transforms Power Sector Recovery</p>
+                    <p style="color: #999; font-size: 0.9em;">Business Recorder | November 5, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">Integration of digital wallets (JazzCash, EasyPaisa) with AI payment prediction models increases online bill payment by 35%. Younger demographics show highest adoption with 71% digital payment rate.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Circular Debt Page -->
+        <div id="aiCircularDebtPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('aiPowerPage')">← Back to Power AI</button>
+            <div class="page-title">AI Research: Circular Debt Analysis</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📚 Literature Review Summary</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>Overview:</strong> Pakistan's circular debt (exceeding 2.8 trillion PKR) represents a complex interplay of T&D losses, low recovery rates, and tariff shortfalls. AI-powered causal analysis and system dynamics modeling offer insights for policy intervention.</p>
+                    <br/>
+                    <p><strong>Key Research Areas:</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li><strong>Causal Inference Models:</strong> Bayesian networks quantify contribution of each factor (losses, recovery, tariffs) to circular debt formation (LUMS Faculty of Engineering, 2024)</li>
+                        <li><strong>Scenario Simulation:</strong> Agent-based modeling simulates impact of policy interventions (tariff adjustments, loss reduction, privatization) on circular debt trajectory (World Bank, 2023)</li>
+                        <li><strong>Early Warning Systems:</strong> Time-series forecasting models predict circular debt accumulation 6-12 months ahead with 78% accuracy (NEPRA Analysis, 2024)</li>
+                        <li><strong>Subsidy Optimization:</strong> ML algorithms identify optimal subsidy allocation across consumer categories to minimize debt while protecting vulnerable populations (89% efficiency vs manual planning)</li>
+                    </ul>
+                    <br/>
+                    <p><strong>Latest Findings:</strong> IMF-commissioned analysis reveals that without intervention, circular debt will reach 3.5 trillion PKR by 2026. Combined AI-driven loss reduction (targeting 12%), recovery improvement (targeting 93%), and tariff rationalization can reverse trajectory by 30-40% annually.</p>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📰 Recent Newspaper Articles</h3>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">IMF Recommends AI-Driven Reforms to Combat Circular Debt</p>
+                    <p style="color: #999; font-size: 0.9em;">Dawn News | November 25, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">IMF report emphasizes that technological solutions combined with governance reforms offer best path to circular debt resolution. Pakistan's 2025 budget allocates 25B PKR for digital infrastructure in power sector.</p>
+                </div>
+
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Circular Debt Stabilizes at 2.84 Trillion PKR, Structural Reforms Needed</p>
+                    <p style="color: #999; font-size: 0.9em;">The Nation | November 12, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">Ministry of Power reports debt stabilization is temporary. Long-term solutions require 5-year implementation of T&D optimization, collection enhancement, and policy reforms estimated at 150B PKR investment.</p>
+                </div>
+
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Artificial Intelligence: Pakistan's Key to Energy Crisis Resolution</p>
+                    <p style="color: #999; font-size: 0.9em;">Business Recorder | October 28, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">Expert roundtable discusses how integrated AI systems can address circular debt through real-time monitoring, predictive maintenance, and dynamic optimization. Success requires public-private collaboration and regulatory support.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Research - Tax Sector Page -->
+        <div id="aiTaxPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('aiPage')">← Back to AI Research</button>
+            <div class="page-title">Tax Technology AI Research</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">AI Applications in Tax Collection</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>Current Research Focus:</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li>Computer vision for property assessment automation</li>
+                        <li>NLP for tax code analysis and policy optimization</li>
+                        <li>Fraud detection in property valuations</li>
+                        <li>Machine learning for tax defaulter prediction</li>
+                    </ul>
+                    <br/>
+                    <p>More detailed tax sector research content coming soon...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2025 Government of Pakistan - Information Systems Department</p>
+        <p>All data is for demonstration purposes only</p>
+    </div>
+
+    <script>
+        function navigateTo(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function navigateToPowerDashboard() {
+            // Redirect to the power dashboard (index.html)
+            window.location.href = 'index.html';
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard loaded');
+        });
+    </script>
+</body>
+</html>

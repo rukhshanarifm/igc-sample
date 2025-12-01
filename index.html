@@ -3,696 +3,596 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>T&D Loss and Recovery Loss Dashboard</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>Pakistan Dashboard - Main</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px 20px 60px 20px;
-            background-color: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8faf9 0%, #f0f5f3 100%);
+            min-height: 100vh;
+            color: #2d3e2f;
+            font-weight: 400;
+            letter-spacing: 0.3px;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        /* Disclaimer Bar */
+        .disclaimer-bar {
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A5A 100%);
             color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95em;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+            letter-spacing: 0.3px;
         }
-        .header h1 {
-            margin: 0 0 10px 0;
-            font-size: 2.5em;
+
+        /* Header Section */
+        .header {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #1b5e20;
+            padding: 40px 20px;
+            box-shadow: 0 2px 8px rgba(27, 94, 32, 0.08);
         }
-        .header p {
-            margin: 0;
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-        .controls {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
             display: flex;
-            gap: 20px;
             align-items: center;
-            flex-wrap: wrap;
+            gap: 30px;
         }
-        .control-group {
+
+        .logo-section {
             display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        label {
-            font-weight: 600;
-            color: #333;
-            font-size: 0.9em;
-        }
-        select, input {
-            padding: 8px 12px;
-            border: 2px solid #e1e8ed;
-            border-radius: 5px;
-            font-size: 1em;
-            min-width: 150px;
-        }
-        select:focus, input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            align-items: center;
             gap: 20px;
-            margin-bottom: 20px;
+            flex-shrink: 0;
         }
-        .chart-container {
+
+        .logo-container {
+            width: 100px;
+            height: 100px;
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        .map-container {
-            grid-column: 1 / -1;
-            height: 600px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
+
+        .logo-container svg {
+            width: 85px;
+            height: 85px;
         }
-        #map {
-            height: 100%;
-            border-radius: 5px;
+
+        .header-text h1 {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
         }
-        .metric-cards {
+
+        .header-text p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Main Dashboard Grid */
+        .dashboard-main {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 16px;
+            padding: 50px;
+            box-shadow: 0 2px 8px rgba(27, 94, 32, 0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(27, 94, 32, 0.12);
+            border-color: #a5d6a7;
+        }
+
+        .dashboard-card h2 {
+            font-size: 2.5em;
+            color: #2e7d32;
             margin-bottom: 20px;
         }
-        .metric-card {
+
+        .dashboard-card p {
+            font-size: 1.1em;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        /* Reform Tracking Page */
+        .reform-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .reform-card {
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(27, 94, 32, 0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
             text-align: center;
+            border-left: 5px solid transparent;
         }
-        .metric-value {
+
+        .reform-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(27, 94, 32, 0.12);
+            border-left-color: #a5d6a7;
+        }
+
+        .reform-card h3 {
             font-size: 2em;
-            font-weight: bold;
-            color: #667eea;
-            margin: 10px 0;
-        }
-        .metric-label {
-            color: #666;
-            font-size: 0.9em;
+            color: #2e7d32;
+            margin-bottom: 15px;
             font-weight: 600;
+            letter-spacing: 0.2px;
         }
-        .loading {
-            text-align: center;
-            padding: 50px;
+
+        .reform-card p {
             color: #666;
-        }
-        .error {
-            text-align: center;
-            padding: 50px;
-            color: red;
-        }
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-        }
-        .footnotes {
-            background: #fffbf0;
-            border: 2px solid #667eea;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin: 20px 0 40px 0;
-            clear: both;
-            width: 100%;
-            position: relative;
-            z-index: 1000;
-        }
-        .footnotes h3 {
-            margin: 0 0 15px 0;
-            color: #333;
-            font-size: 1.2em;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 10px;
-        }
-        .footnotes p {
-            margin: 8px 0;
-            color: #666;
-            font-size: 0.9em;
+            font-size: 1em;
             line-height: 1.5;
         }
-        .footnotes a {
-            color: #667eea;
-            text-decoration: none;
+
+        .reform-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
         }
-        .footnotes a:hover {
-            text-decoration: underline;
+
+        /* Navigation Buttons */
+        .nav-button {
+            background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(27, 94, 32, 0.3);
+        }
+
+        .nav-button.back {
+            background: linear-gradient(135deg, #666 0%, #444 100%);
+        }
+
+        .nav-button.back:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Page Title */
+        .page-title {
+            font-size: 2.5em;
+            color: #1B5E20;
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1B5E20;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .header-text h1 {
+                font-size: 2em;
+            }
+
+            .dashboard-main {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .dashboard-card {
+                padding: 35px;
+            }
+
+            .dashboard-card h2 {
+                font-size: 1.8em;
+            }
+
+            .page-title {
+                font-size: 1.8em;
+            }
+
+            .reform-nav {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Disclaimer Bar -->
+    <div class="disclaimer-bar">
+        ⚠️ Disclaimer: This product is a conceptual mockup based on fictitious data. It does not reflect official information and is not endorsed by the Government of Pakistan    </div>
+
+    <!-- Header -->
     <div class="header">
-        <h1>T&D Loss and Recovery Loss Dashboard</h1>
-        <p>Comprehensive analysis of transmission & distribution losses and recovery losses across administrative levels</p>
-    </div>
-
-    <div class="controls">
-        <div class="control-group">
-            <label for="adminLevel">Administrative Level:</label>
-            <select id="adminLevel">
-                <option value="uc">Union Council (UC)</option>
-                <option value="district">District</option>
-                <option value="province">Province</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <label for="metric">Metric:</label>
-            <select id="metric">
-                <option value="td_loss_dummy">T&D Loss (%)</option>
-                <option value="recovery_loss_dummy">Recovery Loss (%)</option>
-                <option value="mth_unit_recieved_dummy">Units Received</option>
-                <option value="assessment_dummy">Assessment</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <label for="monthFilter">Month:</label>
-            <select id="monthFilter">
-                <option value="">All Months</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <label for="provinceFilter">Province:</label>
-            <select id="provinceFilter">
-                <option value="">All Provinces</option>
-            </select>
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-container">
+                    <img src="https://crystalpng.com/wp-content/uploads/2025/04/government-of-pakistan-logo.png" alt="Government of Pakistan" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="header-text">
+                    <h1>Reform Tracking Tool</h1>
+                    <p>Dashboard Portal</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="metric-cards" id="metricCards">
-        <div class="loading">Loading data...</div>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Main Dashboard Page -->
+        <div id="mainPage" class="page active">
+            <div style="text-align: center; margin-bottom: 50px;">
+                <h1 style="font-size: 2.5em; color: #1B5E20; margin-bottom: 20px;">Select a Dashboard</h1>
+                <p style="font-size: 1.1em; color: #666; max-width: 600px; margin: 0 auto;">Choose from available dashboards to track reforms and research initiatives</p>
+            </div>
+
+            <div class="dashboard-main">
+                <!-- Reform Tracking Card -->
+                <div class="dashboard-card" onclick="navigateTo('reformPage')">
+                    <div class="card-icon">📊</div>
+                    <h2>Reform Tracking</h2>
+                    <p>Monitor government initiatives and reform programs across various sectors including Power, Tax, and more</p>
+                </div>
+
+                <!-- AI Research Card -->
+                <div class="dashboard-card" onclick="navigateTo('aiPage')">
+                    <div class="card-icon">🤖</div>
+                    <h2>AI Research Summary</h2>
+                    <p>Track active research projects, deployed AI models, and performance metrics across different research areas</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reform Tracking Page -->
+        <div id="reformPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('mainPage')">← Back to Main</button>
+            <div class="page-title">Reform Tracking Sectors</div>
+
+            <div class="reform-nav">
+                <!-- Power Sector -->
+                <div class="reform-card" onclick="navigateToPowerDashboard()">
+                    <div class="reform-icon">⚡</div>
+                    <h3>Power Sector</h3>
+                    <p>T&D Losses, Recovery Rates, Circular Debt Management, and Power Reform Initiatives</p>
+                </div>
+
+                <!-- Tax Sector -->
+                <div class="reform-card" onclick="navigateTo('taxPage')">
+                    <div class="reform-icon">💰</div>
+                    <h3>Tax Reforms</h3>
+                    <p>Property Tax Collection, Assessment Rates, and Tax Policy Implementation</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tax Page -->
+        <div id="taxPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('reformPage')">← Back to Reform Tracking</button>
+            <div class="page-title">Tax Reforms Dashboard</div>
+            <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <p style="font-size: 1.2em; color: #666;">Tax Reforms Dashboard Content</p>
+                <p style="color: #999; margin-top: 20px;">This page will display tax collection data, assessment rates, and policy implementation metrics</p>
+            </div>
+        </div>
+
+        <!-- AI Research Page -->
+        <div id="aiPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('mainPage')">← Back to Main</button>
+            <div class="page-title">AI Research Summary - Select Sector</div>
+            
+            <div class="reform-nav">
+                <!-- Power Sector AI Research -->
+                <div class="reform-card" onclick="navigateTo('aiPowerPage')">
+                    <div class="reform-icon">⚡</div>
+                    <h3>Power Sector AI</h3>
+                    <p>Literature reviews and research on AI applications in power systems including T&D optimization</p>
+                </div>
+
+                <!-- Tax Sector AI Research -->
+                <div class="reform-card" onclick="navigateTo('aiTaxPage')">
+                    <div class="reform-icon">🤖</div>
+                    <h3>Tax Technology AI</h3>
+                    <p>Machine learning applications in tax collection and property assessment optimization</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Research - Power Sector Page -->
+        <div id="aiPowerPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('aiPage')">← Back to AI Research</button>
+            <div class="page-title">Power Sector AI Research</div>
+
+            <div class="reform-nav">
+                <div class="reform-card" onclick="navigateTo('aiTDLossPage')">
+                    <div class="reform-icon">📉</div>
+                    <h3>T&D Losses Optimization</h3>
+                    <p>AI and ML techniques for reducing transmission & distribution losses</p>
+                </div>
+
+                <div class="reform-card" onclick="navigateTo('aiRecoveryPage')">
+                    <div class="reform-icon">📈</div>
+                    <h3>Recovery Enhancement</h3>
+                    <p>Predictive analytics for improving collection rates</p>
+                </div>
+
+                <div class="reform-card" onclick="navigateTo('aiCircularDebtPage')">
+                    <div class="reform-icon">💳</div>
+                    <h3>Circular Debt Analysis</h3>
+                    <p>Data-driven approaches to circular debt management</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI T&D Losses Page -->
+        <div id="aiTDLossPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('aiPowerPage')">← Back to Power AI</button>
+            <div class="page-title">AI Research: T&D Losses Optimization</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📚 Literature Review Summary</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>Overview:</strong> T&D losses in South Asian power systems average 15-25%, with Pakistan experiencing significant distribution losses. Recent research emphasizes machine learning applications for anomaly detection in grid networks.</p>
+                    <br/>
+                    <p><strong>Key Research Areas:</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li><strong>Smart Grid Monitoring:</strong> IoT sensors combined with real-time ML models detect unusual consumption patterns indicating theft or equipment failure (Ahmed et al., 2024)</li>
+                        <li><strong>Predictive Maintenance:</strong> Neural networks predict transformer failures 15-30 days in advance, reducing emergency downtime by 40% (Chen & Kumar, 2023)</li>
+                        <li><strong>Loss Disaggregation:</strong> Deep learning models separate technical losses from non-technical losses (theft/metering fraud) with 87% accuracy (Sharma et al., 2024)</li>
+                        <li><strong>Grid Optimization:</strong> Reinforcement learning algorithms optimize power routing to minimize losses by 3-8% (Wilson et al., 2023)</li>
+                    </ul>
+                    <br/>
+                    <p><strong>Latest Findings:</strong> A 2024 study by the International Energy Agency highlights that AI-powered grid management reduces T&D losses by 2-5% annually when combined with physical infrastructure upgrades. Pakistan's National Transmission & Dispatch Company is piloting such systems in 3 provinces.</p>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📰 Recent Newspaper Articles</h3>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Pakistan Plans AI-Based Power Grid Management System</p>
+                    <p style="color: #999; font-size: 0.9em;">Dawn News | November 28, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">NTDC announces plans to deploy machine learning models across 5 major distribution centers to curb T&D losses. Estimated savings: 15 billion PKR annually by 2026.</p>
+                </div>
+
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Smart Meters Detect 40% More Power Theft in Pilot Project</p>
+                    <p style="color: #999; font-size: 0.9em;">The Nation | November 15, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">Three-month pilot in Lahore detected unauthorized connections and meter tampering 40% more effectively with IoT-enabled real-time monitoring. Rollout planned for Q1 2025.</p>
+                </div>
+
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">World Bank Supports Pakistan's T&D Loss Reduction Initiative</p>
+                    <p style="color: #999; font-size: 0.9em;">Business Recorder | October 22, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">World Bank allocates $250M for AI and infrastructure modernization. Target: reduce T&D losses from 17% to 12% by 2027 through combined technology and governance reforms.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Recovery Rate Page -->
+        <div id="aiRecoveryPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('aiPowerPage')">← Back to Power AI</button>
+            <div class="page-title">AI Research: Recovery Enhancement</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📚 Literature Review Summary</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>Overview:</strong> Collection recovery rates in Pakistan's power sector remain below 90%, with significant regional variations. AI-driven approaches targeting high-risk defaulters and predicting payment behavior show promise.</p>
+                    <br/>
+                    <p><strong>Key Research Areas:</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li><strong>Predictive Defaulter Identification:</strong> Classification algorithms identify likely defaulters with 84% accuracy 2-3 months before delinquency (Pakistan Bureau of Statistics, 2024)</li>
+                        <li><strong>Dynamic Pricing Strategies:</strong> ML models optimize billing cycles and tariff structures to improve willingness-to-pay by 12-18% (Malik & Hassan, 2023)</li>
+                        <li><strong>Automated Collection Routing:</strong> Route optimization for field collectors reduces collection costs by 25% while increasing recovery by 8% (Karachi Electric Research, 2024)</li>
+                        <li><strong>SMS/WhatsApp Nudging:</strong> NLP-optimized payment reminder messages increase voluntary payment by 22% vs traditional notices (Digital Pakistan Initiative, 2024)</li>
+                    </ul>
+                    <br/>
+                    <p><strong>Latest Findings:</strong> A comprehensive study by K-Electric shows that integrated AI systems can increase recovery rates by 15-20% annually, with payback period under 2 years. Early intervention programs targeting customers at-risk show highest ROI.</p>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📰 Recent Newspaper Articles</h3>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">K-Electric Uses AI to Boost Collection Rate to 94%</p>
+                    <p style="color: #999; font-size: 0.9em;">Dawn News | November 20, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">K-Electric's machine learning platform for identifying payment defaulters and optimizing collection strategies results in 94% recovery rate - highest in South Asia. Model now being studied for national implementation.</p>
+                </div>
+
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">PEPCO Launches SMS-Based Bill Reminder Campaign Using AI</p>
+                    <p style="color: #999; font-size: 0.9em;">The Nation | October 30, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">PEPCO deploys NLP-powered personalized payment reminder system. Early results show 18% increase in voluntary compliance within first 45 days. Expansion to 8 million customers planned.</p>
+                </div>
+
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Digital Payment Infrastructure Transforms Power Sector Recovery</p>
+                    <p style="color: #999; font-size: 0.9em;">Business Recorder | November 5, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">Integration of digital wallets (JazzCash, EasyPaisa) with AI payment prediction models increases online bill payment by 35%. Younger demographics show highest adoption with 71% digital payment rate.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Circular Debt Page -->
+        <div id="aiCircularDebtPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('aiPowerPage')">← Back to Power AI</button>
+            <div class="page-title">AI Research: Circular Debt Analysis</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📚 Literature Review Summary</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>Overview:</strong> Pakistan's circular debt (exceeding 2.8 trillion PKR) represents a complex interplay of T&D losses, low recovery rates, and tariff shortfalls. AI-powered causal analysis and system dynamics modeling offer insights for policy intervention.</p>
+                    <br/>
+                    <p><strong>Key Research Areas:</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li><strong>Causal Inference Models:</strong> Bayesian networks quantify contribution of each factor (losses, recovery, tariffs) to circular debt formation (LUMS Faculty of Engineering, 2024)</li>
+                        <li><strong>Scenario Simulation:</strong> Agent-based modeling simulates impact of policy interventions (tariff adjustments, loss reduction, privatization) on circular debt trajectory (World Bank, 2023)</li>
+                        <li><strong>Early Warning Systems:</strong> Time-series forecasting models predict circular debt accumulation 6-12 months ahead with 78% accuracy (NEPRA Analysis, 2024)</li>
+                        <li><strong>Subsidy Optimization:</strong> ML algorithms identify optimal subsidy allocation across consumer categories to minimize debt while protecting vulnerable populations (89% efficiency vs manual planning)</li>
+                    </ul>
+                    <br/>
+                    <p><strong>Latest Findings:</strong> IMF-commissioned analysis reveals that without intervention, circular debt will reach 3.5 trillion PKR by 2026. Combined AI-driven loss reduction (targeting 12%), recovery improvement (targeting 93%), and tariff rationalization can reverse trajectory by 30-40% annually.</p>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📰 Recent Newspaper Articles</h3>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">IMF Recommends AI-Driven Reforms to Combat Circular Debt</p>
+                    <p style="color: #999; font-size: 0.9em;">Dawn News | November 25, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">IMF report emphasizes that technological solutions combined with governance reforms offer best path to circular debt resolution. Pakistan's 2025 budget allocates 25B PKR for digital infrastructure in power sector.</p>
+                </div>
+
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Circular Debt Stabilizes at 2.84 Trillion PKR, Structural Reforms Needed</p>
+                    <p style="color: #999; font-size: 0.9em;">The Nation | November 12, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">Ministry of Power reports debt stabilization is temporary. Long-term solutions require 5-year implementation of T&D optimization, collection enhancement, and policy reforms estimated at 150B PKR investment.</p>
+                </div>
+
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Artificial Intelligence: Pakistan's Key to Energy Crisis Resolution</p>
+                    <p style="color: #999; font-size: 0.9em;">Business Recorder | October 28, 2024</p>
+                    <p style="color: #666; margin-top: 10px;">Expert roundtable discusses how integrated AI systems can address circular debt through real-time monitoring, predictive maintenance, and dynamic optimization. Success requires public-private collaboration and regulatory support.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Research - Tax Sector Page -->
+        <div id="aiTaxPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('aiPage')">← Back to AI Research</button>
+            <div class="page-title">Tax Technology AI Research</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">AI Applications in Tax Collection</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>Current Research Focus:</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li>Computer vision for property assessment automation</li>
+                        <li>NLP for tax code analysis and policy optimization</li>
+                        <li>Fraud detection in property valuations</li>
+                        <li>Machine learning for tax defaulter prediction</li>
+                    </ul>
+                    <br/>
+                    <p>More detailed tax sector research content coming soon...</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="dashboard-grid">
-        <div class="chart-container">
-            <div id="barChart"></div>
-        </div>
-        <div class="chart-container">
-            <div id="scatterPlot"></div>
-        </div>
-        <div class="chart-container">
-            <div id="timeSeriesChart"></div>
-        </div>
-        <div class="chart-container">
-            <div id="distributionChart"></div>
-        </div>
-    </div>
-
-    <div class="map-container">
-        <div id="map"></div>
-    </div>
-
-    <div class="footnotes">
-        <h3>Data Sources & Notes</h3>
-        <p><strong>-</strong> Feeder data used in this dashboard is dummy data for demonstration purposes only.</p>
-        <p><strong>-</strong> UC (Union Council) shapefile source: <a href="https://data.humdata.org/dataset/pakistan-union-council-boundaries-along-with-other-admin-boundaries-dataset" target="_blank">Pakistan Union Council Boundaries - Humanitarian Data Exchange</a></p>
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2025 Government of Pakistan - Information Systems Department</p>
+        <p>All data is for demonstration purposes only</p>
     </div>
 
     <script>
-        // Global variables
-        let rawData = [];
-        let aggregatedData = [];
-        let map;
-        let geoData = {};
-        let currentLayer;
+        function navigateTo(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
 
-        // Initialize dashboard
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function navigateToPowerDashboard() {
+            // Redirect to the power dashboard (index.html)
+            window.location.href = 'td_loss_dashboard.html';
+        }
+
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            initializeMap();
-            loadData();
-            setupEventListeners();
+            console.log('Dashboard loaded');
         });
-
-        function setupEventListeners() {
-            document.getElementById('adminLevel').addEventListener('change', updateDashboard);
-            document.getElementById('metric').addEventListener('change', updateDashboard);
-            document.getElementById('monthFilter').addEventListener('change', updateDashboard);
-            document.getElementById('provinceFilter').addEventListener('change', updateDashboard);
-        }
-
-        function initializeMap() {
-            map = L.map('map').setView([30.3753, 69.3451], 6); // Pakistan center
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-        }
-
-        async function loadData() {
-            try {
-                // Load CSV data
-                console.log('Loading CSV data...');
-                const csvData = await d3.csv('data/dummy/dummy_data_sampled.csv');
-                rawData = csvData.map(d => ({
-                    month: d.month,
-                    uc: +d.uc,
-                    PROVINCE: d.PROVINCE,
-                    DISTRICT: d.DISTRICT,
-                    TEHSIL: d.TEHSIL,
-                    mth_unit_recieved_dummy: +d.mth_unit_recieved_dummy || 0,
-                    mth_unit_billed_dummy: +d.mth_unit_billed_dummy || 0,
-                    assessment_dummy: +d.assessment_dummy || 0,
-                    payment_dummy: +d.payment_dummy || 0,
-                    td_loss_dummy: +d.td_loss_dummy || 0,
-                    recovery_loss_dummy: +d.recovery_loss_dummy || 0
-                }));
-
-                console.log('Loaded', rawData.length, 'records');
-
-                // Load GeoJSON data
-                console.log('Loading GeoJSON data...');
-                await loadGeoData();
-
-                populateFilters();
-                updateDashboard();
-                
-            } catch (error) {
-                console.error('Error loading data:', error);
-                document.getElementById('metricCards').innerHTML = '<div class="error">Error loading data. Please check console and file paths.</div>';
-            }
-        }
-
-        async function loadGeoData() {
-            try {
-                // Load geographic boundaries
-                const [ucData, districtData, provinceData] = await Promise.all([
-                    d3.json('data/geo/geojson/union_councils.geojson'),
-                    d3.json('data/geo/geojson/districts.geojson'),
-                    d3.json('data/geo/geojson/provinces.geojson')
-                ]);
-
-                geoData = {
-                    uc: ucData,
-                    district: districtData,
-                    province: provinceData
-                };
-
-                console.log('Loaded geographic data:', {
-                    ucs: ucData.features.length,
-                    districts: districtData.features.length,
-                    provinces: provinceData.features.length
-                });
-
-            } catch (error) {
-                console.error('Error loading geographic data:', error);
-                console.log('Dashboard will work without map functionality');
-            }
-        }
-
-        function populateFilters() {
-            // Populate month filter
-            const months = [...new Set(rawData.map(d => d.month))].sort();
-            const monthSelect = document.getElementById('monthFilter');
-            monthSelect.innerHTML = '<option value="">All Months</option>';
-            months.forEach(month => {
-                const option = document.createElement('option');
-                option.value = month;
-                option.textContent = month;
-                monthSelect.appendChild(option);
-            });
-
-            // Populate province filter
-            const provinces = [...new Set(rawData.map(d => d.PROVINCE))].filter(p => p).sort();
-            const provinceSelect = document.getElementById('provinceFilter');
-            provinceSelect.innerHTML = '<option value="">All Provinces</option>';
-            provinces.forEach(province => {
-                const option = document.createElement('option');
-                option.value = province;
-                option.textContent = province;
-                provinceSelect.appendChild(option);
-            });
-        }
-
-        function getFilteredData() {
-            let filtered = [...rawData];
-
-            const monthFilter = document.getElementById('monthFilter').value;
-            const provinceFilter = document.getElementById('provinceFilter').value;
-
-            if (monthFilter) {
-                filtered = filtered.filter(d => d.month === monthFilter);
-            }
-
-            if (provinceFilter) {
-                filtered = filtered.filter(d => d.PROVINCE === provinceFilter);
-            }
-
-            return filtered;
-        }
-
-        function aggregateData(data, level) {
-            const groupBy = {
-                uc: d => d.uc,
-                district: d => `${d.PROVINCE}-${d.DISTRICT}`,
-                province: d => d.PROVINCE
-            };
-
-            const grouped = d3.group(data, groupBy[level]);
-            
-            return Array.from(grouped, ([key, values]) => {
-                const first = values[0];
-                return {
-                    id: key,
-                    name: level === 'uc' ? `UC ${key}` : 
-                          level === 'district' ? first.DISTRICT : 
-                          first.PROVINCE,
-                    province: first.PROVINCE,
-                    district: first.DISTRICT,
-                    tehsil: first.TEHSIL,
-                    count: values.length,
-                    mth_unit_recieved_dummy: d3.mean(values, d => d.mth_unit_recieved_dummy),
-                    mth_unit_billed_dummy: d3.mean(values, d => d.mth_unit_billed_dummy),
-                    assessment_dummy: d3.mean(values, d => d.assessment_dummy),
-                    payment_dummy: d3.mean(values, d => d.payment_dummy),
-                    td_loss_dummy: d3.mean(values, d => d.td_loss_dummy),
-                    recovery_loss_dummy: d3.mean(values, d => d.recovery_loss_dummy)
-                };
-            });
-        }
-
-        function updateDashboard() {
-            const filteredData = getFilteredData();
-            const adminLevel = document.getElementById('adminLevel').value;
-            aggregatedData = aggregateData(filteredData, adminLevel);
-
-            updateMetricCards();
-            updateCharts();
-            updateMap();
-        }
-
-        function updateMetricCards() {
-            const metric = document.getElementById('metric').value;
-            const data = aggregatedData;
-
-            if (data.length === 0) {
-                document.getElementById('metricCards').innerHTML = '<div class="loading">No data available for current filters</div>';
-                return;
-            }
-
-            const values = data.map(d => d[metric]).filter(v => !isNaN(v));
-            const mean = d3.mean(values);
-            const max = d3.max(values);
-            const min = d3.min(values);
-
-            const formatValue = (value) => {
-                if (metric.includes('loss')) {
-                    return `${(value * 100).toFixed(1)}%`;
-                }
-                return value.toLocaleString();
-            };
-
-            document.getElementById('metricCards').innerHTML = `
-                <div class="metric-card">
-                    <div class="metric-label">Average</div>
-                    <div class="metric-value">${formatValue(mean)}</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Maximum</div>
-                    <div class="metric-value">${formatValue(max)}</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Minimum</div>
-                    <div class="metric-value">${formatValue(min)}</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Total Records</div>
-                    <div class="metric-value">${data.length}</div>
-                </div>
-            `;
-        }
-
-        function updateCharts() {
-            updateBarChart();
-            updateScatterPlot();
-            updateTimeSeriesChart();
-            updateDistributionChart();
-        }
-
-        function updateBarChart() {
-            const metric = document.getElementById('metric').value;
-            const adminLevel = document.getElementById('adminLevel').value;
-            
-            // Get top 15 for visualization
-            const topData = aggregatedData
-                .sort((a, b) => b[metric] - a[metric])
-                .slice(0, 15);
-
-            const trace = {
-                x: topData.map(d => d.name),
-                y: topData.map(d => d[metric]),
-                type: 'bar',
-                marker: {
-                    color: '#667eea',
-                    opacity: 0.8
-                }
-            };
-
-            const layout = {
-                title: `Top 15 ${adminLevel.toUpperCase()}s by ${metric.replace('_', ' ')}`,
-                xaxis: { tickangle: -45 },
-                margin: { b: 100 }
-            };
-
-            Plotly.newPlot('barChart', [trace], layout, {responsive: true});
-        }
-
-        function updateScatterPlot() {
-            const trace = {
-                x: aggregatedData.map(d => d.td_loss_dummy),
-                y: aggregatedData.map(d => d.recovery_loss_dummy),
-                mode: 'markers',
-                type: 'scatter',
-                text: aggregatedData.map(d => d.name),
-                marker: {
-                    color: '#764ba2',
-                    size: 8,
-                    opacity: 0.7
-                }
-            };
-
-            const layout = {
-                title: 'T&D Loss vs Recovery Loss',
-                xaxis: { title: 'T&D Loss (%)' },
-                yaxis: { title: 'Recovery Loss (%)' }
-            };
-
-            Plotly.newPlot('scatterPlot', [trace], layout, {responsive: true});
-        }
-
-        function updateTimeSeriesChart() {
-            const monthFilter = document.getElementById('monthFilter').value;
-            
-            if (monthFilter) {
-                // Show current vs all time if filtered
-                const allData = aggregateData(rawData, document.getElementById('adminLevel').value);
-                const metric = document.getElementById('metric').value;
-                
-                const allValues = allData.map(d => d[metric]);
-                const currentValues = aggregatedData.map(d => d[metric]);
-                
-                const trace1 = {
-                    y: allValues,
-                    type: 'box',
-                    name: 'All Time',
-                    marker: { color: '#667eea' }
-                };
-                
-                const trace2 = {
-                    y: currentValues,
-                    type: 'box',
-                    name: monthFilter,
-                    marker: { color: '#764ba2' }
-                };
-
-                const layout = {
-                    title: `${metric.replace('_', ' ')} Distribution: ${monthFilter} vs All Time`,
-                    yaxis: { title: metric.replace('_', ' ') }
-                };
-
-                Plotly.newPlot('timeSeriesChart', [trace1, trace2], layout, {responsive: true});
-            } else {
-                // Show monthly trends
-                const monthlyData = d3.group(rawData, d => d.month);
-                const months = Array.from(monthlyData.keys()).sort();
-                const metric = document.getElementById('metric').value;
-
-                const monthlyAvgs = months.map(month => {
-                    const monthData = monthlyData.get(month);
-                    return d3.mean(monthData, d => d[metric]);
-                });
-
-                const trace = {
-                    x: months,
-                    y: monthlyAvgs,
-                    type: 'scatter',
-                    mode: 'lines+markers',
-                    line: { color: '#667eea', width: 3 },
-                    marker: { size: 8 }
-                };
-
-                const layout = {
-                    title: `Monthly Trend: ${metric.replace('_', ' ')}`,
-                    xaxis: { title: 'Month' },
-                    yaxis: { title: metric.replace('_', ' ') }
-                };
-
-                Plotly.newPlot('timeSeriesChart', [trace], layout, {responsive: true});
-            }
-        }
-
-        function updateDistributionChart() {
-            const metric = document.getElementById('metric').value;
-            const values = aggregatedData.map(d => d[metric]).filter(v => !isNaN(v));
-
-            const trace = {
-                x: values,
-                type: 'histogram',
-                nbinsx: 20,
-                marker: {
-                    color: '#764ba2',
-                    opacity: 0.7
-                }
-            };
-
-            const layout = {
-                title: `Distribution of ${metric.replace('_', ' ')}`,
-                xaxis: { title: metric.replace('_', ' ') },
-                yaxis: { title: 'Frequency' }
-            };
-
-            Plotly.newPlot('distributionChart', [trace], layout, {responsive: true});
-        }
-
-        function updateMap() {
-            // Clear existing layers
-            if (currentLayer) {
-                map.removeLayer(currentLayer);
-            }
-
-            const adminLevel = document.getElementById('adminLevel').value;
-            const metric = document.getElementById('metric').value;
-
-            if (!geoData[adminLevel]) {
-                console.log('No geographic data available for', adminLevel);
-                return;
-            }
-
-            // Create a lookup for our data
-            const dataLookup = new Map();
-            aggregatedData.forEach(d => {
-                if (adminLevel === 'uc') {
-                    dataLookup.set(d.id.toString(), d);
-                } else if (adminLevel === 'district') {
-                    dataLookup.set(`${d.province}-${d.district}`, d);
-                } else if (adminLevel === 'province') {
-                    dataLookup.set(d.province, d);
-                }
-            });
-
-            // Get value range for color scaling
-            const values = aggregatedData.map(d => d[metric]).filter(v => !isNaN(v));
-            const minValue = d3.min(values);
-            const maxValue = d3.max(values);
-
-            function getColor(value) {
-                if (isNaN(value) || value === null) return '#ccc';
-                const normalized = (value - minValue) / (maxValue - minValue);
-                const intensity = Math.round(normalized * 255);
-                return `rgba(102, 126, 234, ${0.2 + normalized * 0.8})`;
-            }
-
-            function getFeatureKey(feature) {
-                const props = feature.properties;
-                if (adminLevel === 'uc') {
-                    return props.uc_id || props.UC_C?.toString();
-                } else if (adminLevel === 'district') {
-                    return `${props.PROVINCE}-${props.DISTRICT}`;
-                } else if (adminLevel === 'province') {
-                    return props.PROVINCE;
-                }
-            }
-
-            currentLayer = L.geoJSON(geoData[adminLevel], {
-                style: function(feature) {
-                    const key = getFeatureKey(feature);
-                    const data = dataLookup.get(key);
-                    const value = data ? data[metric] : null;
-
-                    return {
-                        fillColor: getColor(value),
-                        weight: 1,
-                        opacity: 1,
-                        color: '#333',
-                        fillOpacity: 0.7
-                    };
-                },
-                onEachFeature: function(feature, layer) {
-                    const key = getFeatureKey(feature);
-                    const data = dataLookup.get(key);
-                    const props = feature.properties;
-
-                    let popupContent = `<strong>${props.uc_name || props.DISTRICT || props.PROVINCE}</strong><br>`;
-                    
-                    if (data) {
-                        popupContent += `${metric.replace('_', ' ')}: `;
-                        if (metric.includes('loss')) {
-                            popupContent += `${(data[metric] * 100).toFixed(2)}%`;
-                        } else {
-                            popupContent += data[metric].toLocaleString();
-                        }
-                        
-                        popupContent += `<br>Records: ${data.count}`;
-                    } else {
-                        popupContent += 'No data available';
-                    }
-
-                    layer.bindPopup(popupContent);
-                    
-                    layer.on({
-                        mouseover: function(e) {
-                            e.target.setStyle({
-                                weight: 3,
-                                color: '#666',
-                                fillOpacity: 0.9
-                            });
-                        },
-                        mouseout: function(e) {
-                            currentLayer.resetStyle(e.target);
-                        }
-                    });
-                }
-            }).addTo(map);
-
-            // Fit map to layer bounds
-            if (currentLayer.getBounds().isValid()) {
-                map.fitBounds(currentLayer.getBounds());
-            }
-        }
     </script>
 </body>
 </html>
