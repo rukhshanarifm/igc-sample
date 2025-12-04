@@ -338,7 +338,7 @@
 
             <div class="reform-nav">
                 <!-- Power Sector -->
-                <div class="reform-card" onclick="navigateToPowerDashboard()">
+                <div class="reform-card" onclick="navigateTo('powerSectorPage')">
                     <div class="reform-icon">⚡</div>
                     <h3>Power Sector</h3>
                     <p>T&D Losses, Recovery Rates, Circular Debt Management, and Power Reform Initiatives</p>
@@ -348,7 +348,180 @@
                 <div class="reform-card" onclick="navigateTo('taxPage')">
                     <div class="reform-icon">💰</div>
                     <h3>Tax Reforms</h3>
-                    <p>Property Tax Collection, Assessment Rates, and Tax Policy Implementation</p>
+                    <p>Tax Revenue, Expenditure, Growth</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Power Sector Options Page -->
+        <div id="powerSectorPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('reformPage')">← Back to Reform Tracking</button>
+            <div class="page-title">Power Sector - Select View</div>
+
+            <div class="reform-nav">
+                <!-- Real Time Dashboard -->
+                <div class="reform-card" onclick="navigateToPowerDashboard()">
+                    <div class="reform-icon">📊</div>
+                    <h3>Real Time Dashboard</h3>
+                    <p>Interactive live dashboards with maps, charts, and real-time data visualization for T&D losses, recovery rates, and circular debt</p>
+                </div>
+
+                <!-- Deep Dive Analysis -->
+                <div class="reform-card" onclick="navigateTo('powerDeepDivePage')">
+                    <div class="reform-icon">🔍</div>
+                    <h3>Deep Dive Analysis</h3>
+                    <p>Detailed analysis, research insights, and comprehensive reports on power sector reforms and policy recommendations</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Power Deep Dive Page -->
+        <div id="powerDeepDivePage" class="page">
+            <button class="nav-button back" onclick="navigateTo('powerSectorPage')">← Back to Power Sector</button>
+            <div class="page-title">Power Sector Deep Dive</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.8em;">📈 Comprehensive Power Sector Analysis</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1.1em;">
+                    <p><strong>Overview:</strong> Pakistan's power sector faces critical challenges including high T&D losses (17%), low recovery rates (88%), and mounting circular debt (2.84 trillion PKR). This section provides in-depth analysis and reform insights.</p>
+                </div>
+            </div>
+
+            <div class="reform-nav">
+                <div class="reform-card" onclick="navigateTo('deepDiveTDPage')">
+                    <div class="reform-icon">📉</div>
+                    <h3>T&D Losses Analysis</h3>
+                    <p>In-depth research, trends, and actionable insights on transmission and distribution losses</p>
+                </div>
+
+                <div class="reform-card" onclick="navigateTo('deepDiveRecoveryPage')">
+                    <div class="reform-icon">💰</div>
+                    <h3>Recovery Rates Research</h3>
+                    <p>Comprehensive analysis of collection rates, payment patterns, and recovery optimization strategies</p>
+                </div>
+
+                <div class="reform-card" onclick="navigateTo('deepDiveCircularDebtPage')">
+                    <div class="reform-icon">💳</div>
+                    <h3>Circular Debt Deep Dive</h3>
+                    <p>Detailed examination of circular debt causes, trajectory, and structural reform recommendations</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deep Dive - T&D Losses Page -->
+        <div id="deepDiveTDPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('powerDeepDivePage')">← Back to Deep Dive</button>
+            <div class="page-title">Deep Dive: T&D Losses Analysis</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📊 Current State Analysis</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>National Average:</strong> 17% (Target: 12% by 2027)</p>
+                    <p><strong>Technical Losses:</strong> ~8% (infrastructure aging, long transmission lines)</p>
+                    <p><strong>Non-Technical Losses:</strong> ~9% (theft, metering issues, billing errors)</p>
+                    <br/>
+                    <p><strong>Regional Breakdown:</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li>Punjab: 14-16% (better infrastructure)</li>
+                        <li>Sindh: 18-22% (high theft incidence)</li>
+                        <li>KPK: 20-25% (terrain challenges)</li>
+                        <li>Balochistan: 25-30% (sparse population, long distances)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">💡 Reform Recommendations</h3>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Infrastructure Modernization</p>
+                    <p style="color: #666; margin-top: 10px;">Replace aging transformers and transmission lines. Estimated cost: 80B PKR over 5 years. Expected loss reduction: 3-4%</p>
+                </div>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Smart Metering</p>
+                    <p style="color: #666; margin-top: 10px;">Deploy 10M smart meters with real-time monitoring. Cost: 50B PKR. Expected loss reduction: 2-3%</p>
+                </div>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">AI-Powered Theft Detection</p>
+                    <p style="color: #666; margin-top: 10px;">Machine learning systems for anomaly detection. Cost: 5B PKR. Expected loss reduction: 1-2%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deep Dive - Recovery Rates Page -->
+        <div id="deepDiveRecoveryPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('powerDeepDivePage')">← Back to Deep Dive</button>
+            <div class="page-title">Deep Dive: Recovery Rates Research</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📊 Collection Performance Analysis</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>National Average:</strong> 88% (Target: 93% by 2027)</p>
+                    <p><strong>Outstanding Receivables:</strong> ~450 billion PKR</p>
+                    <br/>
+                    <p><strong>Company Performance:</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li>K-Electric: 94% (best performer - private sector)</li>
+                        <li>IESCO: 91% (improved governance)</li>
+                        <li>LESCO: 89% (population density challenges)</li>
+                        <li>PESCO: 78% (lowest - security and billing issues)</li>
+                        <li>QESCO: 72% (sparse population, enforcement challenges)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">💡 Recovery Enhancement Strategies</h3>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Digital Payment Infrastructure</p>
+                    <p style="color: #666; margin-top: 10px;">Expand mobile wallet integration, online banking, and automated payment options. Expected improvement: 5-7%</p>
+                </div>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Predictive Analytics</p>
+                    <p style="color: #666; margin-top: 10px;">AI models to identify high-risk defaulters and enable early intervention. Expected improvement: 3-4%</p>
+                </div>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Incentive Programs</p>
+                    <p style="color: #666; margin-top: 10px;">Reward timely payers with discounts, penalty waivers for chronic defaulters who clear dues. Expected improvement: 2-3%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deep Dive - Circular Debt Page -->
+        <div id="deepDiveCircularDebtPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('powerDeepDivePage')">← Back to Deep Dive</button>
+            <div class="page-title">Deep Dive: Circular Debt Analysis</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📊 Circular Debt Composition</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>Current Stock:</strong> 2.84 trillion PKR (as of Nov 2024)</p>
+                    <p><strong>Monthly Flow:</strong> ~35 billion PKR (stabilized after reforms)</p>
+                    <br/>
+                    <p><strong>Key Contributing Factors:</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li>T&D Losses: ~40% contribution (720B PKR annually)</li>
+                        <li>Low Recovery Rates: ~25% contribution (450B PKR annually)</li>
+                        <li>Tariff Differential: ~20% contribution (subsidies not paid on time)</li>
+                        <li>Delayed Payments: ~15% contribution (government/public sector dues)</li>
+                    </ul>
+                    <br/>
+                    <p><strong>Projection:</strong> Without reforms, debt will reach 3.5 trillion PKR by 2026. With integrated reforms, can be reduced to 2.2 trillion PKR.</p>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">💡 Structural Reform Roadmap</h3>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Phase 1 (2025-2026): Loss Reduction</p>
+                    <p style="color: #666; margin-top: 10px;">Target T&D losses from 17% to 14%. Investment: 80B PKR. Expected annual savings: 250B PKR</p>
+                </div>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Phase 2 (2026-2027): Recovery Enhancement</p>
+                    <p style="color: #666; margin-top: 10px;">Target recovery from 88% to 92%. Investment: 30B PKR. Expected annual savings: 180B PKR</p>
+                </div>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Phase 3 (2027-2028): Tariff Rationalization</p>
+                    <p style="color: #666; margin-top: 10px;">Gradual subsidy phase-out with social protection for vulnerable groups. Expected debt reduction: 400B PKR annually</p>
                 </div>
             </div>
         </div>
@@ -356,10 +529,219 @@
         <!-- Tax Page -->
         <div id="taxPage" class="page">
             <button class="nav-button back" onclick="navigateTo('reformPage')">← Back to Reform Tracking</button>
-            <div class="page-title">Tax Reforms Dashboard</div>
-            <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
-                <p style="font-size: 1.2em; color: #666;">Tax Reforms Dashboard Content</p>
-                <p style="color: #999; margin-top: 20px;">This page will display tax collection data, assessment rates, and policy implementation metrics</p>
+            <div class="page-title">Tax Reforms</div>
+            
+            <!-- Key Tax Insights at Top -->
+            <div style="background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); border-radius: 16px; padding: 40px; margin-bottom: 40px; color: white;">
+                <h3 style="margin-bottom: 25px; font-size: 1.8em;">📊 Key Tax Insights</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px;">
+                    <div style="background: rgba(255,255,255,0.15); padding: 25px; border-radius: 12px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 2.5em; font-weight: bold; margin-bottom: 10px;">₨5.8T</div>
+                        <div style="font-size: 1em; opacity: 0.9;">Total FBR Collection FY24-25</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 25px; border-radius: 12px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 2.5em; font-weight: bold; margin-bottom: 10px; color: #FFD700;">22.5%</div>
+                        <div style="font-size: 1em; opacity: 0.9;">Avg Salaried Tax Rate</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 25px; border-radius: 12px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 2.5em; font-weight: bold; margin-bottom: 10px; color: #FF6B6B;">0.65</div>
+                        <div style="font-size: 1em; opacity: 0.9;">Income Elasticity (Declining)</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 25px; border-radius: 12px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 2.5em; font-weight: bold; margin-bottom: 10px;">48%</div>
+                        <div style="font-size: 1em; opacity: 0.9;">Salaried Class Tax Burden</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two Options Side by Side -->
+            <div class="reform-nav" style="grid-template-columns: repeat(2, 1fr);">
+                <!-- Real Time Dashboard -->
+                <div class="reform-card" onclick="window.location.href='tax_dashboard.html'">
+                    <div class="reform-icon">📊</div>
+                    <h3>Real Time Dashboard</h3>
+                    <p>Interactive dashboards with charts and visualizations for FBR tax collections, income tax trends, salaried class burden, elasticity analysis, and Laffer Curve</p>
+                </div>
+
+                <!-- Deep Dive Analysis -->
+                <div class="reform-card" onclick="navigateTo('taxDeepDivePage')">
+                    <div class="reform-icon">🔍</div>
+                    <h3>Deep Dive Analysis</h3>
+                    <p>Comprehensive research, policy analysis, and detailed insights on tax reform strategies and revenue optimization</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tax Deep Dive Page -->
+        <div id="taxDeepDivePage" class="page">
+            <button class="nav-button back" onclick="navigateTo('taxPage')">← Back to Tax Reforms</button>
+            <div class="page-title">Tax Reform Deep Dive</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.8em;">📈 Comprehensive Tax Reform Analysis</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1.1em;">
+                    <p><strong>Overview:</strong> Pakistan's tax system faces structural challenges including low tax-to-GDP ratio (8.6%), heavy reliance on indirect taxes (65%), and disproportionate burden on salaried class (48% of income tax). This section provides in-depth analysis and reform recommendations.</p>
+                </div>
+            </div>
+
+            <div class="reform-nav">
+                <div class="reform-card" onclick="navigateTo('taxBurdenPage')">
+                    <div class="reform-icon">💰</div>
+                    <h3>Tax Burden Analysis</h3>
+                    <p>Detailed breakdown of tax distribution across different income sources and analysis of salaried class burden</p>
+                </div>
+
+                <div class="reform-card" onclick="navigateTo('taxElasticityPage')">
+                    <div class="reform-icon">📉</div>
+                    <h3>Income Elasticity Research</h3>
+                    <p>Analysis of declining income elasticity (0.65) and its implications for revenue optimization</p>
+                </div>
+
+                <div class="reform-card" onclick="navigateTo('taxReformPage')">
+                    <div class="reform-icon">🎯</div>
+                    <h3>Reform Strategies</h3>
+                    <p>Policy recommendations for broadening tax base, improving collection, and reducing evasion</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tax Burden Analysis Page -->
+        <div id="taxBurdenPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('taxDeepDivePage')">← Back to Tax Deep Dive</button>
+            <div class="page-title">Deep Dive: Tax Burden Analysis</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📊 Current Tax Distribution</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>Income Tax Breakdown (FY 2024-25):</strong></p>
+                    <ul style="margin-left: 20px; color: #666; margin-bottom: 15px;">
+                        <li><strong>Salaried Class:</strong> 48% of income tax (₨480B) - disproportionate burden</li>
+                        <li><strong>Corporate Sector:</strong> 28% of income tax (₨280B) - under-documented</li>
+                        <li><strong>Business Income:</strong> 24% of income tax (₨240B) - high evasion</li>
+                    </ul>
+                    <br/>
+                    <p><strong>Tax-to-GDP Ratio Comparison:</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li>Pakistan: 8.6% (well below regional average)</li>
+                        <li>India: 17.7%</li>
+                        <li>Bangladesh: 11.2%</li>
+                        <li>Sri Lanka: 12.5%</li>
+                        <li>Developing Country Average: 15.2%</li>
+                    </ul>
+                    <br/>
+                    <p><strong>Key Issues:</strong> Only 3.1 million registered tax filers out of 220 million population. Agriculture sector (contributing 24% to GDP) largely untaxed. Real estate transactions heavily under-reported.</p>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">💡 Equity & Fairness Recommendations</h3>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Broaden Tax Base</p>
+                    <p style="color: #666; margin-top: 10px;">Implement universal ID-based tracking, bring agriculture and real estate into tax net. Target: Increase filers from 3.1M to 8M by 2027. Expected revenue: ₨300-400B annually.</p>
+                </div>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Reduce Salaried Class Burden</p>
+                    <p style="color: #666; margin-top: 10px;">Lower effective tax rates on salaried income while increasing enforcement on business and corporate sectors. Target: Reduce salaried burden from 48% to 35% by 2026.</p>
+                </div>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Digital Tax Administration</p>
+                    <p style="color: #666; margin-top: 10px;">AI-powered audit selection, automated return processing, real-time transaction monitoring. Expected efficiency gain: 30-40% reduction in collection costs.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tax Elasticity Analysis Page -->
+        <div id="taxElasticityPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('taxDeepDivePage')">← Back to Tax Deep Dive</button>
+            <div class="page-title">Deep Dive: Income Elasticity Research</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📊 Elasticity Trends & Analysis</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>Income Tax Elasticity (FY 2018-2025):</strong></p>
+                    <ul style="margin-left: 20px; color: #666; margin-bottom: 15px;">
+                        <li>FY 2018-19: 1.42 (healthy elasticity)</li>
+                        <li>FY 2019-20: 1.18 (pandemic impact)</li>
+                        <li>FY 2020-21: 0.89 (below-unity - concerning)</li>
+                        <li>FY 2021-22: 0.78 (declining trend)</li>
+                        <li>FY 2022-23: 0.71 (structural issues emerging)</li>
+                        <li>FY 2023-24: 0.67 (critical zone)</li>
+                        <li>FY 2024-25: 0.65 (reform urgency)</li>
+                    </ul>
+                    <br/>
+                    <p><strong>Interpretation:</strong> Elasticity below 1.0 means tax revenue is growing slower than GDP - indicating tax base erosion, increased evasion, or structural inefficiencies in collection.</p>
+                    <br/>
+                    <p><strong>Laffer Curve Position:</strong> Analysis suggests Pakistan may be on the "wrong side" of the Laffer curve for salaried income (average rate 22.5%), where further rate increases reduce total revenue due to evasion and behavioral changes.</p>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">💡 Revenue Optimization Strategies</h3>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Rate Rationalization</p>
+                    <p style="color: #666; margin-top: 10px;">Reduce marginal rates on compliant taxpayers while improving enforcement. Model suggests optimal top rate around 25-28% (vs current 35%) can increase net revenue by 15-20%.</p>
+                </div>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Close Loopholes</p>
+                    <p style="color: #666; margin-top: 10px;">Eliminate exemptions costing ₨1.2 trillion annually. Priority areas: agriculture income tax (₨200B potential), real estate capital gains (₨150B), offshore wealth (₨100B).</p>
+                </div>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Behavioral Economics</p>
+                    <p style="color: #666; margin-top: 10px;">Use nudges, social norms, and simplified filing to increase voluntary compliance. Pilot programs show 12-18% improvement in filing rates.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tax Reform Strategies Page -->
+        <div id="taxReformPage" class="page">
+            <button class="nav-button back" onclick="navigateTo('taxDeepDivePage')">← Back to Tax Deep Dive</button>
+            <div class="page-title">Deep Dive: Tax Reform Strategies</div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📊 Comprehensive Reform Framework</h3>
+                <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                    <p><strong>Three-Phase Reform Roadmap (2025-2030):</strong></p>
+                    <br/>
+                    <p><strong>Phase 1 (2025-2026): Foundation Building</strong></p>
+                    <ul style="margin-left: 20px; color: #666; margin-bottom: 15px;">
+                        <li>Digital infrastructure investment: ₨50B</li>
+                        <li>National Tax ID rollout to 15M citizens</li>
+                        <li>Pilot automated audit system in 3 major cities</li>
+                        <li>Expected revenue gain: ₨150B</li>
+                    </ul>
+                    <br/>
+                    <p><strong>Phase 2 (2026-2028): Base Expansion</strong></p>
+                    <ul style="margin-left: 20px; color: #666; margin-bottom: 15px;">
+                        <li>Mandatory agricultural income tax (₨200B potential)</li>
+                        <li>Real estate transaction tracking (₨150B potential)</li>
+                        <li>Corporate sector audit enhancement</li>
+                        <li>Target: Tax-to-GDP ratio 11% by 2028</li>
+                    </ul>
+                    <br/>
+                    <p><strong>Phase 3 (2028-2030): Optimization</strong></p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li>AI-driven compliance monitoring</li>
+                        <li>Regional tax coordination with provincial govts</li>
+                        <li>Target: Tax-to-GDP ratio 13-14% by 2030</li>
+                        <li>Expected total revenue: ₨10+ trillion annually</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">💡 Quick Win Initiatives (2025)</h3>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Withholding Tax Automation</p>
+                    <p style="color: #666; margin-top: 10px;">Real-time reporting by banks and payment processors. Cost: ₨5B. Expected revenue: ₨80B in first year (10:1 ROI).</p>
+                </div>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Amnesty-Plus Program</p>
+                    <p style="color: #666; margin-top: 10px;">One-time declaration scheme with reduced penalties + mandatory registration. Target: Bring 2M new taxpayers into system. Expected revenue: ₨120B.</p>
+                </div>
+                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
+                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">E-Commerce Tax Integration</p>
+                    <p style="color: #666; margin-top: 10px;">Mandatory registration for online sellers, automated sales tax collection. Expected revenue: ₨40B annually from growing e-commerce sector.</p>
+                </div>
             </div>
         </div>
 
@@ -573,12 +955,24 @@
 
     <script>
         function navigateTo(pageId) {
+            console.log('Navigating to:', pageId);
+            
             // Hide all pages
             const pages = document.querySelectorAll('.page');
-            pages.forEach(page => page.classList.remove('active'));
+            console.log('Found', pages.length, 'pages');
+            pages.forEach(page => {
+                page.classList.remove('active');
+                console.log('Hiding page:', page.id);
+            });
 
             // Show selected page
-            document.getElementById(pageId).classList.add('active');
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                console.log('Showing page:', pageId);
+            } else {
+                console.error('Page not found:', pageId);
+            }
 
             // Scroll to top
             window.scrollTo(0, 0);
@@ -592,6 +986,7 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Dashboard loaded');
+            console.log('All page elements:', document.querySelectorAll('.page'));
         });
     </script>
 </body>

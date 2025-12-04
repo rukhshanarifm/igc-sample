@@ -14,7 +14,15 @@
 
 #### 2. Reform Tracking
 - ✅ Power Sector dashboard with T&D Loss, Recovery %, and Circular Debt metrics
-- ✅ Tax Sector placeholder (ready for expansion)
+- ✅ Tax Reforms section with navigation to:
+  - FBR Tax Collection Analysis Dashboard
+  - Property Tax & T&D Loss Analysis Dashboard
+  - Tax Policy Reforms (placeholder)
+- ✅ Key tax insights summary cards showing:
+  - Total FBR Collection (₨5.8T)
+  - Average Salaried Tax Rate (22.5%)
+  - Income Elasticity (0.65 - declining)
+  - Salaried Class Tax Burden (48%)
 - ✅ Professional card-based interface with hover effects
 
 #### 3. AI Research Summary
@@ -42,7 +50,36 @@
 - ✅ Correlation analysis charts
 - ✅ Responsive design for mobile devices
 
-#### 5. Design & Theming
+#### 5. FBR Tax Collection Dashboard (`tax_dashboard.html`)
+- ✅ Comprehensive FBR (Federal Board of Revenue) analysis
+- ✅ Total Collection Breakdown by categories:
+  - Income Tax
+  - Sales Tax
+  - Customs Duty
+  - Federal Excise
+- ✅ Income Tax detailed breakdown:
+  - Salaried Class
+  - Corporate
+  - Business Income
+  - Capital Gains
+- ✅ Salaried Class Tax Burden Analysis:
+  - Average tax rate trends over time
+  - Tax burden as percentage of total income tax
+  - Commensurate analysis with tax rate increases
+- ✅ Taxable Income Elasticity:
+  - Response of reported income to tax rate changes
+  - 1:1 ratio analysis
+  - Revenue planning projections
+- ✅ Laffer Curve Analysis:
+  - Tax rate vs revenue generation
+  - Theoretical optimal point calculation
+  - Actual vs expected income reporting
+  - Tax avoidance/evasion behavior indicators
+- ✅ Time-series visualizations showing trends from FY 2018-19 to 2024-25
+- ✅ Interactive filters by fiscal year and quarter
+- ✅ Revenue collection efficiency metrics
+
+#### 6. Design & Theming
 - ✅ Professional green and white color scheme throughout:
   - Primary: #1B5E20 (Dark Green) to #2E7D32 (Medium Green)
   - Background: #f1f8f4 to #e8f5e9 (Light Green Gradient)
@@ -86,6 +123,7 @@
 /Users/rukhshanarifmian/igc-sample/
 ├── dashboard_main.html         # Main navigation portal
 ├── index.html                  # T&D Loss & Property Tax Dashboard
+├── tax_dashboard.html          # FBR Tax Collection Dashboard
 ├── dashboard_v2.html           # Alternative dashboard version
 ├── README.md                   # Documentation
 ├── start_server.sh             # Server startup script
@@ -113,6 +151,7 @@
 2. **Access Dashboards:**
    - Main Portal: http://localhost:8000/dashboard_main.html
    - T&D Dashboard: http://localhost:8000/index.html
+   - Tax Dashboard: http://localhost:8000/tax_dashboard.html
    - Alternative: http://localhost:8000/dashboard_v2.html
 
 ### Key Features
