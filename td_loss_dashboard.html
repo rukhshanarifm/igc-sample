@@ -381,8 +381,7 @@
     <div class="tab-container">
         <div class="tab-header">
             <button class="tab-button active" onclick="showTab('overview')">Dashboard Overview</button>
-            <button class="tab-button" onclick="showTab('overlay')">T&D vs Property Tax Overlay</button>
-            <button class="tab-button" onclick="showTab('feeder')">Feeder Analytics</button>
+            <button class="tab-button" onclick="showTab('district')">District Deep Dive</button>
         </div>
         
         <div class="tab-content">
@@ -440,101 +439,7 @@
     </div>
 
     <div class="map-container">
-        <div id="map"></div>
-    </div>
-            </div>
-            
-            <!-- Overlay Tab -->
-            <div id="overlay" class="tab-panel">
-                <div class="overlay-controls">
-                    <div class="overlay-section">
-                        <h4>Data Layers</h4>
-                        <div class="overlay-options">
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="showTDLoss" checked>
-                                <label for="showTDLoss">T&D Loss Data</label>
-                            </div>
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="showPropertyTax" checked>
-                                <label for="showPropertyTax">Property Tax Data</label>
-                            </div>
-                            <div class="control-group">
-                                <label for="overlayAdminLevel">Administrative Level:</label>
-                                <select id="overlayAdminLevel">
-                                    <option value="uc">Union Council (UC)</option>
-                                    <option value="district">District</option>
-                                    <option value="province">Province</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="overlay-section">
-                        <h4>Layer Opacity</h4>
-                        <div class="overlay-options">
-                            <div class="opacity-control">
-                                <label for="tdLossOpacity">T&D Loss:</label>
-                                <input type="range" id="tdLossOpacity" class="opacity-slider" min="0" max="1" step="0.1" value="0.7">
-                                <span id="tdLossOpacityValue">70%</span>
-                            </div>
-                            <div class="opacity-control">
-                                <label for="propertyTaxOpacity">Property Tax:</label>
-                                <input type="range" id="propertyTaxOpacity" class="opacity-slider" min="0" max="1" step="0.1" value="0.7">
-                                <span id="propertyTaxOpacityValue">70%</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="overlay-section">
-                        <h4>Analysis Type</h4>
-                        <div class="overlay-options">
-                            <div class="control-group">
-                                <label for="analysisType">Analysis:</label>
-                                <select id="analysisType">
-                                    <option value="correlation">Correlation Analysis</option>
-                                    <option value="ratio">T&D Loss to Property Tax Ratio</option>
-                                    <option value="efficiency">Collection Efficiency</option>
-                                    <option value="propertyTypes">Property Types Analysis</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="overlay-section">
-                        <h4>Property Type Filter</h4>
-                        <div class="overlay-options">
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="showHousehold" checked>
-                                <label for="showHousehold">Household Properties</label>
-                            </div>
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="showIndustrial" checked>
-                                <label for="showIndustrial">Industrial Properties</label>
-                            </div>
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="showCommercial" checked>
-                                <label for="showCommercial">Commercial Properties</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="overlay-map-container">
-                    <div id="overlayMap"></div>
-                    <div id="overlayMapLegend" class="map-legend" style="display: none;">
-                        <div class="legend-title">Map Legend</div>
-                        <div id="legendContent"></div>
-                    </div>
-                </div>
-                
-                <div class="dashboard-grid">
-                    <div class="chart-container">
-                        <div id="correlationChart"></div>
-                    </div>
-                    <div class="chart-container">
-                        <div id="analysisChart"></div>
-                    </div>
-                </div>
+        <div id="map"></div>        </div>
             </div>
             
             <!-- Feeder Analytics Tab -->
@@ -582,6 +487,71 @@
                     <div id="feederMap"></div>
                 </div>
             </div>
+            
+            <!-- District Deep Dive Tab -->
+            <div id="district" class="tab-panel">
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="districtMetric">Metric:</label>
+                        <select id="districtMetric">
+                            <option value="td_loss">T&D Loss (%)</option>
+                            <option value="recovery_loss">Recovery Loss (%)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="overlayIndicator">Overlay Indicator:</label>
+                        <select id="overlayIndicator" style="min-width: 200px;">
+                            <option value="">None</option>
+                            <option value="property_value">Property Value</option>
+                            <option value="property_tax">Property Tax</option>
+                            <option value="road_network_coverage">Road Network Coverage</option>
+                            <option value="per_capita_income">Per Capita HH Income</option>
+                        </select>
+                    </div>
+                    <div class="control-group" style="flex: 1; min-width: 400px;">
+                        <label for="districtMonthSlider">Select Month:</label>
+                        <div style="width: 100%;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                <button id="prevMonth" style="padding: 5px 10px; cursor: pointer; background: #2E7D32; color: white; border: none; border-radius: 3px;">◀</button>
+                                <input type="range" id="districtMonthSlider" min="0" max="0" value="0" 
+                                       style="flex: 1; min-width: 200px;">
+                                <button id="nextMonth" style="padding: 5px 10px; cursor: pointer; background: #2E7D32; color: white; border: none; border-radius: 3px;">▶</button>
+                                <span id="currentMonthDisplay" style="font-weight: bold; color: #2E7D32; min-width: 60px;">Loading...</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75em; color: #666; margin-top: 3px;">
+                                <span id="monthRangeStart">-</span>
+                                <span id="monthRangeEnd">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label>Comparison Views:</label>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="showLastMonth" style="width: auto;">
+                                <span style="font-size: 0.9em;">vs Last Month</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="showLastYear" style="width: auto;">
+                                <span style="font-size: 0.9em;">vs Same Month Last Year</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="map-container">
+                    <div id="districtMap" style="height: 600px;"></div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="chart-container">
+                        <div id="districtTimeSeriesChart"></div>
+                    </div>
+                    <div class="chart-container">
+                        <div id="districtRankingChart"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -598,10 +568,13 @@
         let propertyTaxData = [];
         let aggregatedData = [];
         let feederData = [];
-        let map, overlayMap, feederMap;
+        let map, feederMap, districtMap;
         let geoData = {};
-        let currentLayer, tdLossLayer, propertyTaxLayer;
+        let currentLayer, districtLayer;
         let currentTab = 'overview';
+        let districtData = null;
+        let districtTimePeriods = [];
+        let currentDistrictMonthIndex = 0;
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
@@ -626,22 +599,14 @@
             // Add active class to the clicked button
             const targetButton = Array.from(buttons).find(button => 
                 button.textContent.includes(tabName === 'overview' ? 'Dashboard Overview' : 
-                                          tabName === 'overlay' ? 'T&D vs Property Tax Overlay' : 
-                                          'Feeder Analytics')
+                                          tabName === 'feeder' ? 'Feeder Analytics' : 
+                                          'District Deep Dive')
             );
             if (targetButton) {
                 targetButton.classList.add('active');
             }
             
             currentTab = tabName;
-            
-            // Initialize overlay map if switching to overlay tab
-            if (tabName === 'overlay' && overlayMap) {
-                setTimeout(() => {
-                    overlayMap.invalidateSize();
-                    updateOverlayMap();
-                }, 100);
-            }
             
             // Initialize feeder map if switching to feeder tab
             if (tabName === 'feeder') {
@@ -654,6 +619,18 @@
                     updateFeederAnalytics();
                 }, 100);
             }
+            
+            // Initialize district map if switching to district tab
+            if (tabName === 'district') {
+                setTimeout(() => {
+                    if (!districtMap) {
+                        initializeDistrictMap();
+                    } else {
+                        districtMap.invalidateSize();
+                    }
+                    loadDistrictData();
+                }, 100);
+            }
         }
 
         function setupEventListeners() {
@@ -662,26 +639,6 @@
             document.getElementById('metric').addEventListener('change', updateDashboard);
             document.getElementById('monthFilter').addEventListener('change', updateDashboard);
             document.getElementById('provinceFilter').addEventListener('change', updateDashboard);
-            
-            // Overlay tab event listeners
-            document.getElementById('overlayAdminLevel').addEventListener('change', updateOverlayMap);
-            document.getElementById('showTDLoss').addEventListener('change', updateOverlayMap);
-            document.getElementById('showPropertyTax').addEventListener('change', updateOverlayMap);
-            document.getElementById('analysisType').addEventListener('change', updateOverlayMap);
-            document.getElementById('showHousehold').addEventListener('change', updateOverlayMap);
-            document.getElementById('showIndustrial').addEventListener('change', updateOverlayMap);
-            document.getElementById('showCommercial').addEventListener('change', updateOverlayMap);
-            
-            // Opacity sliders
-            document.getElementById('tdLossOpacity').addEventListener('input', function() {
-                document.getElementById('tdLossOpacityValue').textContent = Math.round(this.value * 100) + '%';
-                updateOverlayMap();
-            });
-            
-            document.getElementById('propertyTaxOpacity').addEventListener('input', function() {
-                document.getElementById('propertyTaxOpacityValue').textContent = Math.round(this.value * 100) + '%';
-                updateOverlayMap();
-            });
             
             // Feeder analytics event listeners
             document.getElementById('feederAdminLevel').addEventListener('change', updateFeederAnalytics);
@@ -694,12 +651,6 @@
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
-            
-            // Initialize overlay map
-            overlayMap = L.map('overlayMap').setView([30.3753, 69.3451], 6);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(overlayMap);
         }
 
         // Generate dummy property tax data with property types
@@ -838,7 +789,7 @@
         async function loadFeederData() {
             try {
                 // Try to load feeder GeoJSON data with LineStrings
-                const feederGeoJSON = await d3.json('data/geo/geojson/feeders.geojson').catch(() => null);
+                const feederGeoJSON = await d3.json('data/geo/geojson/appended_district_analysis_completed.geojson').catch(() => null);
                 
                 if (feederGeoJSON && feederGeoJSON.features) {
                     feederData = feederGeoJSON.features.map(feature => {
@@ -1320,65 +1271,96 @@
             }
         }
 
-        // Overlay Map Functions
-        function updateOverlayMap() {
-            if (currentTab !== 'overlay') return;
-            
-            // Clear existing layers
-            if (tdLossLayer) {
-                overlayMap.removeLayer(tdLossLayer);
+        // Feeder Analytics Functions
+        function initializeFeederMap() {
+            feederMap = L.map('feederMap').setView([30.3753, 69.3451], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(feederMap);
+        }
+
+        function updateFeederAnalytics() {
+            const adminLevel = document.getElementById('feederAdminLevel').value;
+            const metric = document.getElementById('feederMetric').value;
+
+            // Aggregate feeder data by admin level
+            const aggregatedFeeders = aggregateFeederData(adminLevel);
+
+            // Update metric cards
+            updateFeederMetricCards(aggregatedFeeders);
+
+            // Update charts
+            updateFeederBarChart(aggregatedFeeders, metric);
+            updateFeederDistributionChart(aggregatedFeeders);
+            updateFeederStatsChart(aggregatedFeeders);
+
+            // Update map
+            if (feederMap) {
+                updateFeederMapDisplay(aggregatedFeeders);
             }
-            if (propertyTaxLayer) {
-                overlayMap.removeLayer(propertyTaxLayer);
+        }
+
+        function aggregateFeederData(adminLevel) {
+            if (feederData.length === 0) {
+                return {};
             }
 
-            const adminLevel = document.getElementById('overlayAdminLevel').value;
-            const showTDLoss = document.getElementById('showTDLoss').checked;
-            const showPropertyTax = document.getElementById('showPropertyTax').checked;
-            const analysisType = document.getElementById('analysisType').value;
-            const tdLossOpacity = parseFloat(document.getElementById('tdLossOpacity').value);
-            const propertyTaxOpacity = parseFloat(document.getElementById('propertyTaxOpacity').value);
+            const aggregated = {};
 
-            if (!geoData[adminLevel]) {
-                console.log('No geographic data available for', adminLevel);
-                return;
-            }
+            feederData.forEach(line => {
+                let key;
+                const ucData = geoData.uc ? geoData.uc.features.find(f => 
+                    (f.properties.uc_id === line.uc_id || f.properties.UC_C === line.uc_id)
+                ) : null;
 
-            // Aggregate property tax data
-            const propertyTaxAggregated = aggregatePropertyTaxData(propertyTaxData, adminLevel);
-            const tdLossAggregated = aggregateData(rawData, adminLevel);
+                if (adminLevel === 'uc') {
+                    key = line.uc_id;
+                } else if (adminLevel === 'district' && ucData) {
+                    key = ucData.properties.DISTRICT || 'Unknown';
+                } else if (adminLevel === 'province' && ucData) {
+                    key = ucData.properties.PROVINCE || 'Unknown';
+                } else {
+                    key = 'Unknown';
+                }
 
-            // Create data lookups
-            const propertyTaxLookup = new Map();
-            propertyTaxAggregated.forEach(d => {
-                const key = adminLevel === 'uc' ? d.id.toString() :
-                           adminLevel === 'district' ? `${d.province}-${d.district}` :
-                           d.province;
-                propertyTaxLookup.set(key, d);
+                if (!aggregated[key]) {
+                    aggregated[key] = {
+                        name: key,
+                        lines: [],
+                        line_count: 0,
+                        total_length: 0,
+                        avg_length: 0,
+                        total_td_loss: 0,
+                        avg_td_loss: 0,
+                        max_td_loss: 0,
+                        min_td_loss: 100,
+                        total_peak_load: 0,
+                        high_loss_count: 0
+                    };
+                }
+
+                aggregated[key].lines.push(line);
+                aggregated[key].line_count += 1;
+                aggregated[key].total_length += line.circuit_length_km || 0;
+                aggregated[key].total_td_loss += line.td_loss_percent || 0;
+                aggregated[key].total_peak_load += line.peak_load_mw || 0;
+                aggregated[key].max_td_loss = Math.max(aggregated[key].max_td_loss, line.td_loss_percent || 0);
+                aggregated[key].min_td_loss = Math.min(aggregated[key].min_td_loss, line.td_loss_percent || 0);
+                
+                // Count high loss lines (> 25%)
+                if ((line.td_loss_percent || 0) > 25) {
+                    aggregated[key].high_loss_count += 1;
+                }
             });
 
-            const tdLossLookup = new Map();
-            tdLossAggregated.forEach(d => {
-                const key = adminLevel === 'uc' ? d.id.toString() :
-                           adminLevel === 'district' ? `${d.province}-${d.district}` :
-                           d.province;
-                tdLossLookup.set(key, d);
+            // Calculate averages
+            Object.values(aggregated).forEach(group => {
+                group.avg_length = group.total_length / group.line_count;
+                group.avg_td_loss = group.total_td_loss / group.line_count;
+                if (group.min_td_loss === 100) group.min_td_loss = 0;
             });
 
-            // Create layers
-            if (showTDLoss) {
-                createTDLossLayer(adminLevel, tdLossLookup, tdLossOpacity);
-            }
-
-            if (showPropertyTax) {
-                createPropertyTaxLayer(adminLevel, propertyTaxLookup, propertyTaxOpacity);
-            }
-
-            // Update legend
-            updateMapLegend(showTDLoss, showPropertyTax);
-            
-            // Update analysis charts
-            updateOverlayCharts(tdLossAggregated, propertyTaxAggregated, analysisType);
+            return aggregated;
         }
 
         function aggregatePropertyTaxData(data, level) {
@@ -1454,7 +1436,7 @@
                     const data = dataLookup.get(key);
                     const props = feature.properties;
 
-                    let popupContent = `<strong>${props.uc_name || props.DISTRICT || props.PROVINCE}</strong><br>`;
+                    let popupContent = `<strong>${props.uc_name || props.UC || props.PROVINCE}</strong><br>`;
                     
                     if (data) {
                         popupContent += `T&D Loss: ${(data.td_loss_dummy * 100).toFixed(2)}%<br>`;
@@ -2043,6 +2025,600 @@
                     feederMap.fitBounds(group.getBounds().pad(0.1));
                 }
             }
+        }
+
+        // ========================================
+        // DISTRICT DEEP DIVE FUNCTIONS
+        // ========================================
+        
+        function initializeDistrictMap() {
+            districtMap = L.map('districtMap').setView([30.3753, 69.3451], 6); // Center on Pakistan
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(districtMap);
+        }
+
+        async function loadDistrictData() {
+            try {
+                const response = await fetch('data/geo/geojson/appended_district_analysis_completed.geojson');
+                districtData = await response.json();
+                
+                // Extract unique time periods and sort them
+                const timePeriodsSet = new Set();
+                districtData.features.forEach(feature => {
+                    timePeriodsSet.add(feature.properties.month);
+                });
+                
+                districtTimePeriods = Array.from(timePeriodsSet).sort((a, b) => {
+                    // Sort by year-month (format: "YY-MMM")
+                    const [aYear, aMonth] = a.split('-');
+                    const [bYear, bMonth] = b.split('-');
+                    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    
+                    if (aYear !== bYear) {
+                        return aYear.localeCompare(bYear);
+                    }
+                    return monthOrder.indexOf(aMonth) - monthOrder.indexOf(bMonth);
+                });
+                
+                // Set up month slider
+                const slider = document.getElementById('districtMonthSlider');
+                slider.max = districtTimePeriods.length - 1;
+                slider.value = districtTimePeriods.length - 1; // Start at most recent
+                currentDistrictMonthIndex = districtTimePeriods.length - 1;
+                
+                // Update month range labels
+                document.getElementById('monthRangeStart').textContent = districtTimePeriods[0];
+                document.getElementById('monthRangeEnd').textContent = districtTimePeriods[districtTimePeriods.length - 1];
+                document.getElementById('currentMonthDisplay').textContent = districtTimePeriods[currentDistrictMonthIndex];
+                
+                // Set up event listeners
+                slider.addEventListener('input', function() {
+                    currentDistrictMonthIndex = parseInt(this.value);
+                    document.getElementById('currentMonthDisplay').textContent = districtTimePeriods[currentDistrictMonthIndex];
+                    updateDistrictMap();
+                    updateDistrictCharts();
+                });
+                
+                document.getElementById('prevMonth').addEventListener('click', function() {
+                    if (currentDistrictMonthIndex > 0) {
+                        currentDistrictMonthIndex--;
+                        slider.value = currentDistrictMonthIndex;
+                        document.getElementById('currentMonthDisplay').textContent = districtTimePeriods[currentDistrictMonthIndex];
+                        updateDistrictMap();
+                        updateDistrictCharts();
+                    }
+                });
+                
+                document.getElementById('nextMonth').addEventListener('click', function() {
+                    if (currentDistrictMonthIndex < districtTimePeriods.length - 1) {
+                        currentDistrictMonthIndex++;
+                        slider.value = currentDistrictMonthIndex;
+                        document.getElementById('currentMonthDisplay').textContent = districtTimePeriods[currentDistrictMonthIndex];
+                        updateDistrictMap();
+                        updateDistrictCharts();
+                    }
+                });
+                
+                document.getElementById('districtMetric').addEventListener('change', () => {
+                    updateDistrictMap();
+                    updateDistrictCharts();
+                });
+                
+                document.getElementById('overlayIndicator').addEventListener('change', updateDistrictMap);
+                
+                document.getElementById('showLastMonth').addEventListener('change', () => {
+                    updateDistrictMap();
+                    updateDistrictCharts();
+                });
+                
+                document.getElementById('showLastYear').addEventListener('change', () => {
+                    updateDistrictMap();
+                    updateDistrictCharts();
+                });
+                
+                // Initial render
+                updateDistrictMap();
+                
+            } catch (error) {
+                console.error('Error loading district data:', error);
+            }
+        }
+
+        function getLastMonthIndex(currentIndex) {
+            return currentIndex > 0 ? currentIndex - 1 : null;
+        }
+
+        function getLastYearIndex(currentIndex) {
+            // Find same month last year (12 months back)
+            const currentMonth = districtTimePeriods[currentIndex];
+            if (!currentMonth) return null;
+            
+            const [currentYear, currentMonthName] = currentMonth.split('-');
+            const targetYear = (parseInt(currentYear) - 1).toString().padStart(2, '0');
+            const targetMonth = `${targetYear}-${currentMonthName}`;
+            
+            const targetIndex = districtTimePeriods.indexOf(targetMonth);
+            return targetIndex >= 0 ? targetIndex : null;
+        }
+
+        function updateDistrictMap() {
+            if (!districtData || districtTimePeriods.length === 0) return;
+            
+            const currentMonth = districtTimePeriods[currentDistrictMonthIndex];
+            const metric = document.getElementById('districtMetric').value;
+            const overlayIndicator = document.getElementById('overlayIndicator').value;
+            
+            // Check comparison options
+            const showLastMonth = document.getElementById('showLastMonth').checked;
+            const showLastYear = document.getElementById('showLastYear').checked;
+            
+            // Filter features for current time period
+            const currentFeatures = districtData.features.filter(
+                f => f.properties.month === currentMonth
+            );
+            
+            // Remove existing layer
+            if (districtLayer) {
+                districtMap.removeLayer(districtLayer);
+            }
+            
+            // Separate features with data and missing data
+            const featuresWithData = currentFeatures.filter(f => 
+                f.properties[metric] != null && !isNaN(f.properties[metric])
+            );
+            const featuresWithMissingData = currentFeatures.filter(f => 
+                f.properties[metric] == null || isNaN(f.properties[metric])
+            );
+            
+            // Get min/max for color scaling (only from valid data)
+            const values = featuresWithData.map(f => f.properties[metric]);
+            const minValue = values.length > 0 ? Math.min(...values) : 0;
+            const maxValue = values.length > 0 ? Math.max(...values) : 1;
+            
+            // Get min/max for overlay indicator if selected
+            let overlayMinValue = 0, overlayMaxValue = 1;
+            if (overlayIndicator) {
+                const overlayValues = currentFeatures
+                    .map(f => f.properties[overlayIndicator])
+                    .filter(v => v != null && !isNaN(v));
+                if (overlayValues.length > 0) {
+                    overlayMinValue = Math.min(...overlayValues);
+                    overlayMaxValue = Math.max(...overlayValues);
+                }
+            }
+            
+            // Bivariate color matrix (3x3) - Main metric (rows) × Overlay indicator (columns)
+            // Using a purple (low-low) to orange (high-high) diverging scheme
+            const bivariateColors = [
+                // Low main metric (green tones)
+                ['#e8e8e8', '#ace4e4', '#5ac8c8'],  // Low overlay → High overlay
+                // Medium main metric (yellow tones)
+                ['#dfb0d6', '#a5add3', '#5698b9'],  // Low overlay → High overlay
+                // High main metric (red tones)
+                ['#be64ac', '#8c62aa', '#3b4994']   // Low overlay → High overlay
+            ];
+            
+            // Create GeoJSON layer
+            districtLayer = L.geoJSON({
+                type: 'FeatureCollection',
+                features: currentFeatures
+            }, {
+                style: function(feature) {
+                    const value = feature.properties[metric];
+                    const overlayValue = overlayIndicator ? feature.properties[overlayIndicator] : null;
+                    
+                    // Check if data is missing
+                    if (value == null || isNaN(value)) {
+                        return {
+                            fillColor: '#CCCCCC',
+                            weight: 2,
+                            opacity: 1,
+                            color: '#666',
+                            dashArray: '5, 5',
+                            fillOpacity: 0.5
+                        };
+                    }
+                    
+                    // If no overlay, use simple green-yellow-red gradient
+                    if (!overlayIndicator || overlayValue == null || isNaN(overlayValue)) {
+                        const normalizedValue = (value - minValue) / (maxValue - minValue);
+                        let fillColor;
+                        if (normalizedValue < 0.33) {
+                            fillColor = '#00B050'; // Green
+                        } else if (normalizedValue < 0.67) {
+                            fillColor = '#FFC000'; // Yellow
+                        } else {
+                            fillColor = '#FF0000'; // Red
+                        }
+                        
+                        return {
+                            fillColor: fillColor,
+                            weight: 2,
+                            opacity: 1,
+                            color: '#333',
+                            fillOpacity: 0.7
+                        };
+                    }
+                    
+                    // Bivariate choropleth: Classify both values into 3 categories (Low, Medium, High)
+                    const normalizedValue = (value - minValue) / (maxValue - minValue);
+                    const normalizedOverlay = (overlayValue - overlayMinValue) / (overlayMaxValue - overlayMinValue);
+                    
+                    // Determine row (main metric category: 0=low, 1=medium, 2=high)
+                    let row;
+                    if (normalizedValue < 0.33) {
+                        row = 0; // Low
+                    } else if (normalizedValue < 0.67) {
+                        row = 1; // Medium
+                    } else {
+                        row = 2; // High
+                    }
+                    
+                    // Determine column (overlay indicator category: 0=low, 1=medium, 2=high)
+                    let col;
+                    if (normalizedOverlay < 0.33) {
+                        col = 0; // Low
+                    } else if (normalizedOverlay < 0.67) {
+                        col = 1; // Medium
+                    } else {
+                        col = 2; // High
+                    }
+                    
+                    return {
+                        fillColor: bivariateColors[row][col],
+                        weight: 2,
+                        opacity: 1,
+                        color: '#333',
+                        fillOpacity: 0.85
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    const props = feature.properties;
+                    const metricLabel = metric === 'td_loss' ? 'T&D Loss' : 'Recovery Loss';
+                    const value = props[metric];
+                    const overlayIndicator = document.getElementById('overlayIndicator').value;
+                    
+                    let popupContent = `<strong>${props.UC}</strong><br>`;
+                    popupContent += `<span style="color: #2E7D32; font-weight: bold;">📅 ${currentMonth}</span><br>`;
+                    
+                    if (value == null || isNaN(value)) {
+                        popupContent += `<span style="color: #FF6B6B; font-weight: bold;">⚠️ ${metricLabel}: NO DATA</span><br>`;
+                    } else {
+                        const metricValue = (value * 100).toFixed(2);
+                        popupContent += `<span style="font-size: 1.1em; font-weight: bold;">${metricLabel}: ${metricValue}%</span><br>`;
+                    }
+                    
+                    // Display overlay indicator if selected
+                    if (overlayIndicator) {
+                        const overlayValue = props[overlayIndicator];
+                        let overlayLabel = '';
+                        let formattedValue = '';
+                        
+                        switch(overlayIndicator) {
+                            case 'property_value':
+                                overlayLabel = '🏘️ Property Value';
+                                formattedValue = overlayValue != null ? `PKR ${(overlayValue / 1000000).toFixed(2)}M` : 'N/A';
+                                break;
+                            case 'property_tax':
+                                overlayLabel = '💰 Property Tax';
+                                formattedValue = overlayValue != null ? `PKR ${(overlayValue / 1000000).toFixed(2)}M` : 'N/A';
+                                break;
+                            case 'road_network_coverage':
+                                overlayLabel = '🛣️ Road Network Coverage';
+                                formattedValue = overlayValue != null ? `${(overlayValue * 100).toFixed(2)}%` : 'N/A';
+                                break;
+                            case 'per_capita_income':
+                                overlayLabel = '👥 Per Capita HH Income';
+                                formattedValue = overlayValue != null ? `PKR ${overlayValue.toLocaleString()}` : 'N/A';
+                                break;
+                        }
+                        
+                        popupContent += `<br><span style="color: #1976D2; font-weight: bold;">${overlayLabel}: ${formattedValue}</span><br>`;
+                    }
+                    
+                    // Show comparison with last month
+                    if (showLastMonth) {
+                        const lastMonthIdx = getLastMonthIndex(currentDistrictMonthIndex);
+                        if (lastMonthIdx !== null) {
+                            const lastMonthName = districtTimePeriods[lastMonthIdx];
+                            const lastMonthFeature = districtData.features.find(
+                                f => f.properties.UC === props.UC && f.properties.month === lastMonthName
+                            );
+                            if (lastMonthFeature) {
+                                const lastMonthValue = lastMonthFeature.properties[metric];
+                                if (lastMonthValue != null && !isNaN(lastMonthValue)) {
+                                    const lastMonthMetricValue = (lastMonthValue * 100).toFixed(2);
+                                    const change = value && lastMonthValue ? ((value - lastMonthValue) * 100).toFixed(2) : 'N/A';
+                                    const changeIcon = change > 0 ? '📈' : change < 0 ? '📉' : '➡️';
+                                    const changeColor = change > 0 ? '#FF6B6B' : change < 0 ? '#4CAF50' : '#999';
+                                    popupContent += `<br><span style="color: #666;">vs Last Month (${lastMonthName}):</span><br>`;
+                                    popupContent += `${lastMonthMetricValue}% <span style="color: ${changeColor};">${changeIcon} ${change > 0 ? '+' : ''}${change}%</span><br>`;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Show comparison with same month last year
+                    if (showLastYear) {
+                        const lastYearIdx = getLastYearIndex(currentDistrictMonthIndex);
+                        if (lastYearIdx !== null) {
+                            const lastYearName = districtTimePeriods[lastYearIdx];
+                            const lastYearFeature = districtData.features.find(
+                                f => f.properties.UC === props.UC && f.properties.month === lastYearName
+                            );
+                            if (lastYearFeature) {
+                                const lastYearValue = lastYearFeature.properties[metric];
+                                if (lastYearValue != null && !isNaN(lastYearValue)) {
+                                    const lastYearMetricValue = (lastYearValue * 100).toFixed(2);
+                                    const change = value && lastYearValue ? ((value - lastYearValue) * 100).toFixed(2) : 'N/A';
+                                    const changeIcon = change > 0 ? '📈' : change < 0 ? '📉' : '➡️';
+                                    const changeColor = change > 0 ? '#FF6B6B' : change < 0 ? '#4CAF50' : '#999';
+                                    popupContent += `<br><span style="color: #666;">vs Same Month Last Year (${lastYearName}):</span><br>`;
+                                    popupContent += `${lastYearMetricValue}% <span style="color: ${changeColor};">${changeIcon} ${change > 0 ? '+' : ''}${change}%</span><br>`;
+                                }
+                            }
+                        }
+                    }
+                    
+                    
+                    layer.bindPopup(popupContent);
+                    
+                    // Highlight on hover
+                    layer.on({
+                        mouseover: function(e) {
+                            e.target.setStyle({
+                                weight: 3,
+                                color: '#000',
+                                fillOpacity: 0.9
+                            });
+                        },
+                        mouseout: function(e) {
+                            districtLayer.resetStyle(e.target);
+                        }
+                    });
+                }
+            }).addTo(districtMap);
+            
+            // Add legend
+            addDistrictMapLegend(featuresWithMissingData.length);
+            
+            // Fit bounds
+            if (currentFeatures.length > 0) {
+                districtMap.fitBounds(districtLayer.getBounds());
+            }
+            
+            // Update charts
+            updateDistrictCharts();
+        }
+
+        function addDistrictMapLegend(missingDataCount) {
+            // Remove existing legend if any
+            if (window.districtLegend) {
+                districtMap.removeControl(window.districtLegend);
+            }
+            
+            const metric = document.getElementById('districtMetric').value;
+            const metricLabel = metric === 'td_loss' ? 'T&D Loss' : 'Recovery Loss';
+            const overlayIndicator = document.getElementById('overlayIndicator').value;
+            
+            window.districtLegend = L.control({ position: 'bottomright' });
+            
+            window.districtLegend.onAdd = function(map) {
+                const div = L.DomUtil.create('div', 'map-legend');
+                div.style.background = 'white';
+                div.style.padding = '15px';
+                div.style.borderRadius = '5px';
+                div.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)';
+                div.style.fontSize = '12px';
+                div.style.maxWidth = '320px';
+                
+                if (overlayIndicator) {
+                    let overlayLabel = '';
+                    switch(overlayIndicator) {
+                        case 'property_value':
+                            overlayLabel = '🏘️ Property Value';
+                            break;
+                        case 'property_tax':
+                            overlayLabel = '💰 Property Tax';
+                            break;
+                        case 'road_network_coverage':
+                            overlayLabel = '🛣️ Road Network Coverage';
+                            break;
+                        case 'per_capita_income':
+                            overlayLabel = '👥 Per Capita HH Income';
+                            break;
+                    }
+                    
+                    // Bivariate legend with 3x3 grid
+                    div.innerHTML = `
+                        <div style="margin-bottom: 10px;">
+                            <strong>Bivariate Map Legend</strong>
+                        </div>
+                        <div style="font-size: 11px; color: #666; margin-bottom: 10px;">
+                            <strong>${metricLabel}</strong> × <strong>${overlayLabel}</strong>
+                        </div>
+                        <table style="border-collapse: collapse; margin-bottom: 10px;">
+                            <tr>
+                                <td style="width: 30px; height: 30px; background: #be64ac; border: 1px solid #999;"></td>
+                                <td style="width: 30px; height: 30px; background: #8c62aa; border: 1px solid #999;"></td>
+                                <td style="width: 30px; height: 30px; background: #3b4994; border: 1px solid #999;"></td>
+                                <td style="padding-left: 8px; font-size: 10px;">High ${metricLabel}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 30px; height: 30px; background: #dfb0d6; border: 1px solid #999;"></td>
+                                <td style="width: 30px; height: 30px; background: #a5add3; border: 1px solid #999;"></td>
+                                <td style="width: 30px; height: 30px; background: #5698b9; border: 1px solid #999;"></td>
+                                <td style="padding-left: 8px; font-size: 10px;">Med ${metricLabel}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 30px; height: 30px; background: #e8e8e8; border: 1px solid #999;"></td>
+                                <td style="width: 30px; height: 30px; background: #ace4e4; border: 1px solid #999;"></td>
+                                <td style="width: 30px; height: 30px; background: #5ac8c8; border: 1px solid #999;"></td>
+                                <td style="padding-left: 8px; font-size: 10px;">Low ${metricLabel}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: center; font-size: 10px; padding-top: 5px;">
+                                    Low ← ${overlayLabel} → High
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="margin-top: 10px; padding: 8px; background: #f0f8ff; border-left: 3px solid #1976D2; font-size: 11px;">
+                            <strong>How to read:</strong> Each color shows the combination of both metrics. 
+                            For example, purple = high ${metricLabel} + low ${overlayLabel}
+                        </div>
+                        ${missingDataCount > 0 ? `
+                            <hr style="margin: 8px 0; border: none; border-top: 1px solid #ddd;">
+                            <div style="margin-bottom: 3px;">
+                                <i style="background: #CCCCCC; width: 20px; height: 12px; display: inline-block; margin-right: 8px; border: 2px dashed #666;"></i>
+                                No Data Available
+                            </div>
+                            <div style="color: #FF6B6B; font-size: 11px; margin-top: 5px;">⚠️ ${missingDataCount} district(s) with missing data</div>
+                        ` : ''}
+                    `;
+                } else {
+                    // Simple univariate legend
+                    div.innerHTML = `
+                        <div style="margin-bottom: 8px;"><strong>${metricLabel}</strong></div>
+                        <div style="margin-bottom: 3px;">
+                            <i style="background: #00B050; width: 20px; height: 12px; display: inline-block; margin-right: 8px;"></i>
+                            Low
+                        </div>
+                        <div style="margin-bottom: 3px;">
+                            <i style="background: #FFC000; width: 20px; height: 12px; display: inline-block; margin-right: 8px;"></i>
+                            Medium
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            <i style="background: #FF0000; width: 20px; height: 12px; display: inline-block; margin-right: 8px;"></i>
+                            High
+                        </div>
+                        ${missingDataCount > 0 ? `
+                            <hr style="margin: 8px 0; border: none; border-top: 1px solid #ddd;">
+                            <div style="margin-bottom: 3px;">
+                                <i style="background: #CCCCCC; width: 20px; height: 12px; display: inline-block; margin-right: 8px; border: 2px dashed #666;"></i>
+                                No Data Available
+                            </div>
+                            <div style="color: #FF6B6B; font-size: 11px; margin-top: 5px;">⚠️ ${missingDataCount} district(s) with missing data</div>
+                        ` : ''}
+                    `;
+                }
+                
+                return div;
+            };
+            
+            window.districtLegend.addTo(districtMap);
+        }
+
+        function updateDistrictCharts() {
+            if (!districtData || districtTimePeriods.length === 0) return;
+            
+            const currentMonth = districtTimePeriods[currentDistrictMonthIndex];
+            const metric = document.getElementById('districtMetric').value;
+            const metricLabel = metric === 'td_loss' ? 'T&D Loss (%)' : 'Recovery Loss (%)';
+            const showLastMonth = document.getElementById('showLastMonth').checked;
+            const showLastYear = document.getElementById('showLastYear').checked;
+            
+            // Time Series Chart - Show all time periods for all districts
+            let districts = [...new Set(districtData.features.map(f => f.properties.DISTRICT))];
+            
+            // Show top 10 districts for time series
+            districts = districts.slice(0, 10);
+            
+            const timeSeriesTraces = districts.map(district => {
+                const districtFeatures = districtData.features
+                    .filter(f => f.properties.DISTRICT === district)
+                    .sort((a, b) => {
+                        const aIdx = districtTimePeriods.indexOf(a.properties.month);
+                        const bIdx = districtTimePeriods.indexOf(b.properties.month);
+                        return aIdx - bIdx;
+                    });
+                
+                return {
+                    x: districtFeatures.map(f => f.properties.month),
+                    y: districtFeatures.map(f => (f.properties[metric] * 100)),
+                    name: district,
+                    type: 'scatter',
+                    mode: 'lines+markers'
+                };
+            });
+            
+            
+            // Ranking Chart - Show current month rankings with comparisons
+            const currentFeatures = districtData.features
+                .filter(f => f.properties.month === currentMonth)
+                .sort((a, b) => b.properties[metric] - a.properties[metric])
+                .slice(0, 15);
+            
+            const rankingTraces = [];
+            
+            // Main trace - current month
+            rankingTraces.push({
+                x: currentFeatures.map(f => (f.properties[metric] * 100).toFixed(2)),
+                y: currentFeatures.map(f => f.properties.DISTRICT),
+                name: currentMonth,
+                type: 'bar',
+                orientation: 'h',
+                marker: {
+                    color: currentFeatures.map(f => {
+                        const value = f.properties[metric];
+                        if (value < 0.1) return '#00B050';
+                        if (value < 0.15) return '#92D050';
+                        if (value < 0.2) return '#FFC000';
+                        if (value < 0.25) return '#FF8C00';
+                        return '#FF0000';
+                    })
+                }
+            });
+            
+            // Add last month comparison if checked
+            if (showLastMonth) {
+                const lastMonthIdx = getLastMonthIndex(currentDistrictMonthIndex);
+                if (lastMonthIdx !== null) {
+                    const lastMonthName = districtTimePeriods[lastMonthIdx];
+                    const lastMonthData = currentFeatures.map(f => {
+                        const lastMonthFeature = districtData.features.find(
+                            feat => feat.properties.DISTRICT === f.properties.DISTRICT && 
+                                   feat.properties.month === lastMonthName
+                        );
+                        return lastMonthFeature ? (lastMonthFeature.properties[metric] * 100).toFixed(2) : 0;
+                    });
+                    
+                    rankingTraces.push({
+                        x: lastMonthData,
+                        y: currentFeatures.map(f => f.properties.DISTRICT),
+                        name: `Last Month (${lastMonthName})`,
+                        type: 'bar',
+                        orientation: 'h',
+                        marker: { color: 'rgba(46, 125, 50, 0.5)' }
+                    });
+                }
+            }
+            
+            // Add last year comparison if checked
+            if (showLastYear) {
+                const lastYearIdx = getLastYearIndex(currentDistrictMonthIndex);
+                if (lastYearIdx !== null) {
+                    const lastYearName = districtTimePeriods[lastYearIdx];
+                    const lastYearData = currentFeatures.map(f => {
+                        const lastYearFeature = districtData.features.find(
+                            feat => feat.properties.DISTRICT === f.properties.DISTRICT && 
+                                   feat.properties.month === lastYearName
+                        );
+                        return lastYearFeature ? (lastYearFeature.properties[metric] * 100).toFixed(2) : 0;
+                    });
+                    
+                    rankingTraces.push({
+                        x: lastYearData,
+                        y: currentFeatures.map(f => f.properties.DISTRICT),
+                        name: `Same Month Last Year (${lastYearName})`,
+                        type: 'bar',
+                        orientation: 'h',
+                        marker: { color: 'rgba(33, 150, 243, 0.5)' }
+                    });
+                }
+            }
+        
         }
     </script>
 </body>
