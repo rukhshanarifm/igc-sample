@@ -399,8 +399,8 @@
         <div class="control-group">
             <label for="metric">Metric:</label>
             <select id="metric">
-                <option value="td_loss_dummy">T&D Loss (%)</option>
-                <option value="recovery_loss_dummy">Recovery Loss (%)</option>
+                <option value="td_loss_dummy">T&D Loss</option>
+                <option value="recovery_loss_dummy">Recovery Loss</option>
                 <option value="mth_unit_recieved_dummy">Units Received</option>
                 <option value="assessment_dummy">Assessment</option>
             </select>
@@ -1003,6 +1003,17 @@
                 return value.toLocaleString();
             };
 
+            const metricDisplayNames = {
+                'td_loss_dummy': 'T&D Loss',
+                'recovery_loss_dummy': 'Recovery Loss',
+                'mth_unit_recieved_dummy': 'Units Received',
+                'mth_unit_billed_dummy': 'Units Billed',
+                'assessment_dummy': 'Assessment',
+                'payment_dummy': 'Payment'
+            };
+
+            const metricName = metricDisplayNames[metric] || metric;
+
             document.getElementById('metricCards').innerHTML = `
                 <div class="metric-card">
                     <div class="metric-label">Average</div>
@@ -1034,14 +1045,33 @@
             const metric = document.getElementById('metric').value;
             const adminLevel = document.getElementById('adminLevel').value;
             
+            const metricDisplayNames = {
+                'td_loss_dummy': 'T&D Loss',
+                'recovery_loss_dummy': 'Recovery Loss',
+                'mth_unit_recieved_dummy': 'Units Received',
+                'mth_unit_billed_dummy': 'Units Billed',
+                'assessment_dummy': 'Assessment',
+                'payment_dummy': 'Payment'
+            };
+
+            const metricName = metricDisplayNames[metric] || metric;
+            
             // Get top 15 for visualization
             const topData = aggregatedData
                 .sort((a, b) => b[metric] - a[metric])
                 .slice(0, 15);
 
+            // Convert to percentage if it's a loss metric
+            const yValues = topData.map(d => {
+                if (metric.includes('loss')) {
+                    return d[metric] * 100;
+                }
+                return d[metric];
+            });
+
             const trace = {
                 x: topData.map(d => d.name),
-                y: topData.map(d => d[metric]),
+                y: yValues,
                 type: 'bar',
                 marker: {
                     color: '#2E7D32',
@@ -1049,9 +1079,12 @@
                 }
             };
 
+            const yAxisTitle = metric.includes('loss') ? `${metricName} (%)` : metricName;
+
             const layout = {
-                title: `Top 15 ${adminLevel.toUpperCase()}s by ${metric.replace('_', ' ')}`,
+                title: `Top 15 ${adminLevel.toUpperCase()}s by ${metricName}`,
                 xaxis: { tickangle: -45 },
+                yaxis: { title: yAxisTitle },
                 margin: { b: 100 }
             };
 
@@ -1060,8 +1093,8 @@
 
         function updateScatterPlot() {
             const trace = {
-                x: aggregatedData.map(d => d.td_loss_dummy),
-                y: aggregatedData.map(d => d.recovery_loss_dummy),
+                x: aggregatedData.map(d => d.td_loss_dummy * 100),
+                y: aggregatedData.map(d => d.recovery_loss_dummy * 100),
                 mode: 'markers',
                 type: 'scatter',
                 text: aggregatedData.map(d => d.name),
@@ -1083,14 +1116,27 @@
 
         function updateTimeSeriesChart() {
             const monthFilter = document.getElementById('monthFilter').value;
+            const metric = document.getElementById('metric').value;
+            
+            const metricDisplayNames = {
+                'td_loss_dummy': 'T&D Loss',
+                'recovery_loss_dummy': 'Recovery Loss',
+                'mth_unit_recieved_dummy': 'Units Received',
+                'mth_unit_billed_dummy': 'Units Billed',
+                'assessment_dummy': 'Assessment',
+                'payment_dummy': 'Payment'
+            };
+
+            const metricName = metricDisplayNames[metric] || metric;
+            const isLossMetric = metric.includes('loss');
+            const yAxisTitle = isLossMetric ? `${metricName} (%)` : metricName;
             
             if (monthFilter) {
                 // Show current vs all time if filtered
                 const allData = aggregateData(rawData, document.getElementById('adminLevel').value);
-                const metric = document.getElementById('metric').value;
                 
-                const allValues = allData.map(d => d[metric]);
-                const currentValues = aggregatedData.map(d => d[metric]);
+                const allValues = allData.map(d => isLossMetric ? d[metric] * 100 : d[metric]);
+                const currentValues = aggregatedData.map(d => isLossMetric ? d[metric] * 100 : d[metric]);
                 
                 const trace1 = {
                     y: allValues,
@@ -1107,8 +1153,8 @@
                 };
 
                 const layout = {
-                    title: `${metric.replace('_', ' ')} Distribution: ${monthFilter} vs All Time`,
-                    yaxis: { title: metric.replace('_', ' ') }
+                    title: `${metricName} Distribution: ${monthFilter} vs All Time`,
+                    yaxis: { title: yAxisTitle }
                 };
 
                 Plotly.newPlot('timeSeriesChart', [trace1, trace2], layout, {responsive: true});
@@ -1128,11 +1174,11 @@
                     // If same year, compare months
                     return monthOrder.indexOf(aMonth) - monthOrder.indexOf(bMonth);
                 });
-                const metric = document.getElementById('metric').value;
 
                 const monthlyAvgs = months.map(month => {
                     const monthData = monthlyData.get(month);
-                    return d3.mean(monthData, d => d[metric]);
+                    const avg = d3.mean(monthData, d => d[metric]);
+                    return isLossMetric ? avg * 100 : avg;
                 });
 
                 const trace = {
@@ -1145,9 +1191,9 @@
                 };
 
                 const layout = {
-                    title: `Monthly Trend: ${metric.replace('_', ' ')}`,
+                    title: `Monthly Trend: ${metricName}`,
                     xaxis: { title: 'Month' },
-                    yaxis: { title: metric.replace('_', ' ') }
+                    yaxis: { title: yAxisTitle }
                 };
 
                 Plotly.newPlot('timeSeriesChart', [trace], layout, {responsive: true});
@@ -1158,8 +1204,24 @@
             const metric = document.getElementById('metric').value;
             const values = aggregatedData.map(d => d[metric]).filter(v => !isNaN(v));
 
+            const metricDisplayNames = {
+                'td_loss_dummy': 'T&D Loss',
+                'recovery_loss_dummy': 'Recovery Loss',
+                'mth_unit_recieved_dummy': 'Units Received',
+                'mth_unit_billed_dummy': 'Units Billed',
+                'assessment_dummy': 'Assessment',
+                'payment_dummy': 'Payment'
+            };
+
+            const metricName = metricDisplayNames[metric] || metric;
+            const isLossMetric = metric.includes('loss');
+            
+            // Convert to percentage if it's a loss metric
+            const displayValues = isLossMetric ? values.map(v => v * 100) : values;
+            const xAxisTitle = isLossMetric ? `${metricName} (%)` : metricName;
+
             const trace = {
-                x: values,
+                x: displayValues,
                 type: 'histogram',
                 nbinsx: 20,
                 marker: {
@@ -1169,8 +1231,8 @@
             };
 
             const layout = {
-                title: `Distribution of ${metric.replace('_', ' ')}`,
-                xaxis: { title: metric.replace('_', ' ') },
+                title: `Distribution of ${metricName}`,
+                xaxis: { title: xAxisTitle },
                 yaxis: { title: 'Frequency' }
             };
 
