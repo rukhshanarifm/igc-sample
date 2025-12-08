@@ -32,6 +32,111 @@
             letter-spacing: 0.3px;
         }
 
+        /* Navigation Sidebar */
+        .nav-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .nav-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(46, 125, 50, 0.5);
+        }
+
+        .nav-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1B5E20 0%, #2E7D32 100%);
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+            transition: right 0.4s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 80px 30px 30px 30px;
+        }
+
+        .nav-sidebar.open {
+            right: 0;
+        }
+
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .nav-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-sidebar h3 {
+            color: white;
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-section {
+            margin-bottom: 30px;
+        }
+
+        .nav-section h4 {
+            color: #A5D6A7;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .nav-link {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+            font-size: 0.95em;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(-5px);
+            padding-left: 20px;
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+
         /* Header Section */
         .header {
             background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
@@ -324,7 +429,7 @@
 
                 <!-- AI Research Card -->
                 <div class="dashboard-card" onclick="window.location.href='pages/ai/ai_research.html'">
-                    <div class="card-icon">🤖</div>
+                    <div class="card-icon">⚙️</div>
                     <h2>AI Research Summary</h2>
                     <p>Track active research projects, deployed AI models, and performance metrics across different research areas</p>
                 </div>
@@ -739,111 +844,6 @@
                     <p style="color: #666; margin-top: 10px;">Implement universal ID-based tracking, bring agriculture and real estate into tax net. Target: Increase filers from 3.1M to 8M by 2027. Expected revenue: ₨300-400B annually.</p>
                 </div>
                 <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
-                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Reduce Salaried Class Burden</p>
-                    <p style="color: #666; margin-top: 10px;">Lower effective tax rates on salaried income while increasing enforcement on business and corporate sectors. Target: Reduce salaried burden from 48% to 35% by 2026.</p>
-                </div>
-                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
-                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Digital Tax Administration</p>
-                    <p style="color: #666; margin-top: 10px;">AI-powered audit selection, automated return processing, real-time transaction monitoring. Expected efficiency gain: 30-40% reduction in collection costs.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tax Elasticity Analysis Page -->
-        <div id="taxElasticityPage" class="page">
-            <button class="nav-button back" onclick="navigateTo('taxDeepDivePage')">← Back to Tax Deep Dive</button>
-            <div class="page-title">Deep Dive: Income Elasticity Research</div>
-
-            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
-                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📊 Elasticity Trends & Analysis</h3>
-                <div style="color: #555; line-height: 1.8; font-size: 1em;">
-                    <p><strong>Income Tax Elasticity (FY 2018-2025):</strong></p>
-                    <ul style="margin-left: 20px; color: #666; margin-bottom: 15px;">
-                        <li>FY 2018-19: 1.42 (healthy elasticity)</li>
-                        <li>FY 2019-20: 1.18 (pandemic impact)</li>
-                        <li>FY 2020-21: 0.89 (below-unity - concerning)</li>
-                        <li>FY 2021-22: 0.78 (declining trend)</li>
-                        <li>FY 2022-23: 0.71 (structural issues emerging)</li>
-                        <li>FY 2023-24: 0.67 (critical zone)</li>
-                        <li>FY 2024-25: 0.65 (reform urgency)</li>
-                    </ul>
-                    <br/>
-                    <p><strong>Interpretation:</strong> Elasticity below 1.0 means tax revenue is growing slower than GDP - indicating tax base erosion, increased evasion, or structural inefficiencies in collection.</p>
-                    <br/>
-                    <p><strong>Laffer Curve Position:</strong> Analysis suggests Pakistan may be on the "wrong side" of the Laffer curve for salaried income (average rate 22.5%), where further rate increases reduce total revenue due to evasion and behavioral changes.</p>
-                </div>
-            </div>
-
-            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
-                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">💡 Revenue Optimization Strategies</h3>
-                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
-                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Rate Rationalization</p>
-                    <p style="color: #666; margin-top: 10px;">Reduce marginal rates on compliant taxpayers while improving enforcement. Model suggests optimal top rate around 25-28% (vs current 35%) can increase net revenue by 15-20%.</p>
-                </div>
-                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
-                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Close Loopholes</p>
-                    <p style="color: #666; margin-top: 10px;">Eliminate exemptions costing ₨1.2 trillion annually. Priority areas: agriculture income tax (₨200B potential), real estate capital gains (₨150B), offshore wealth (₨100B).</p>
-                </div>
-                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
-                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Behavioral Economics</p>
-                    <p style="color: #666; margin-top: 10px;">Use nudges, social norms, and simplified filing to increase voluntary compliance. Pilot programs show 12-18% improvement in filing rates.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tax Reform Strategies Page -->
-        <div id="taxReformPage" class="page">
-            <button class="nav-button back" onclick="navigateTo('taxDeepDivePage')">← Back to Tax Deep Dive</button>
-            <div class="page-title">Deep Dive: Tax Reform Strategies</div>
-
-            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
-                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📊 Comprehensive Reform Framework</h3>
-                <div style="color: #555; line-height: 1.8; font-size: 1em;">
-                    <p><strong>Three-Phase Reform Roadmap (2025-2030):</strong></p>
-                    <br/>
-                    <p><strong>Phase 1 (2025-2026): Foundation Building</strong></p>
-                    <ul style="margin-left: 20px; color: #666; margin-bottom: 15px;">
-                        <li>Digital infrastructure investment: ₨50B</li>
-                        <li>National Tax ID rollout to 15M citizens</li>
-                        <li>Pilot automated audit system in 3 major cities</li>
-                        <li>Expected revenue gain: ₨150B</li>
-                    </ul>
-                    <br/>
-                    <p><strong>Phase 2 (2026-2028): Base Expansion</strong></p>
-                    <ul style="margin-left: 20px; color: #666; margin-bottom: 15px;">
-                        <li>Mandatory agricultural income tax (₨200B potential)</li>
-                        <li>Real estate transaction tracking (₨150B potential)</li>
-                        <li>Corporate sector audit enhancement</li>
-                        <li>Target: Tax-to-GDP ratio 11% by 2028</li>
-                    </ul>
-                    <br/>
-                    <p><strong>Phase 3 (2028-2030): Optimization</strong></p>
-                    <ul style="margin-left: 20px; color: #666;">
-                        <li>AI-driven compliance monitoring</li>
-                        <li>Regional tax coordination with provincial govts</li>
-                        <li>Target: Tax-to-GDP ratio 13-14% by 2030</li>
-                        <li>Expected total revenue: ₨10+ trillion annually</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
-                <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">💡 Quick Win Initiatives (2025)</h3>
-                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
-                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Withholding Tax Automation</p>
-                    <p style="color: #666; margin-top: 10px;">Real-time reporting by banks and payment processors. Cost: ₨5B. Expected revenue: ₨80B in first year (10:1 ROI).</p>
-                </div>
-                <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
-                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Amnesty-Plus Program</p>
-                    <p style="color: #666; margin-top: 10px;">One-time declaration scheme with reduced penalties + mandatory registration. Target: Bring 2M new taxpayers into system. Expected revenue: ₨120B.</p>
-                </div>
-                <div style="border-left: 4px solid #2E7D32; padding-left: 20px;">
-                    <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">E-Commerce Tax Integration</p>
-                    <p style="color: #666; margin-top: 10px;">Mandatory registration for online sellers, automated sales tax collection. Expected revenue: ₨40B annually from growing e-commerce sector.</p>
-                </div>
-            </div>
-        </div>
-
         <!-- FBR Risk Management System Page -->
         <div id="fbrRiskManagementPage" class="page">
             <button class="nav-button back" onclick="navigateTo('taxDeepDivePage')">← Back to Tax Deep Dive</button>
@@ -882,7 +882,7 @@
                     </div>
 
                     <div style="background: #E3F2FD; padding: 25px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #1976D2;">
-                        <h4 style="color: #0D47A1; margin-bottom: 15px; font-size: 1.2em;">🤖 Step 2: Risk Management System (Backend)</h4>
+                        <h4 style="color: #0D47A1; margin-bottom: 15px; font-size: 1.2em;">⚙️ Step 2: Risk Management System (Backend)</h4>
                         <p style="color: #333; line-height: 1.8; margin-bottom: 15px;">
                             FBR's automated system analyzes every GD in real-time using:
                         </p>
@@ -1213,7 +1213,7 @@
 
                 <!-- Tax Sector AI Research -->
                 <div class="reform-card" onclick="navigateTo('aiTaxPage')">
-                    <div class="reform-icon">🤖</div>
+                    <div class="reform-icon">⚙️</div>
                     <h3>Tax Technology AI</h3>
                     <p>Machine learning applications in tax collection and property assessment optimization</p>
                 </div>

@@ -400,7 +400,7 @@
             <label for="metric">Metric:</label>
             <select id="metric">
                 <option value="td_loss_dummy">T&D Loss</option>
-                <option value="recovery_loss_dummy">Recovery Loss</option>
+                <option value="recovery_loss_dummy">Recovery</option>
                 <option value="mth_unit_recieved_dummy">Units Received</option>
                 <option value="assessment_dummy">Assessment</option>
             </select>
@@ -495,7 +495,7 @@
                         <label for="districtMetric">Metric:</label>
                         <select id="districtMetric">
                             <option value="td_loss">T&D Loss (%)</option>
-                            <option value="recovery_loss">Recovery Loss (%)</option>
+                            <option value="recovery_loss">Recovery (%)</option>
                         </select>
                     </div>
                     <div class="control-group">
@@ -914,8 +914,22 @@
         }
 
         function populateFilters() {
-            // Populate month filter
-            const months = [...new Set(rawData.map(d => d.month))].sort();
+            // Populate month filter with proper chronological sorting
+            const months = [...new Set(rawData.map(d => d.month))].sort((a, b) => {
+                // Sort by year-month (format: "YY-Month" e.g., "24-April")
+                const [aYear, aMonth] = a.split('-');
+                const [bYear, bMonth] = b.split('-');
+                const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                    'July', 'August', 'September', 'October', 'November', 'December'];
+                
+                // First compare years
+                if (aYear !== bYear) {
+                    return aYear.localeCompare(bYear);
+                }
+                // If same year, compare months
+                return monthOrder.indexOf(aMonth) - monthOrder.indexOf(bMonth);
+            });
+            
             const monthSelect = document.getElementById('monthFilter');
             monthSelect.innerHTML = '<option value="">All Months</option>';
             months.forEach(month => {
@@ -1017,7 +1031,7 @@
 
             const metricDisplayNames = {
                 'td_loss_dummy': 'T&D Loss',
-                'recovery_loss_dummy': 'Recovery Loss',
+                'recovery_loss_dummy': 'Recovery',
                 'mth_unit_recieved_dummy': 'Units Received',
                 'mth_unit_billed_dummy': 'Units Billed',
                 'assessment_dummy': 'Assessment',
@@ -1059,7 +1073,7 @@
             
             const metricDisplayNames = {
                 'td_loss_dummy': 'T&D Loss',
-                'recovery_loss_dummy': 'Recovery Loss',
+                'recovery_loss_dummy': 'Recovery',
                 'mth_unit_recieved_dummy': 'Units Received',
                 'mth_unit_billed_dummy': 'Units Billed',
                 'assessment_dummy': 'Assessment',
@@ -1118,9 +1132,9 @@
             };
 
             const layout = {
-                title: 'T&D Loss vs Recovery Loss',
+                title: 'T&D Loss vs Recovery',
                 xaxis: { title: 'T&D Loss (%)' },
-                yaxis: { title: 'Recovery Loss (%)' }
+                yaxis: { title: 'Recovery (%)' }
             };
 
             Plotly.newPlot('scatterPlot', [trace], layout, {responsive: true});
@@ -1132,7 +1146,7 @@
             
             const metricDisplayNames = {
                 'td_loss_dummy': 'T&D Loss',
-                'recovery_loss_dummy': 'Recovery Loss',
+                'recovery_loss_dummy': 'Recovery',
                 'mth_unit_recieved_dummy': 'Units Received',
                 'mth_unit_billed_dummy': 'Units Billed',
                 'assessment_dummy': 'Assessment',
@@ -1218,7 +1232,7 @@
 
             const metricDisplayNames = {
                 'td_loss_dummy': 'T&D Loss',
-                'recovery_loss_dummy': 'Recovery Loss',
+                'recovery_loss_dummy': 'Recovery',
                 'mth_unit_recieved_dummy': 'Units Received',
                 'mth_unit_billed_dummy': 'Units Billed',
                 'assessment_dummy': 'Assessment',
@@ -1526,7 +1540,7 @@
                     
                     if (data) {
                         popupContent += `T&D Loss: ${(data.td_loss_dummy * 100).toFixed(2)}%<br>`;
-                        popupContent += `Recovery Loss: ${(data.recovery_loss_dummy * 100).toFixed(2)}%`;
+                        popupContent += `Recovery: ${(data.recovery_loss_dummy * 100).toFixed(2)}%`;
                     } else {
                         popupContent += 'No T&D Loss data available';
                     }
@@ -2501,7 +2515,7 @@
                 },
                 onEachFeature: function(feature, layer) {
                     const props = feature.properties;
-                    const metricLabel = metric === 'td_loss' ? 'T&D Loss' : 'Recovery Loss';
+                    const metricLabel = metric === 'td_loss' ? 'T&D Loss' : 'Recovery';
                     const value = props[metric];
                     const overlayIndicator = document.getElementById('overlayIndicator').value;
                     
@@ -2635,7 +2649,7 @@
             }
             
             const metric = document.getElementById('districtMetric').value;
-            const metricLabel = metric === 'td_loss' ? 'T&D Loss' : 'Recovery Loss';
+            const metricLabel = metric === 'td_loss' ? 'T&D Loss' : 'Recovery';
             const overlayIndicator = document.getElementById('overlayIndicator').value;
             
             window.districtLegend = L.control({ position: 'bottomright' });
@@ -2709,7 +2723,7 @@
                                 <i style="background: #CCCCCC; width: 20px; height: 12px; display: inline-block; margin-right: 8px; border: 2px dashed #666;"></i>
                                 No Data Available
                             </div>
-                            <div style="color: #FF6B6B; font-size: 11px; margin-top: 5px;">⚠️ ${missingDataCount} district(s) with missing data</div>
+                            <div style="color: #FF6B6B; font-size: 11px; margin-top: 5px;">⚠️ ${missingDataCount} UC(s) with missing data</div>
                         ` : ''}
                     `;
                 } else {
@@ -2765,7 +2779,7 @@
             
             const currentMonth = districtTimePeriods[currentDistrictMonthIndex];
             const metric = document.getElementById('districtMetric').value;
-            const metricLabel = metric === 'td_loss' ? 'T&D Loss (%)' : 'Recovery Loss (%)';
+            const metricLabel = metric === 'td_loss' ? 'T&D Loss (%)' : 'Recovery (%)';
             const showLastMonth = document.getElementById('showLastMonth').checked;
             const showLastYear = document.getElementById('showLastYear').checked;
             
