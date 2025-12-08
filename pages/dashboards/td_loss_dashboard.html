@@ -537,6 +537,15 @@
                             </label>
                         </div>
                     </div>
+                    <div class="control-group">
+                        <label>Map Overlays:</label>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="showConstituencies" style="width: auto;">
+                                <span style="font-size: 0.9em;">🗳️ Political Constituencies</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="map-container">
@@ -575,6 +584,8 @@
         let districtData = null;
         let districtTimePeriods = [];
         let currentDistrictMonthIndex = 0;
+        let constituenciesData = null;
+        let constituenciesLayer = null;
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
@@ -763,9 +774,9 @@
             try {
                 // Load geographic boundaries
                 const [ucData, districtData, provinceData] = await Promise.all([
-                    d3.json('data/geo/geojson/union_councils.geojson'),
-                    d3.json('data/geo/geojson/districts.geojson'),
-                    d3.json('data/geo/geojson/provinces.geojson')
+                    d3.json('../../data/geo/geojson/union_councils.geojson'),
+                    d3.json('../../data/geo/geojson/districts.geojson'),
+                    d3.json('../../data/geo/geojson/provinces.geojson')
                 ]);
 
                 geoData = {
@@ -789,7 +800,7 @@
         async function loadFeederData() {
             try {
                 // Try to load feeder GeoJSON data with LineStrings
-                const feederGeoJSON = await d3.json('data/geo/geojson/appended_district_analysis_completed.geojson').catch(() => null);
+                const feederGeoJSON = await d3.json('../../data/geo/geojson/appended_district_analysis_completed.geojson').catch(() => null);
                 
                 if (feederGeoJSON && feederGeoJSON.features) {
                     feederData = feederGeoJSON.features.map(feature => {
@@ -2115,7 +2126,7 @@
 
         async function loadDistrictData() {
             try {
-                const response = await fetch('data/geo/geojson/appended_district_analysis_completed.geojson');
+                const response = await fetch('../../data/geo/geojson/appended_district_analysis_completed.geojson');
                 districtData = await response.json();
                 
                 // Extract unique time periods and sort them
@@ -2192,6 +2203,11 @@
                     updateDistrictCharts();
                 });
                 
+                document.getElementById('showConstituencies').addEventListener('change', toggleConstituenciesLayer);
+                
+                // Load political constituencies data
+                loadConstituenciesData();
+                
                 // Initial render
                 updateDistrictMap();
                 
@@ -2215,6 +2231,71 @@
             
             const targetIndex = districtTimePeriods.indexOf(targetMonth);
             return targetIndex >= 0 ? targetIndex : null;
+        }
+
+        async function loadConstituenciesData() {
+            try {
+                const response = await fetch('../../data/geo/geojson/political_constituencies.geojson');
+                constituenciesData = await response.json();
+                console.log('Political constituencies data loaded successfully');
+            } catch (error) {
+                console.error('Error loading political constituencies data:', error);
+            }
+        }
+
+        function toggleConstituenciesLayer() {
+            const showConstituencies = document.getElementById('showConstituencies').checked;
+            
+            if (showConstituencies) {
+                // Add constituencies layer if it doesn't exist
+                if (!constituenciesLayer && constituenciesData) {
+                    constituenciesLayer = L.geoJSON(constituenciesData, {
+                        style: {
+                            fillColor: 'transparent',
+                            weight: 4,
+                            opacity: 1,
+                            color: '#E91E63',
+                            dashArray: '10, 5',
+                            fillOpacity: 0
+                        },
+                        onEachFeature: function(feature, layer) {
+                            const props = feature.properties;
+                            let popupContent = `<strong>🗳️ Political Constituency</strong><br>`;
+                            popupContent += `<strong>Constituency:</strong> ${props.NA_Cons || 'N/A'}<br>`;
+                            popupContent += `<strong>District:</strong> ${props.District || 'N/A'}<br>`;
+                            popupContent += `<strong>Province:</strong> ${props.Province || 'N/A'}<br>`;
+                            if (props.WON) {
+                                popupContent += `<strong>Winner:</strong> ${props.WON}<br>`;
+                            }
+                            
+                            layer.bindPopup(popupContent);
+                            
+                            // Highlight on hover
+                            layer.on({
+                                mouseover: function(e) {
+                                    e.target.setStyle({
+                                        weight: 6,
+                                        color: '#C2185B',
+                                        opacity: 1
+                                    });
+                                },
+                                mouseout: function(e) {
+                                    constituenciesLayer.resetStyle(e.target);
+                                }
+                            });
+                        }
+                    }).addTo(districtMap);
+                    
+                    // Bring the constituencies layer to front so it's visible above other layers
+                    constituenciesLayer.bringToFront();
+                }
+            } else {
+                // Remove constituencies layer
+                if (constituenciesLayer) {
+                    districtMap.removeLayer(constituenciesLayer);
+                    constituenciesLayer = null;
+                }
+            }
         }
 
         function updateDistrictMap() {
@@ -2463,6 +2544,11 @@
                 districtMap.fitBounds(districtLayer.getBounds());
             }
             
+            // Bring constituencies layer to front if it exists (to keep it visible above district layer)
+            if (constituenciesLayer) {
+                constituenciesLayer.bringToFront();
+            }
+            
             // Update charts
             updateDistrictCharts();
         }
@@ -2575,6 +2661,21 @@
                             </div>
                             <div style="color: #FF6B6B; font-size: 11px; margin-top: 5px;">⚠️ ${missingDataCount} district(s) with missing data</div>
                         ` : ''}
+                    `;
+                }
+                
+                // Add constituencies legend if visible
+                const showConstituencies = document.getElementById('showConstituencies').checked;
+                if (showConstituencies) {
+                    div.innerHTML += `
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        <div style="margin-bottom: 5px;"><strong>Overlays</strong></div>
+                        <div style="margin-bottom: 3px;">
+                            <svg width="25" height="12" style="vertical-align: middle; margin-right: 5px;">
+                                <line x1="0" y1="6" x2="25" y2="6" stroke="#E91E63" stroke-width="4" stroke-dasharray="10,5" />
+                            </svg>
+                            <span style="color: #E91E63; font-weight: bold;">Political Constituencies</span>
+                        </div>
                     `;
                 }
                 
