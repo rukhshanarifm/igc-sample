@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Power Sector AI Research - Pakistan Dashboard</title>
+    <title>Reform Tracking - Pakistan Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -185,26 +185,20 @@
     </div>
 
     <div class="container">
-        <a href="ai_research.html" class="nav-button">← Back to AI Research</a>
-        <div class="page-title">Power Sector AI Research</div>
+        <a href="../index.html" class="nav-button">← Back to Main</a>
+        <div class="page-title">Reform Tracking Sectors</div>
 
         <div class="reform-nav">
-            <a href="index.html#aiTDLossPage" class="reform-card" onclick="event.preventDefault(); window.location.href='index.html'; setTimeout(() => navigateTo('aiTDLossPage'), 100);">
-                <div class="reform-icon">📉</div>
-                <h3>T&D Losses Optimization</h3>
-                <p>AI and ML techniques for reducing transmission & distribution losses - literature reviews and recent research</p>
+            <a href="sectors/power/power_sector.html" class="reform-card">
+                <div class="reform-icon">⚡</div>
+                <h3>Power Sector</h3>
+                <p>T&D Losses, Recovery Rates, Circular Debt Management, and Power Reform Initiatives</p>
             </a>
 
-            <a href="index.html#aiRecoveryPage" class="reform-card" onclick="event.preventDefault(); window.location.href='index.html'; setTimeout(() => navigateTo('aiRecoveryPage'), 100);">
-                <div class="reform-icon">📈</div>
-                <h3>Recovery Enhancement</h3>
-                <p>Predictive analytics for improving collection rates and payment behavior analysis</p>
-            </a>
-
-            <a href="index.html#aiCircularDebtPage" class="reform-card" onclick="event.preventDefault(); window.location.href='index.html'; setTimeout(() => navigateTo('aiCircularDebtPage'), 100);">
-                <div class="reform-icon">💳</div>
-                <h3>Circular Debt Analysis</h3>
-                <p>Data-driven approaches to circular debt management and causal modeling</p>
+            <a href="sectors/tax/tax_sector.html" class="reform-card">
+                <div class="reform-icon">💰</div>
+                <h3>Tax Reforms</h3>
+                <p>Tax Revenue, Expenditure, Growth</p>
             </a>
         </div>
     </div>
@@ -213,14 +207,5 @@
         <p>&copy; 2025 Government of Pakistan - Information Systems Department</p>
         <p>All data is for demonstration purposes only</p>
     </div>
-
-    <script>
-        function navigateTo(pageId) {
-            if (window.opener && !window.opener.closed) {
-                window.opener.navigateTo(pageId);
-                window.close();
-            }
-        }
-    </script>
 </body>
 </html>

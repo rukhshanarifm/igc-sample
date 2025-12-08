@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Research Summary - Pakistan Dashboard</title>
+    <title>Power Sector Deep Dive - Pakistan Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -100,27 +100,28 @@
         }
 
         .info-box {
-            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+            background: white;
             border-radius: 16px;
             padding: 40px;
-            margin-bottom: 40px;
-            color: white;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
 
         .info-box h3 {
+            color: #1e3c72;
             margin-bottom: 20px;
             font-size: 1.8em;
         }
 
         .info-box p {
-            font-size: 1.1em;
+            color: #555;
             line-height: 1.8;
-            opacity: 0.95;
+            font-size: 1.1em;
         }
 
         .reform-nav {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
         }
 
@@ -204,26 +205,38 @@
     </div>
 
     <div class="container">
-        <a href="index.html" class="nav-button">← Back to Main</a>
-        <div class="page-title">AI Research Summary - Select Sector</div>
+        <a href="power_sector.html" class="nav-button">← Back to Power Sector</a>
+        <div class="page-title">Power Sector Deep Dive</div>
 
         <div class="info-box">
-            <h3>🤖 AI & Machine Learning Research</h3>
-            <p>Track active research projects, literature reviews, and AI/ML applications in power and tax sectors. This section provides comprehensive summaries of academic research, pilot projects, and newspaper coverage of technology adoption in Pakistan's reform initiatives.</p>
+            <h3>📈 Comprehensive Power Sector Analysis</h3>
+            <p><strong>Overview:</strong> Pakistan's power sector faces critical challenges including high T&D losses (17%), low recovery rates (88%), and mounting circular debt (2.84 trillion PKR). This section provides in-depth analysis and reform insights.</p>
         </div>
 
         <div class="reform-nav">
-            <a href="ai_power_research.html" class="reform-card">
-                <div class="reform-icon">⚡</div>
-                <h3>Power Sector AI</h3>
-                <p>Literature reviews and research on AI applications in power systems including T&D optimization, recovery enhancement, and circular debt analysis</p>
+            <!-- <a href="index.html#deepDiveTDPage" class="reform-card" onclick="event.preventDefault(); window.location.href='index.html'; setTimeout(() => navigateTo('deepDiveTDPage'), 100);">
+                <div class="reform-icon">📉</div>
+                <h3>T&D Losses Analysis</h3>
+                <p>In-depth research, trends, and actionable insights on transmission and distribution losses</p>
+            </a> -->
+
+            <a href="net_metering_analysis.html" class="reform-card" style="text-decoration: none;">
+                <div class="reform-icon">☀️</div>
+                <h3>Net-Metering Impact Analysis</h3>
+                <p>How much revenue does the National Grid lose due to net-metering? Data-driven insights and policy implications</p>
             </a>
 
-            <a href="ai_tax_research.html" class="reform-card">
+            <!-- <a href="index.html#deepDiveRecoveryPage" class="reform-card" onclick="event.preventDefault(); window.location.href='index.html'; setTimeout(() => navigateTo('deepDiveRecoveryPage'), 100);">
                 <div class="reform-icon">💰</div>
-                <h3>Tax Technology AI</h3>
-                <p>Machine learning applications in tax collection, property assessment optimization, and fraud detection systems</p>
-            </a>
+                <h3>Recovery Rates Research</h3>
+                <p>Comprehensive analysis of collection rates, payment patterns, and recovery optimization strategies</p>
+            </a> -->
+<!-- 
+            <a href="index.html#deepDiveCircularDebtPage" class="reform-card" onclick="event.preventDefault(); window.location.href='index.html'; setTimeout(() => navigateTo('deepDiveCircularDebtPage'), 100);">
+                <div class="reform-icon">💳</div>
+                <h3>Circular Debt Deep Dive</h3>
+                <p>Detailed examination of circular debt causes, trajectory, and structural reform recommendations</p>
+            </a> -->
         </div>
     </div>
 
@@ -231,5 +244,15 @@
         <p>&copy; 2025 Government of Pakistan - Information Systems Department</p>
         <p>All data is for demonstration purposes only</p>
     </div>
+
+    <script>
+        function navigateTo(pageId) {
+            // This function is for when coming from index.html
+            if (window.opener && !window.opener.closed) {
+                window.opener.navigateTo(pageId);
+                window.close();
+            }
+        }
+    </script>
 </body>
 </html>

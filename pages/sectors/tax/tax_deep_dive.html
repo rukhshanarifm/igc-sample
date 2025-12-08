@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reform Tracking - Pakistan Dashboard</title>
-    <style>
-        * {
+    <title>Tax Deep Dive - Pakistan Dashboard</title>
+    <style    <div class="container">
+        <a href="tax_sector.html" class="nav-button">← Back to Tax Sector</a>
+        <div class="page-title">Tax Reform Deep Dive</div>       * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -99,9 +100,29 @@
             font-weight: 700;
         }
 
+        .info-box {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .info-box h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
         .reform-nav {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
         }
 
@@ -131,7 +152,7 @@
         }
 
         .reform-card h3 {
-            font-size: 2em;
+            font-size: 1.6em;
             color: #2e7d32;
             margin-bottom: 15px;
             font-weight: 600;
@@ -139,7 +160,7 @@
 
         .reform-card p {
             color: #666;
-            font-size: 1em;
+            font-size: 0.95em;
             line-height: 1.5;
         }
 
@@ -185,20 +206,43 @@
     </div>
 
     <div class="container">
-        <a href="index.html" class="nav-button">← Back to Main</a>
-        <div class="page-title">Reform Tracking Sectors</div>
+        <a href="tax_sector.html" class="nav-button">← Back to Tax Reforms</a>
+        <div class="page-title">Tax Reform Deep Dive</div>
+
+        <div class="info-box">
+            <h3>📈 Comprehensive Tax Reform Analysis</h3>
+            <p><strong>Overview:</strong> Pakistan's tax system faces structural challenges including low tax-to-GDP ratio (8.6%), heavy reliance on indirect taxes (65%), and disproportionate burden on salaried class (48% of income tax). This section provides in-depth analysis and reform recommendations.</p>
+        </div>
 
         <div class="reform-nav">
-            <a href="power_sector.html" class="reform-card">
-                <div class="reform-icon">⚡</div>
-                <h3>Power Sector</h3>
-                <p>T&D Losses, Recovery Rates, Circular Debt Management, and Power Reform Initiatives</p>
+            <!-- <a href="index.html#taxBurdenPage" class="reform-card" onclick="event.preventDefault(); window.location.href='index.html'; setTimeout(() => navigateTo('taxBurdenPage'), 100);">
+                <div class="reform-icon">💰</div>
+                <h3>Tax Burden Analysis</h3>
+                <p>Detailed breakdown of tax distribution across different income sources and analysis of salaried class burden</p>
+            </a> -->
+
+            <!-- <a href="index.html#taxElasticityPage" class="reform-card" onclick="event.preventDefault(); window.location.href='index.html'; setTimeout(() => navigateTo('taxElasticityPage'), 100);">
+                <div class="reform-icon">📉</div>
+                <h3>Income Elasticity Research</h3>
+                <p>Analysis of declining income elasticity (0.65) and its implications for revenue optimization</p>
+            </a> -->
+
+            <!-- <a href="index.html#taxReformPage" class="reform-card" onclick="event.preventDefault(); window.location.href='index.html'; setTimeout(() => navigateTo('taxReformPage'), 100);">
+                <div class="reform-icon">🎯</div>
+                <h3>Reform Strategies</h3>
+                <p>Policy recommendations for broadening tax base, improving collection, and reducing evasion</p>
+            </a> -->
+
+            <a href="fbr_risk_management.html" class="reform-card" style="text-decoration: none;">
+                <div class="reform-icon">🚢</div>
+                <h3>FBR Risk Management System</h3>
+                <p>Evaluation of customs risk management system and reducing false positives in shipment classification</p>
             </a>
 
-            <a href="tax_sector.html" class="reform-card">
-                <div class="reform-icon">💰</div>
-                <h3>Tax Reforms</h3>
-                <p>Tax Revenue, Expenditure, Growth</p>
+            <a href="lahore_tax_potential.html" class="reform-card" style="text-decoration: none;">
+                <div class="reform-icon">🍽️</div>
+                <h3>Lahore Tax Potential Analysis</h3>
+                <p>How better data reveals where Lahore's tax potential is being lost - focus on restaurant enforcement</p>
             </a>
         </div>
     </div>
@@ -207,5 +251,15 @@
         <p>&copy; 2025 Government of Pakistan - Information Systems Department</p>
         <p>All data is for demonstration purposes only</p>
     </div>
+
+    <script>
+        function navigateTo(pageId) {
+            // This function is for when coming from index.html
+            if (window.opener && !window.opener.closed) {
+                window.opener.navigateTo(pageId);
+                window.close();
+            }
+        }
+    </script>
 </body>
 </html>

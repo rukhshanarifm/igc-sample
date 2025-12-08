@@ -360,9 +360,9 @@
 
     <div style="background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; color: white; margin-bottom: 20px; border-radius: 5px;">
         <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="index.html" style="color: white; text-decoration: none; padding: 8px 15px; background: rgba(255,255,255,0.1); border-radius: 5px; transition: all 0.3s; font-weight: 500;">Home</a>
+            <a href="../../index.html" style="color: white; text-decoration: none; padding: 8px 15px; background: rgba(255,255,255,0.1); border-radius: 5px; transition: all 0.3s; font-weight: 500;">Home</a>
+            <a href="../sectors/power/power_sector.html" style="color: white; text-decoration: none; padding: 8px 15px; background: rgba(255,255,255,0.1); border-radius: 5px; transition: all 0.3s; font-weight: 500;">Power Sector</a>
             <a href="td_loss_dashboard.html" style="color: white; text-decoration: none; padding: 8px 15px; background: rgba(255,255,255,0.2); border-radius: 5px; transition: all 0.3s; font-weight: 500;">T&D Loss Dashboard</a>
-            <a href="tax_dashboard.html" style="color: white; text-decoration: none; padding: 8px 15px; background: rgba(255,255,255,0.1); border-radius: 5px; transition: all 0.3s; font-weight: 500;">Tax Dashboard</a>
         </div>
     </div>
 
@@ -722,7 +722,7 @@
             try {
                 // Load CSV data
                 console.log('Loading CSV data...');
-                const csvData = await d3.csv('data/dummy/dummy_data.csv');
+                const csvData = await d3.csv('../../data/dummy/dummy_data.csv');
                 rawData = csvData.map(d => ({
                     month: d.month,
                     uc: +d.uc,

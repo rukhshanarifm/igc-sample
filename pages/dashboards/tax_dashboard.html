@@ -211,7 +211,7 @@
     <!-- Navigation Bar -->
     <div class="nav-bar">
         <div style="display: flex; gap: 20px; align-items: center;">
-            <a href="index.html">Home</a>
+            <a href="../../index.html">Home</a>
             <a href="td_loss_dashboard.html">T&D Loss Dashboard</a>
             <a href="tax_dashboard.html" style="background: rgba(255,255,255,0.2);">Tax Dashboard</a>
         </div>
@@ -333,7 +333,7 @@
         async function loadTaxData() {
             try {
                 console.log('Loading FBR tax data from CSV...');
-                const csvData = await d3.csv('data/dummy/fbr_tax_data.csv');
+                const csvData = await d3.csv('../../data/dummy/fbr_tax_data.csv');
                 
                 taxData = csvData.map(d => ({
                     year: d.fiscal_year,
@@ -386,7 +386,7 @@
                 
             } catch (error) {
                 console.error('Error loading tax data:', error);
-                alert('Failed to load tax data. Please check if data/dummy/fbr_tax_data.csv exists.');
+                alert('Failed to load tax data. Please check if ../../data/dummy/fbr_tax_data.csv exists.');
                 return [];
             }
         }
