@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Net-Metering Impact Analysis - Pakistan Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8faf9 0%, #f0f5f3 100%);
+            min-height: 100vh;
+            color: #2d3e2f;
+        }
+
+        .disclaimer-bar {
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A5A 100%);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95em;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #1b5e20;
+            padding: 40px 20px;
+            box-shadow: 0 2px 8px rgba(27, 94, 32, 0.08);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-text h1 {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header-text p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #666 0%, #444 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            color: #1B5E20;
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .footer {
+            background: #1B5E20;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="disclaimer-bar">
+        ⚠️ Disclaimer: This product is a conceptual mockup based on fictitious data. It does not reflect official information and is not endorsed by the Government of Pakistan
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="https://crystalpng.com/wp-content/uploads/2025/04/government-of-pakistan-logo.png" alt="Government of Pakistan" style="width: 85px; height: 85px; object-fit: contain;">
+            </div>
+            <div class="header-text">
+                <h1>Reform Tracking Tool</h1>
+                <p>Dashboard Portal</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <a href="power_deep_dive.html" class="nav-button">← Back to Deep Dive</a>
+        <div class="page-title">Deep Dive: Net-Metering Impact Analysis</div>
+
+        <div style="background: linear-gradient(135deg, #FF6B6B 0%, #EE5A5A 100%); border-radius: 16px; padding: 40px; margin-bottom: 30px; color: white;">
+            <h3 style="margin-bottom: 20px; font-size: 1.8em;">⚠️ Critical Finding: Revenue Loss from Net-Metering</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 25px;">
+                <div style="background: rgba(255,255,255,0.2); padding: 25px; border-radius: 12px; backdrop-filter: blur(10px);">
+                    <div style="font-size: 2.5em; font-weight: bold; margin-bottom: 10px;">₨29,000</div>
+                    <div style="font-size: 1em; opacity: 0.95;">Mean Payment (Pre-Net-Metering)</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 25px; border-radius: 12px; backdrop-filter: blur(10px);">
+                    <div style="font-size: 2.5em; font-weight: bold; margin-bottom: 10px; color: #FFD700;">₨17,000</div>
+                    <div style="font-size: 1em; opacity: 0.95;">Average Reduction in Payment</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 25px; border-radius: 12px; backdrop-filter: blur(10px);">
+                    <div style="font-size: 2.5em; font-weight: bold; margin-bottom: 10px; color: #FFD700;">60%</div>
+                    <div style="font-size: 1em; opacity: 0.95;">Percentage Reduction in Payment</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+            <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">📊 Effect of Net-Metering on Payment in PKR</h3>
+            <div style="color: #555; line-height: 1.8; font-size: 1em;">
+                <p style="background: #FFF3CD; padding: 15px; border-left: 4px solid #FFC107; margin-bottom: 20px; border-radius: 4px;">
+                    <strong>Key Finding:</strong> When households install net-metering systems (typically solar panels), their electricity payments drop dramatically. The graph shows a sharp 60% decline at month 0 (when net-metering status is achieved), from an average of ₨29,000/month to approximately ₨12,000/month.
+                </p>
+                
+                <div style="background: #f8f9fa; padding: 30px; border-radius: 12px; margin: 25px 0;">
+                    <h4 style="color: #2E7D32; margin-bottom: 15px;">📈 Visual Analysis</h4>
+                    <p style="margin-bottom: 15px;"><strong>What the data shows:</strong></p>
+                    <ul style="margin-left: 20px; color: #666; line-height: 2;">
+                        <li><strong>Pre-Period (Months -25 to -1):</strong> Stable payments around ₨29,000 - these are typical high-consumption households</li>
+                        <li><strong>Installation Point (Month 0):</strong> Sharp drop as solar panels begin generating electricity</li>
+                        <li><strong>Post-Period (Months 1 to 25):</strong> Payments stabilize at ₨12,000-14,500 - representing only non-solar consumption and grid charges</li>
+                        <li><strong>Net Effect:</strong> Grid loses ₨17,000 per net-metered household per month</li>
+                    </ul>
+                </div>
+
+                <p><strong>Wider Implications:</strong></p>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px; line-height: 1.8;">
+                    <li><strong>Revenue Impact:</strong> With ~50,000 net-metering connections nationwide (2024), monthly revenue loss ≈ ₨850 million (₨10.2 billion annually)</li>
+                    <li><strong>Cross-Subsidy Breakdown:</strong> High-paying customers who subsidize lower tariff classes are exiting the grid, increasing burden on remaining consumers</li>
+                    <li><strong>Grid Maintenance Challenge:</strong> Fixed grid costs (maintenance, upgrades) remain constant, but revenue from affluent consumers declines</li>
+                    <li><strong>Projected Growth:</strong> Net-metering applications growing at 35% annually - revenue loss could exceed ₨30 billion by 2027</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+            <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.4em;">💡 Policy Recommendations</h3>
+            <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Reform Net-Metering Tariff Structure</p>
+                <p style="color: #666; margin-top: 10px;"><strong>Current Issue:</strong> Net-metering customers pay retail rate for grid electricity but receive retail rate credit for exported solar power - creating 1:1 exchange despite grid maintenance costs.</p>
+                <p style="color: #666; margin-top: 10px;"><strong>Recommendation:</strong> Implement "net billing" where exported power is credited at wholesale rate (~₨8-10/kWh) while consumed power is charged at retail rate (~₨25-30/kWh). This reflects true grid infrastructure costs.</p>
+                <p style="color: #666; margin-top: 10px;"><strong>Expected Outcome:</strong> Reduce revenue loss by 40-50% while still incentivizing renewable adoption. Estimated recovery: ₨4-5 billion annually.</p>
+            </div>
+
+            <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Introduce Fixed Grid Access Charges</p>
+                <p style="color: #666; margin-top: 10px;"><strong>Rationale:</strong> Net-metering customers still use grid infrastructure for backup and night-time power, but contribute minimally to grid maintenance costs.</p>
+                <p style="color: #666; margin-top: 10px;"><strong>Recommendation:</strong> Monthly fixed charge of ₨2,000-3,000 for net-metered connections to cover grid access and maintenance, regardless of consumption.</p>
+                <p style="color: #666; margin-top: 10px;"><strong>Expected Outcome:</strong> Generate ₨1.2-1.8 billion annually from 50,000 connections while ensuring grid sustainability.</p>
+            </div>
+
+            <div style="border-left: 4px solid #2E7D32; padding-left: 20px; margin-bottom: 20px;">
+                <p style="color: #1B5E20; font-weight: 600; margin-bottom: 5px;">Time-of-Use (TOU) Net-Metering</p>
+                <p style="color: #666; margin-top: 10px;"><strong>Smart Solution:</strong> Credit exported solar power based on time of day - higher rates during peak demand (6-10 PM) when solar isn't generating, lower rates during midday surplus.</p>
+                <p style="color: #666; margin-top: 10px;"><strong>Benefit:</strong> Encourages battery storage adoption, reduces evening peak load stress, and provides fair compensation aligned with grid needs.</p>
+                <p style="color: #666; margin-top: 10px;"><strong>Expected Outcome:</strong> Better grid stability, 20-25% reduction in peak load stress, and more sustainable renewable integration.</p>
+            </div>
+
+            <div style="border-left: 4px solid #FF9800; padding-left: 20px; background: #FFF3E0; padding: 20px; border-radius: 8px;">
+                <p style="color: #E65100; font-weight: 600; margin-bottom: 10px;">⚖️ Balancing Act Required</p>
+                <p style="color: #666; line-height: 1.8;">Pakistan must balance renewable energy goals (30% by 2030) with grid financial sustainability. Current net-metering policy, while boosting solar adoption, creates unsustainable revenue losses. International best practices (California's NEM 3.0, Australia's feed-in tariffs) show that reformed compensation structures maintain renewable growth while protecting grid viability.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 Government of Pakistan - Information Systems Department</p>
+        <p>All data is for demonstration purposes only</p>
+    </div>
+</body>
+</html>

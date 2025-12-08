@@ -1115,7 +1115,19 @@
             } else {
                 // Show monthly trends
                 const monthlyData = d3.group(rawData, d => d.month);
-                const months = Array.from(monthlyData.keys()).sort();
+                const months = Array.from(monthlyData.keys()).sort((a, b) => {
+                    // Sort by year-month (format: "YY-MMM")
+                    const [aYear, aMonth] = a.split('-');
+                    const [bYear, bMonth] = b.split('-');
+                    const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    
+                    // First compare years
+                    if (aYear !== bYear) {
+                        return aYear.localeCompare(bYear);
+                    }
+                    // If same year, compare months
+                    return monthOrder.indexOf(aMonth) - monthOrder.indexOf(bMonth);
+                });
                 const metric = document.getElementById('metric').value;
 
                 const monthlyAvgs = months.map(month => {

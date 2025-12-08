@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Deep Dive - Pakistan Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8faf9 0%, #f0f5f3 100%);
+            min-height: 100vh;
+            color: #2d3e2f;
+        }
+
+        .disclaimer-bar {
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A5A 100%);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95em;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #1b5e20;
+            padding: 40px 20px;
+            box-shadow: 0 2px 8px rgba(27, 94, 32, 0.08);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-text h1 {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header-text p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #666 0%, #444 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            color: #1B5E20;
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .info-box {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .info-box h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .reform-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .reform-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(27, 94, 32, 0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            border-left: 5px solid transparent;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .reform-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(27, 94, 32, 0.12);
+            border-left-color: #a5d6a7;
+        }
+
+        .reform-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+        }
+
+        .reform-card h3 {
+            font-size: 1.6em;
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .reform-card p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .footer {
+            background: #1B5E20;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .reform-nav {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="disclaimer-bar">
+        ⚠️ Disclaimer: This product is a conceptual mockup based on fictitious data. It does not reflect official information and is not endorsed by the Government of Pakistan
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="https://crystalpng.com/wp-content/uploads/2025/04/government-of-pakistan-logo.png" alt="Government of Pakistan" style="width: 85px; height: 85px; object-fit: contain;">
+            </div>
+            <div class="header-text">
+                <h1>Reform Tracking Tool</h1>
+                <p>Dashboard Portal</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <a href="tax_sector.html" class="nav-button">← Back to Tax Reforms</a>
+        <div class="page-title">Tax Reform Deep Dive</div>
+
+        <div class="info-box">
+            <h3>📈 Comprehensive Tax Reform Analysis</h3>
+            <p><strong>Overview:</strong> Pakistan's tax system faces structural challenges including low tax-to-GDP ratio (8.6%), heavy reliance on indirect taxes (65%), and disproportionate burden on salaried class (48% of income tax). This section provides in-depth analysis and reform recommendations.</p>
+        </div>
+
+        <div class="reform-nav">
+            <!-- <a href="index.html#taxBurdenPage" class="reform-card" onclick="event.preventDefault(); window.location.href='index.html'; setTimeout(() => navigateTo('taxBurdenPage'), 100);">
+                <div class="reform-icon">💰</div>
+                <h3>Tax Burden Analysis</h3>
+                <p>Detailed breakdown of tax distribution across different income sources and analysis of salaried class burden</p>
+            </a> -->
+
+            <!-- <a href="index.html#taxElasticityPage" class="reform-card" onclick="event.preventDefault(); window.location.href='index.html'; setTimeout(() => navigateTo('taxElasticityPage'), 100);">
+                <div class="reform-icon">📉</div>
+                <h3>Income Elasticity Research</h3>
+                <p>Analysis of declining income elasticity (0.65) and its implications for revenue optimization</p>
+            </a> -->
+
+            <!-- <a href="index.html#taxReformPage" class="reform-card" onclick="event.preventDefault(); window.location.href='index.html'; setTimeout(() => navigateTo('taxReformPage'), 100);">
+                <div class="reform-icon">🎯</div>
+                <h3>Reform Strategies</h3>
+                <p>Policy recommendations for broadening tax base, improving collection, and reducing evasion</p>
+            </a> -->
+
+            <a href="fbr_risk_management.html" class="reform-card">
+                <div class="reform-icon">🚢</div>
+                <h3>FBR Risk Management System</h3>
+                <p>Evaluation of customs risk management system and reducing false positives in shipment classification</p>
+            </a>
+
+            <a href="lahore_tax_potential.html" class="reform-card">
+                <div class="reform-icon">🍽️</div>
+                <h3>Lahore Tax Potential Analysis</h3>
+                <p>How better data reveals where Lahore's tax potential is being lost - focus on restaurant enforcement</p>
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 Government of Pakistan - Information Systems Department</p>
+        <p>All data is for demonstration purposes only</p>
+    </div>
+
+    <script>
+        function navigateTo(pageId) {
+            // This function is for when coming from index.html
+            if (window.opener && !window.opener.closed) {
+                window.opener.navigateTo(pageId);
+                window.close();
+            }
+        }
+    </script>
+</body>
+</html>
