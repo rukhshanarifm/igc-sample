@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>T&D Loss and Property Tax Dashboard</title>
+    <title>Transmission & Distribution Dashboard</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -362,7 +362,8 @@
         <div style="display: flex; gap: 20px; align-items: center;">
             <a href="../../index.html" style="color: white; text-decoration: none; padding: 8px 15px; background: rgba(255,255,255,0.1); border-radius: 5px; transition: all 0.3s; font-weight: 500;">Home</a>
             <a href="../sectors/power/power_sector.html" style="color: white; text-decoration: none; padding: 8px 15px; background: rgba(255,255,255,0.1); border-radius: 5px; transition: all 0.3s; font-weight: 500;">Power Sector</a>
-            <a href="td_loss_dashboard.html" style="color: white; text-decoration: none; padding: 8px 15px; background: rgba(255,255,255,0.2); border-radius: 5px; transition: all 0.3s; font-weight: 500;">T&D Loss Dashboard</a>
+            <a href="power_dashboards.html" style="color: white; text-decoration: none; padding: 8px 15px; background: rgba(255,255,255,0.1); border-radius: 5px; transition: all 0.3s; font-weight: 500;">Real Time Dashboards</a>
+            <a href="td_loss_dashboard.html" style="color: white; text-decoration: none; padding: 8px 15px; background: rgba(255,255,255,0.2); border-radius: 5px; transition: all 0.3s; font-weight: 500;">Transmission & Distribution</a>
         </div>
     </div>
 
@@ -403,6 +404,8 @@
                 <option value="recovery_loss_dummy">Recovery</option>
                 <option value="mth_unit_recieved_dummy">Units Received</option>
                 <option value="assessment_dummy">Assessment</option>
+                <option value="circular_debt">Circular Debt</option>
+                <option value="imported_fuel_share">Share of Imported Fuel</option>
             </select>
         </div>
         <div class="control-group">
@@ -590,6 +593,29 @@
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
+            // Check for URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const metricParam = urlParams.get('metric');
+            
+            // If metric parameter exists, set the dropdown value
+            if (metricParam) {
+                const metricSelect = document.getElementById('metric');
+                const validMetrics = ['td_loss_dummy', 'recovery_loss_dummy', 'mth_unit_recieved_dummy', 'assessment_dummy', 'circular_debt', 'imported_fuel_share'];
+                
+                // Map the URL parameter to the correct dropdown value
+                let dropdownValue = metricParam;
+                if (metricParam === 'recovery') {
+                    dropdownValue = 'recovery_loss_dummy';
+                } else if (metricParam === 'td_loss') {
+                    dropdownValue = 'td_loss_dummy';
+                }
+                
+                // Set the dropdown if the value is valid
+                if (validMetrics.includes(dropdownValue)) {
+                    metricSelect.value = dropdownValue;
+                }
+            }
+            
             initializeMaps();
             loadData();
             setupEventListeners();
@@ -746,7 +772,10 @@
                     assessment_dummy: +d.assessment_dummy || 0,
                     payment_dummy: +d.payment_dummy || 0,
                     td_loss_dummy: +d.td_loss_dummy || 0,
-                    recovery_loss_dummy: +d.recovery_loss_dummy || 0
+                    recovery_loss_dummy: +d.recovery_loss_dummy || 0,
+                    // Generate random data for new aggregated metrics
+                    circular_debt: Math.random() * 500000000000 + 2000000000000, // 2-2.5 trillion PKR
+                    imported_fuel_share: Math.random() * 0.4 + 0.3 // 30-70%
                 }));
 
                 console.log('Loaded', rawData.length, 'records');
@@ -993,7 +1022,9 @@
                     assessment_dummy: d3.mean(values, d => d.assessment_dummy),
                     payment_dummy: d3.mean(values, d => d.payment_dummy),
                     td_loss_dummy: d3.mean(values, d => d.td_loss_dummy),
-                    recovery_loss_dummy: d3.mean(values, d => d.recovery_loss_dummy)
+                    recovery_loss_dummy: d3.mean(values, d => d.recovery_loss_dummy),
+                    circular_debt: d3.mean(values, d => d.circular_debt),
+                    imported_fuel_share: d3.mean(values, d => d.imported_fuel_share)
                 };
             });
         }
@@ -1017,30 +1048,89 @@
                 return;
             }
 
-            const values = data.map(d => d[metric]).filter(v => !isNaN(v));
-            const mean = d3.mean(values);
-            const max = d3.max(values);
-            const min = d3.min(values);
-
-            const formatValue = (value) => {
-                if (metric.includes('loss')) {
-                    return `${(value * 100).toFixed(1)}%`;
-                }
-                return value.toLocaleString();
-            };
-
             const metricDisplayNames = {
                 'td_loss_dummy': 'T&D Loss',
                 'recovery_loss_dummy': 'Recovery',
                 'mth_unit_recieved_dummy': 'Units Received',
                 'mth_unit_billed_dummy': 'Units Billed',
                 'assessment_dummy': 'Assessment',
-                'payment_dummy': 'Payment'
+                'payment_dummy': 'Payment',
+                'circular_debt': 'Circular Debt',
+                'imported_fuel_share': 'Share of Imported Fuel'
             };
 
             const metricName = metricDisplayNames[metric] || metric;
 
+            // For aggregated metrics, show monthly breakdown instead of UC/district breakdown
+            if (metric === 'circular_debt' || metric === 'imported_fuel_share') {
+                // Group by month and calculate average across all UCs
+                const monthlyData = d3.group(rawData, d => d.month);
+                const months = Array.from(monthlyData.keys()).sort((a, b) => {
+                    const [aYear, aMonth] = a.split('-');
+                    const [bYear, bMonth] = b.split('-');
+                    const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                        'July', 'August', 'September', 'October', 'November', 'December'];
+                    if (aYear !== bYear) return aYear.localeCompare(bYear);
+                    return monthOrder.indexOf(aMonth) - monthOrder.indexOf(bMonth);
+                });
+
+                const monthlyValues = months.map(month => {
+                    const monthData = monthlyData.get(month);
+                    return d3.mean(monthData, d => d[metric]);
+                });
+
+                const formatValue = (value) => {
+                    if (metric === 'circular_debt') {
+                        return `₨${(value / 1000000000).toFixed(1)}B`;
+                    }
+                    if (metric === 'imported_fuel_share') {
+                        return `${(value * 100).toFixed(1)}%`;
+                    }
+                    return value.toLocaleString();
+                };
+
+                // Show last 5 months
+                const recentMonths = months.slice(-5);
+                const recentValues = monthlyValues.slice(-5);
+
+                let cardsHTML = '';
+                recentMonths.forEach((month, idx) => {
+                    cardsHTML += `
+                        <div class="metric-card">
+                            <div class="metric-label">${month}</div>
+                            <div class="metric-value">${formatValue(recentValues[idx])}</div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('metricCards').innerHTML = cardsHTML;
+                return;
+            }
+
+            // For other metrics, show regular statistics
+            const values = data.map(d => d[metric]).filter(v => !isNaN(v));
+            const mean = d3.mean(values);
+            const max = d3.max(values);
+            const min = d3.min(values);
+
+            const formatValue = (value) => {
+                if (metric === 'circular_debt') {
+                    return `₨${(value / 1000000000).toFixed(1)}B`;
+                }
+                if (metric === 'imported_fuel_share') {
+                    return `${(value * 100).toFixed(1)}%`;
+                }
+                if (metric.includes('loss')) {
+                    return `${(value * 100).toFixed(1)}%`;
+                }
+                return value.toLocaleString();
+            };
+
             document.getElementById('metricCards').innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-label">Current Month</div>
+                    <div class="metric-value">${formatValue(values[values.length-1])}</div>
+                </div>
                 <div class="metric-card">
                     <div class="metric-label">Average</div>
                     <div class="metric-value">${formatValue(mean)}</div>
@@ -1061,10 +1151,24 @@
         }
 
         function updateCharts() {
-            updateBarChart();
-            updateScatterPlot();
-            updateTimeSeriesChart();
-            updateDistributionChart();
+            const metric = document.getElementById('metric').value;
+            
+            // For aggregated metrics, only show time series
+            if (metric === 'circular_debt' || metric === 'imported_fuel_share') {
+                updateTimeSeriesChart();
+                // Clear other charts
+                Plotly.purge('barChart');
+                Plotly.purge('scatterPlot');
+                Plotly.purge('distributionChart');
+                document.getElementById('barChart').innerHTML = '<div style="padding: 50px; text-align: center; color: #666;">Bar chart not applicable for aggregated metrics</div>';
+                document.getElementById('scatterPlot').innerHTML = '<div style="padding: 50px; text-align: center; color: #666;">Scatter plot not applicable for aggregated metrics</div>';
+                document.getElementById('distributionChart').innerHTML = '<div style="padding: 50px; text-align: center; color: #666;">Distribution not applicable for aggregated metrics</div>';
+            } else {
+                updateBarChart();
+                updateScatterPlot();
+                updateTimeSeriesChart();
+                updateDistributionChart();
+            }
         }
 
         function updateBarChart() {
@@ -1077,7 +1181,9 @@
                 'mth_unit_recieved_dummy': 'Units Received',
                 'mth_unit_billed_dummy': 'Units Billed',
                 'assessment_dummy': 'Assessment',
-                'payment_dummy': 'Payment'
+                'payment_dummy': 'Payment',
+                'circular_debt': 'Circular Debt',
+                'imported_fuel_share': 'Share of Imported Fuel'
             };
 
             const metricName = metricDisplayNames[metric] || metric;
@@ -1087,9 +1193,12 @@
                 .sort((a, b) => b[metric] - a[metric])
                 .slice(0, 15);
 
-            // Convert to percentage if it's a loss metric
+            // Convert to appropriate display format
             const yValues = topData.map(d => {
-                if (metric.includes('loss')) {
+                if (metric === 'circular_debt') {
+                    return d[metric] / 1000000000; // Convert to billions
+                }
+                if (metric === 'imported_fuel_share' || metric.includes('loss')) {
                     return d[metric] * 100;
                 }
                 return d[metric];
@@ -1105,7 +1214,12 @@
                 }
             };
 
-            const yAxisTitle = metric.includes('loss') ? `${metricName} (%)` : metricName;
+            let yAxisTitle = metricName;
+            if (metric === 'circular_debt') {
+                yAxisTitle = `${metricName} (Billions PKR)`;
+            } else if (metric === 'imported_fuel_share' || metric.includes('loss')) {
+                yAxisTitle = `${metricName} (%)`;
+            }
 
             const layout = {
                 title: `Top 15 ${adminLevel.toUpperCase()}s by ${metricName}`,
@@ -1150,19 +1264,112 @@
                 'mth_unit_recieved_dummy': 'Units Received',
                 'mth_unit_billed_dummy': 'Units Billed',
                 'assessment_dummy': 'Assessment',
-                'payment_dummy': 'Payment'
+                'payment_dummy': 'Payment',
+                'circular_debt': 'Circular Debt',
+                'imported_fuel_share': 'Share of Imported Fuel'
             };
 
             const metricName = metricDisplayNames[metric] || metric;
             const isLossMetric = metric.includes('loss');
-            const yAxisTitle = isLossMetric ? `${metricName} (%)` : metricName;
+            const isPercentMetric = metric === 'imported_fuel_share' || isLossMetric;
+            const isCurrencyMetric = metric === 'circular_debt';
+            const isAggregatedMetric = metric === 'circular_debt' || metric === 'imported_fuel_share';
             
+            let yAxisTitle = metricName;
+            if (isCurrencyMetric) {
+                yAxisTitle = `${metricName} (Billions PKR)`;
+            } else if (isPercentMetric) {
+                yAxisTitle = `${metricName} (%)`;
+            }
+            
+            // For aggregated metrics, always show time series with 3-month moving average
+            if (isAggregatedMetric) {
+                const monthlyData = d3.group(rawData, d => d.month);
+                const months = Array.from(monthlyData.keys()).sort((a, b) => {
+                    const [aYear, aMonth] = a.split('-');
+                    const [bYear, bMonth] = b.split('-');
+                    const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                        'July', 'August', 'September', 'October', 'November', 'December'];
+                    if (aYear !== bYear) return aYear.localeCompare(bYear);
+                    return monthOrder.indexOf(aMonth) - monthOrder.indexOf(bMonth);
+                });
+
+                const monthlyAvgs = months.map(month => {
+                    const monthData = monthlyData.get(month);
+                    const avg = d3.mean(monthData, d => d[metric]);
+                    if (isCurrencyMetric) return avg / 1000000000;
+                    if (isPercentMetric) return avg * 100;
+                    return avg;
+                });
+
+                // Calculate 3-month moving average
+                const movingAvg = [];
+                for (let i = 0; i < monthlyAvgs.length; i++) {
+                    if (i < 2) {
+                        // For first two months, use available data
+                        movingAvg.push(d3.mean(monthlyAvgs.slice(0, i + 1)));
+                    } else {
+                        // Calculate 3-month average
+                        movingAvg.push(d3.mean(monthlyAvgs.slice(i - 2, i + 1)));
+                    }
+                }
+
+                const trace1 = {
+                    x: months,
+                    y: monthlyAvgs,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Monthly Value',
+                    line: { color: '#2E7D32', width: 2, dash: 'dot' },
+                    marker: { size: 6, opacity: 0.6 }
+                };
+
+                const trace2 = {
+                    x: months,
+                    y: movingAvg,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: '3-Month Moving Average',
+                    line: { color: '#1B5E20', width: 3 },
+                    marker: { size: 8 }
+                };
+
+                const layout = {
+                    title: `${metricName} - Monthly Trend with 3-Month Moving Average`,
+                    xaxis: { 
+                        title: 'Month',
+                        tickangle: -45
+                    },
+                    yaxis: { title: yAxisTitle },
+                    showlegend: true,
+                    legend: {
+                        x: 0.02,
+                        y: 0.98,
+                        bgcolor: 'rgba(255,255,255,0.8)',
+                        bordercolor: '#333',
+                        borderwidth: 1
+                    }
+                };
+
+                Plotly.newPlot('timeSeriesChart', [trace1, trace2], layout, {responsive: true});
+                return;
+            }
+            
+            // For other metrics, show regular time series
             if (monthFilter) {
                 // Show current vs all time if filtered
                 const allData = aggregateData(rawData, document.getElementById('adminLevel').value);
                 
-                const allValues = allData.map(d => isLossMetric ? d[metric] * 100 : d[metric]);
-                const currentValues = aggregatedData.map(d => isLossMetric ? d[metric] * 100 : d[metric]);
+                const allValues = allData.map(d => {
+                    if (isCurrencyMetric) return d[metric] / 1000000000;
+                    if (isPercentMetric) return d[metric] * 100;
+                    return d[metric];
+                });
+                const currentValues = aggregatedData.map(d => {
+                    if (isCurrencyMetric) return d[metric] / 1000000000;
+                    if (isPercentMetric) return d[metric] * 100;
+                    return d[metric];
+                });
                 
                 const trace1 = {
                     y: allValues,
@@ -1204,7 +1411,9 @@
                 const monthlyAvgs = months.map(month => {
                     const monthData = monthlyData.get(month);
                     const avg = d3.mean(monthData, d => d[metric]);
-                    return isLossMetric ? avg * 100 : avg;
+                    if (isCurrencyMetric) return avg / 1000000000;
+                    if (isPercentMetric) return avg * 100;
+                    return avg;
                 });
 
                 const trace = {
@@ -1236,15 +1445,27 @@
                 'mth_unit_recieved_dummy': 'Units Received',
                 'mth_unit_billed_dummy': 'Units Billed',
                 'assessment_dummy': 'Assessment',
-                'payment_dummy': 'Payment'
+                'payment_dummy': 'Payment',
+                'circular_debt': 'Circular Debt',
+                'imported_fuel_share': 'Share of Imported Fuel'
             };
 
             const metricName = metricDisplayNames[metric] || metric;
             const isLossMetric = metric.includes('loss');
+            const isPercentMetric = metric === 'imported_fuel_share' || isLossMetric;
+            const isCurrencyMetric = metric === 'circular_debt';
             
-            // Convert to percentage if it's a loss metric
-            const displayValues = isLossMetric ? values.map(v => v * 100) : values;
-            const xAxisTitle = isLossMetric ? `${metricName} (%)` : metricName;
+            // Convert to appropriate display format
+            let displayValues = values;
+            let xAxisTitle = metricName;
+            
+            if (isCurrencyMetric) {
+                displayValues = values.map(v => v / 1000000000);
+                xAxisTitle = `${metricName} (Billions PKR)`;
+            } else if (isPercentMetric) {
+                displayValues = values.map(v => v * 100);
+                xAxisTitle = `${metricName} (%)`;
+            }
 
             const trace = {
                 x: displayValues,
@@ -1273,6 +1494,12 @@
 
             const adminLevel = document.getElementById('adminLevel').value;
             const metric = document.getElementById('metric').value;
+
+            // Skip map rendering for aggregated metrics (no geographic variation)
+            if (metric === 'circular_debt' || metric === 'imported_fuel_share') {
+                console.log('Map not displayed for aggregated metrics');
+                return;
+            }
 
             if (!geoData[adminLevel]) {
                 console.log('No geographic data available for', adminLevel);

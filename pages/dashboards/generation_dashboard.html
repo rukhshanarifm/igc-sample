@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generation - Real Time Dashboards</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: #f5f7f6; }
+        .header { background: linear-gradient(135deg,#1B5E20 0%,#2E7D32 100%); color: white; padding: 20px; border-radius: 8px; display:flex; align-items:center; gap:20px; }
+        .header h1 { margin:0; font-size:1.6rem; }
+        .nav { margin-top: 12px; display:flex; gap:12px; }
+        .nav a { color: white; text-decoration: none; background: rgba(255,255,255,0.08); padding:8px 12px; border-radius:6px; }
+        .container { margin-top: 20px; display:grid; grid-template-columns: 1fr; gap: 18px; }
+        .chart-box { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s ease; }
+        .chart-title { font-weight: 700; margin-bottom: 8px; color:#333; }
+        @media (min-width:900px) { .container { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Generation — Real Time Dashboards</h1>
+            <div style="font-size:0.95rem; opacity:0.9">Time series only — Subsidies, Utilization, Feeders with load management & Tariff</div>
+            <div class="nav">
+                <a href="../../index.html">Home</a>
+                <a href="../sectors/power/power_sector.html">Power Sector</a>
+                <a href="power_dashboards.html">Real Time Dashboards</a>
+                <a href="td_loss_dashboard.html">Transmission & Distribution</a>
+                <a href="generation_dashboard.html" style="background: rgba(255,255,255,0.16);">Generation</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="chart-box" id="subsidies-section">
+            <div class="chart-title">Subsidies (PKR Billion)</div>
+            <div id="subsidiesChart" style="height:320px;"></div>
+        </div>
+
+        <div class="chart-box" id="utilization-section">
+            <div class="chart-title">Utilization of Average Available Capacity (%, year)</div>
+            <div id="utilizationChart" style="height:320px;"></div>
+        </div>
+
+        <div class="chart-box" id="feeders-section">
+            <div class="chart-title">% of Feeders with Load Management &gt; 3 hours</div>
+            <div id="feedersChart" style="height:320px;"></div>
+        </div>
+
+        <div class="chart-box" id="tariff-section">
+            <div class="chart-title">Tariff (PKR)</div>
+            <div id="tariffChart" style="height:320px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Generate monthly series for the past 36 months
+        function generateMonthlyLabels(monthsBack = 36) {
+            const labels = [];
+            const now = new Date();
+            for (let i = monthsBack - 1; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const month = d.toLocaleString('en-US', { month: 'short' });
+                const year = String(d.getFullYear()).slice(-2);
+                labels.push(`${year}-${month}`);
+            }
+            return labels;
+        }
+
+        function randomRange(min, max) { return Math.random() * (max - min) + min; }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const months = generateMonthlyLabels(36);
+
+            // Subsidies: 50 - 300 PKR Billion
+            const subsidies = months.map(() => +(randomRange(50, 300)).toFixed(1));
+
+            // Utilization: 50 - 95 %
+            const utilization = months.map(() => +(randomRange(50, 95)).toFixed(1));
+
+            // Feeders with load mgmt >3h: 2 - 30 %
+            const feeders = months.map(() => +(randomRange(2, 30)).toFixed(1));
+
+            // Tariff: 12 - 30 PKR
+            const tariff = months.map(() => +(randomRange(12, 30)).toFixed(2));
+
+            const commonLayout = (title, yTitle) => ({
+                margin: {t:40, b:40, l:60, r:20},
+                xaxis: { title: 'Month', tickangle: -45 },
+                yaxis: { title: yTitle },
+                title: title,
+            });
+
+            Plotly.newPlot('subsidiesChart', [{ x: months, y: subsidies, type: 'scatter', mode: 'lines+markers', line: {color: '#1f77b4'} }], commonLayout('Subsidies (PKR Billion)', 'PKR Billion'), {responsive:true});
+
+            Plotly.newPlot('utilizationChart', [{ x: months, y: utilization, type: 'scatter', mode: 'lines+markers', line: {color: '#2ca02c'} }], commonLayout('Utilization of Average Available Capacity','%'), {responsive:true});
+
+            Plotly.newPlot('feedersChart', [{ x: months, y: feeders, type: 'scatter', mode: 'lines+markers', line: {color: '#ff7f0e'} }], commonLayout('% Feeders with Load Management > 3 hrs','%'), {responsive:true});
+
+            Plotly.newPlot('tariffChart', [{ x: months, y: tariff, type: 'scatter', mode: 'lines+markers', line: {color: '#d62728'} }], commonLayout('Tariff (PKR)','PKR'), {responsive:true});
+            
+            // Check for URL parameters to scroll to specific metric
+            const urlParams = new URLSearchParams(window.location.search);
+            const metricParam = urlParams.get('metric');
+            
+            if (metricParam) {
+                let sectionId = null;
+                
+                // Map metric parameter to section ID
+                switch(metricParam) {
+                    case 'subsidies':
+                        sectionId = 'subsidies-section';
+                        break;
+                    case 'utilization':
+                        sectionId = 'utilization-section';
+                        break;
+                    case 'feeders_load_mgmt':
+                        sectionId = 'feeders-section';
+                        break;
+                    case 'tariff':
+                        sectionId = 'tariff-section';
+                        break;
+                }
+                
+                // Scroll to the section and highlight it
+                if (sectionId) {
+                    setTimeout(() => {
+                        const section = document.getElementById(sectionId);
+                        if (section) {
+                            section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            section.style.border = '3px solid #2E7D32';
+                            section.style.boxShadow = '0 4px 20px rgba(46, 125, 50, 0.3)';
+                            
+                            // Remove highlight after 3 seconds
+                            setTimeout(() => {
+                                section.style.border = '';
+                                section.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
+                            }, 3000);
+                        }
+                    }, 500);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

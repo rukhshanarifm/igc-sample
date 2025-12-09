@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device        .dashboard-table thead th {
+            background: #f8f9fa;
+            color: #2e7d32;
+            padding: 8px 6px;
+            font-size: 0.85em;
+            font-weight: 700;
+            border: 1px solid #e8f5e9;
+            border-bottom: 3px solid #2e7d32;
+            text-align: center;
+            vertical-align: bottom;
+        }tial-scale=1.0">
+    <title>Power Sector Real Time Dashboards - Pakistan Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8faf9 0%, #f0f5f3 100%);
+            min-height: 100vh;
+            color: #2d3e2f;
+        }
+
+        .disclaimer-bar {
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A5A 100%);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95em;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #1b5e20;
+            padding: 25px 20px;
+            box-shadow: 0 2px 8px rgba(27, 94, 32, 0.08);
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-container {
+            width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-text h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #666 0%, #444 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-title {
+            font-size: 2.2em;
+            color: #1B5E20;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.15em;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .dashboard-table thead th {
+            background: #f8f9fa;
+            color: #2e7d32;
+            padding: 12px 8px;
+            font-size: 0.9em;
+            font-weight: 700;
+            border: 2px solid #e8f5e9;
+            border-bottom: 4px solid #2e7d32;
+            text-align: center;
+            vertical-align: bottom;
+        }
+
+        .dashboard-table thead th.current-period {
+            border: 3px solid #c62828;
+            background: #ffebee;
+        }
+
+        .dashboard-table tbody td {
+            border: 1px solid #e0e0e0;
+            vertical-align: middle;
+        }
+
+        .dashboard-card-cell {
+            padding: 10px;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            vertical-align: middle;
+            width: 18%;
+        }
+
+        .table-row:has(.dashboard-card-cell) .metrics-cell {
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .table-row:not(:has(.dashboard-card-cell)) .metrics-cell {
+            border-top: none;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 8px;
+            padding: 12px 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid #e8f5e9;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(27, 94, 32, 0.15);
+            border-color: #a5d6a7;
+        }
+
+        .dashboard-icon {
+            font-size: 2.5em;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .dashboard-card h3 {
+            font-size: 1.25em;
+            color: #2e7d32;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .dashboard-card p {
+            color: #666;
+            font-size: 0.75em;
+            line-height: 1.3;
+        }
+
+        .metrics-cell {
+            padding: 6px 8px;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            vertical-align: middle;
+            width: 22%;
+        }
+
+        .metric-row {
+            background: white;
+            color: #2e7d32;
+            padding: 8px 12px;
+            border: 1px solid #e8f5e9;
+            border-left: 3px solid #2e7d32;
+            font-size: 0.78em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-row:hover {
+            background: #e8f5e9;
+            border-left-width: 5px;
+            transform: translateX(2px);
+            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.15);
+        }
+
+        .data-cell {
+            padding: 10px 8px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 0.85em;
+            font-weight: 600;
+            width: 10%;
+        }
+
+        .data-cell.on-track {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .data-cell.minor-delay {
+            background: repeating-linear-gradient(
+                45deg,
+                #CDDC39,
+                #CDDC39 10px,
+                #C0CA33 10px,
+                #C0CA33 20px
+            );
+            color: #1B5E20;
+        }
+
+        .data-cell.high-risk {
+            background: repeating-linear-gradient(
+                45deg,
+                #FF9800,
+                #FF9800 10px,
+                #F57C00 10px,
+                #F57C00 20px
+            );
+            color: white;
+        }
+
+        .data-cell.off-track {
+            background: #f44336;
+            color: white;
+        }
+
+        .data-cell.new-target {
+            background: #FFEB3B;
+            color: #1B5E20;
+            border: 2px solid #000;
+        }
+
+        .data-cell.current {
+            border: 2px solid #c62828;
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .metric-row {
+            background: white;
+            color: #2e7d32;
+            padding: 20px 30px;
+            border: 2px solid #e8f5e9;
+            border-left: 5px solid #2e7d32;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .metric-row:hover {
+            background: #e8f5e9;
+            border-left-width: 8px;
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.15);
+        }
+
+        .footer {
+            background: #1B5E20;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+
+        .legend {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            border: 2px solid #e8f5e9;
+        }
+
+        .legend-title {
+            font-size: 1.05em;
+            font-weight: 700;
+            color: #2e7d32;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.88em;
+        }
+
+        .legend-color {
+            width: 35px;
+            height: 25px;
+            border-radius: 4px;
+            border: 2px solid #ddd;
+        }
+
+        .legend-color.on-track {
+            background: #4CAF50;
+        }
+
+        .legend-color.minor-delay {
+            background: repeating-linear-gradient(
+                45deg,
+                #CDDC39,
+                #CDDC39 5px,
+                #C0CA33 5px,
+                #C0CA33 10px
+            );
+        }
+
+        .legend-color.high-risk {
+            background: repeating-linear-gradient(
+                45deg,
+                #FF9800,
+                #FF9800 5px,
+                #F57C00 5px,
+                #F57C00 10px
+            );
+        }
+
+        .legend-color.off-track {
+            background: #f44336;
+        }
+
+        .legend-color.new-target {
+            background: #FFEB3B;
+            border: 2px solid #000;
+        }
+
+        .legend-color.current {
+            background: #ffebee;
+            border: 3px solid #c62828;
+        }
+
+        @media (max-width: 1200px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .header-text h1 {
+                font-size: 2em;
+            }
+            .page-title {
+                font-size: 1.8em;
+            }
+            .dashboard-table {
+                display: block;
+                overflow-x: auto;
+            }
+            .table-header,
+            .table-row {
+                display: table-row;
+            }
+            .dashboard-card-cell {
+                width: 180px;
+                min-width: 180px;
+            }
+            .metrics-cell {
+                width: 280px;
+                min-width: 280px;
+            }
+            .data-cell {
+                width: 100px;
+                min-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="disclaimer-bar">
+        ⚠️ Disclaimer: This product is a conceptual mockup based on fictitious data. It does not reflect official information and is not endorsed by the Government of Pakistan
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="https://crystalpng.com/wp-content/uploads/2025/04/government-of-pakistan-logo.png" alt="Government of Pakistan" style="width: 85px; height: 85px; object-fit: contain;">
+            </div>
+            <div class="header-text">
+                <h1>Power Sector Reform Tracking</h1>
+                <p>Real Time Dashboards</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <a href="../sectors/power/power_sector.html" class="nav-button">← Back to Power Sector</a>
+        
+        <div class="page-title">Real Time Dashboards for Power Sector Reforms</div>
+        <div class="page-subtitle">Select a dashboard to explore power sector metrics and analytics</div>
+
+        <div class="legend">
+            <div class="legend-title">Performance Status Legend</div>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-color on-track"></div>
+                    <span>On Track</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color minor-delay"></div>
+                    <span>Minor Delays</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color high-risk"></div>
+                    <span>High Risk</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color off-track"></div>
+                    <span>Off Track</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color current"></div>
+                    <span>Current Period</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color new-target"></div>
+                    <span>New Targets</span>
+                </div>
+            </div>
+        </div>
+
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Area</th>
+                    <th>Outcome Indicators</th>
+                    <th>Baseline<br>June 2024</th>
+                    <th>Target June<br>2025</th>
+                    <th>Performance<br>June 2025</th>
+                    <th class="current-period">Performance<br>July-Sep 2025</th>
+                    <th>Target June<br>2026</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            <!-- T&D Dashboard - Row 1: Circular debt -->
+            <tr>
+                <td class="dashboard-card-cell" rowspan="4">
+                    <a href="td_loss_dashboard.html" class="dashboard-card">
+                        <span class="dashboard-icon">⚡</span>
+                        <h3>Transmission & Distribution</h3>
+                        <p>Comprehensive analysis of T&D losses, recovery rates, network performance, and infrastructure analytics.</p>
+                    </a>
+                </td>
+                <td class="metrics-cell">
+                    <a href="td_loss_dashboard.html?metric=circular_debt" class="metric-row">
+                        <strong>Circular debt</strong>, PKR Bn
+                    </a>
+                </td>
+                <td class="data-cell">2,450</td>
+                <td class="data-cell on-track">2,200</td>
+                <td class="data-cell minor-delay">2,280</td>
+                <td class="data-cell current">2,310</td>
+                <td class="data-cell new-target">2,000</td>
+            </tr>
+
+            <!-- T&D Dashboard - Row 2: Recovery -->
+            <tr>
+                <td class="metrics-cell">
+                    <a href="td_loss_dashboard.html?metric=recovery" class="metric-row">
+                        <strong>Recovery</strong>, %
+                    </a>
+                </td>
+                <td class="data-cell">88.5</td>
+                <td class="data-cell on-track">91.0</td>
+                <td class="data-cell on-track">90.8</td>
+                <td class="data-cell current">90.2</td>
+                <td class="data-cell new-target">93.5</td>
+            </tr>
+
+            <!-- T&D Dashboard - Row 3: T&D losses -->
+            <tr>
+                <td class="metrics-cell">
+                    <a href="td_loss_dashboard.html?metric=td_loss" class="metric-row">
+                        <strong>T&D losses</strong>, %
+                    </a>
+                </td>
+                <td class="data-cell">17.2</td>
+                <td class="data-cell on-track">15.5</td>
+                <td class="data-cell minor-delay">16.1</td>
+                <td class="data-cell current">16.5</td>
+                <td class="data-cell new-target">14.0</td>
+            </tr>
+
+            <!-- T&D Dashboard - Row 4: Share of imported fuel -->
+            <tr>
+                <td class="metrics-cell">
+                    <a href="td_loss_dashboard.html?metric=imported_fuel_share" class="metric-row">
+                        <strong>Share of imported fuel in generation mix</strong>, %
+                    </a>
+                </td>
+                <td class="data-cell">65.3</td>
+                <td class="data-cell on-track">58.0</td>
+                <td class="data-cell high-risk">62.5</td>
+                <td class="data-cell current">63.8</td>
+                <td class="data-cell new-target">52.0</td>
+            </tr>
+
+            <!-- Generation Dashboard - Row 1: Subsidies -->
+            <tr>
+                <td class="dashboard-card-cell" rowspan="4">
+                    <a href="generation_dashboard.html" class="dashboard-card">
+                        <span class="dashboard-icon">🔋</span>
+                        <h3>Generation</h3>
+                        <p>Monitor power generation metrics including subsidies, capacity utilization, load management, and tariff trends.</p>
+                    </a>
+                </td>
+                <td class="metrics-cell">
+                    <a href="generation_dashboard.html?metric=subsidies" class="metric-row">
+                        <strong>Subsidies</strong>, PKR Bn
+                    </a>
+                </td>
+                <td class="data-cell">285</td>
+                <td class="data-cell on-track">240</td>
+                <td class="data-cell on-track">248</td>
+                <td class="data-cell current">255</td>
+                <td class="data-cell new-target">210</td>
+            </tr>
+
+            <!-- Generation Dashboard - Row 2: Utilization -->
+            <tr>
+                <td class="metrics-cell">
+                    <a href="generation_dashboard.html?metric=utilization" class="metric-row">
+                        <strong>Utilization of average available capacity for the year</strong>, %
+                    </a>
+                </td>
+                <td class="data-cell">68.2</td>
+                <td class="data-cell on-track">75.0</td>
+                <td class="data-cell minor-delay">72.8</td>
+                <td class="data-cell current">71.5</td>
+                <td class="data-cell new-target">80.0</td>
+            </tr>
+
+            <!-- Generation Dashboard - Row 3: Feeders with load management -->
+            <tr>
+                <td class="metrics-cell">
+                    <a href="generation_dashboard.html?metric=feeders_load_mgmt" class="metric-row">
+                        <strong>% of Feeders with load management more than 3 hrs</strong>
+                    </a>
+                </td>
+                <td class="data-cell">18.5</td>
+                <td class="data-cell on-track">12.0</td>
+                <td class="data-cell high-risk">14.2</td>
+                <td class="data-cell current">15.3</td>
+                <td class="data-cell new-target">8.0</td>
+            </tr>
+
+            <!-- Generation Dashboard - Row 4: Tariff -->
+            <tr>
+                <td class="metrics-cell">
+                    <a href="generation_dashboard.html?metric=tariff" class="metric-row">
+                        <strong>Tariff</strong>, PKR
+                    </a>
+                </td>
+                <td class="data-cell">24.80</td>
+                <td class="data-cell on-track">22.50</td>
+                <td class="data-cell on-track">22.95</td>
+                <td class="data-cell current">23.40</td>
+                <td class="data-cell new-target">21.00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 Government of Pakistan - Information Systems Department</p>
+        <p>All data is for demonstration purposes only</p>
+    </div>
+</body>
+</html>
