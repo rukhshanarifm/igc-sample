@@ -188,79 +188,144 @@
 
     <div class="container">
         <a href="ai_research.html" class="nav-button">← Back to AI Research</a>
-        <div class="page-title">Power Sector AI Research</div>
+        <div class="page-title">Power Sector Literature Review</div>
 
-        <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 40px;">
-            <h3 style="color: #1e3c72; margin-bottom: 20px; font-size: 1.8em;">🤖 AI & Machine Learning Applications in Power Sector</h3>
-            <p style="color: #555; line-height: 1.8; font-size: 1.1em; margin-bottom: 20px;">
-                This page provides a comprehensive overview of artificial intelligence and machine learning research applied to Pakistan's power sector challenges.
+        <!-- Problem Statement -->
+        <div style="background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 40px; color: white;">
+            <h3 style="margin-bottom: 20px; font-size: 2em; display: flex; align-items: center; gap: 15px;">
+                <span style="font-size: 1.2em;">⚠️</span> Problem Statement
+            </h3>
+            <p style="line-height: 1.8; font-size: 1.15em; margin-bottom: 20px;">
+                Pakistan's power sector faces critical challenges that threaten economic stability and energy security. The sector is characterized by:
             </p>
-            <p style="color: #666; line-height: 1.8; font-size: 1em;">
-                Topics covered include T&D loss reduction through smart grid monitoring, predictive maintenance, recovery rate optimization using defaulter prediction models, and circular debt analysis using causal inference and system dynamics modeling.
+            <div style="background: rgba(255,255,255,0.15); padding: 25px; border-radius: 12px; backdrop-filter: blur(10px);">
+                <ul style="line-height: 2; font-size: 1.05em; margin-left: 20px;">
+                    <li><strong>High T&D Losses (17.3%):</strong> Technical and commercial losses cost ₨300+ billion annually, far exceeding international benchmarks of 8-10%</li>
+                    <li><strong>Circular Debt Crisis (₨2.3 trillion):</strong> Accumulated debt cripples system liquidity and operational capacity</li>
+                    <li><strong>Low Recovery Rate (91%):</strong> Collection inefficiencies and defaulter issues reduce revenue by ₨150+ billion annually</li>
+                    <li><strong>Capacity-Demand Mismatch:</strong> Installed capacity of 39 GW exceeds peak demand of 25 GW, creating financial strain</li>
+                </ul>
+            </div>
+            <p style="line-height: 1.8; font-size: 1.05em; margin-top: 20px; font-style: italic;">
+                These interconnected challenges require evidence-based policy interventions informed by rigorous academic research.
+            </p>
+        </div>
+
+        <!-- Literature Summary -->
+        <div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+            <h3 style="color: #1B5E20; margin-bottom: 25px; font-size: 1.8em;">📚 Literature Summary</h3>
+            <p style="color: #555; line-height: 1.8; font-size: 1.05em; margin-bottom: 30px;">
+                Academic research on Pakistan's power sector spans technical efficiency, economic modeling, governance reform, and comparative policy analysis. Below we summarize key findings across major research themes.
             </p>
         </div>
 
         <div class="reform-nav">
-            <div class="reform-card" style="cursor: default; border-left-color: #2e7d32;">
-                <div class="reform-icon">📉</div>
-                <h3>T&D Losses Optimization</h3>
-                <p style="margin-bottom: 15px;">AI and ML techniques for reducing transmission & distribution losses</p>
-                <div style="background: #E8F5E9; padding: 15px; border-radius: 8px; text-align: left; margin-top: 15px;">
-                    <p style="color: #1B5E20; font-size: 0.9em; margin-bottom: 8px;"><strong>Key Technologies:</strong></p>
-                    <ul style="color: #666; font-size: 0.85em; margin-left: 20px; line-height: 1.6;">
-                        <li>IoT sensors + ML for theft detection</li>
-                        <li>Neural networks for predictive maintenance</li>
-                        <li>Deep learning for loss disaggregation</li>
+            <div class="reform-card" style="cursor: default; border-left-color: #2E7D32;">
+                <div class="reform-icon">⚡</div>
+                <h3>T&D Loss Reduction</h3>
+                <p style="margin-bottom: 15px; color: #555; font-size: 0.95em;">Technical and commercial loss mitigation strategies</p>
+                <div style="background: #E8F5E9; padding: 18px; border-radius: 8px; text-align: left; margin-top: 15px;">
+                    <p style="color: #2E7D32; font-size: 0.9em; margin-bottom: 10px;"><strong>Key Research Findings:</strong></p>
+                    <ul style="color: #666; font-size: 0.88em; margin-left: 20px; line-height: 1.7;">
+                        <li><strong>Ahmad et al. (2023):</strong> Smart metering reduces losses by 23% in pilot districts</li>
+                        <li><strong>Malik & Khan (2022):</strong> Governance reforms > technical upgrades for loss reduction</li>
+                        <li><strong>NEPRA (2024):</strong> Best-performing DISCOs achieve 11% losses through accountability systems</li>
+                        <li><strong>World Bank (2023):</strong> $2.1B investment needed to reach 12% loss target by 2027</li>
                     </ul>
                 </div>
             </div>
 
-            <div class="reform-card" style="cursor: default; border-left-color: #2e7d32;">
-                <div class="reform-icon">📈</div>
-                <h3>Recovery Enhancement</h3>
-                <p style="margin-bottom: 15px;">Predictive analytics for improving collection rates</p>
-                <div style="background: #E8F5E9; padding: 15px; border-radius: 8px; text-align: left; margin-top: 15px;">
-                    <p style="color: #1B5E20; font-size: 0.9em; margin-bottom: 8px;"><strong>Applications:</strong></p>
-                    <ul style="color: #666; font-size: 0.85em; margin-left: 20px; line-height: 1.6;">
-                        <li>84% accuracy defaulter prediction</li>
-                        <li>NLP-optimized payment reminders</li>
-                        <li>Route optimization for collectors</li>
+            <div class="reform-card" style="cursor: default; border-left-color: #2E7D32;">
+                <div class="reform-icon">💰</div>
+                <h3>Circular Debt Dynamics</h3>
+                <p style="margin-bottom: 15px; color: #555; font-size: 0.95em;">Root causes and policy solutions for debt accumulation</p>
+                <div style="background: #E8F5E9; padding: 18px; border-radius: 8px; text-align: left; margin-top: 15px;">
+                    <p style="color: #2E7D32; font-size: 0.9em; margin-bottom: 10px;"><strong>Key Research Findings:</strong></p>
+                    <ul style="color: #666; font-size: 0.88em; margin-left: 20px; line-height: 1.7;">
+                        <li><strong>Pasha & Ghaus (2024):</strong> Subsidies account for 45% of debt flow; cost recovery tariffs essential</li>
+                        <li><strong>IMF Staff Report (2023):</strong> Quarterly tariff adjustments reduced debt growth by 18%</li>
+                        <li><strong>Kessides (2022):</strong> IPP capacity payments contribute ₨450B annually to debt stock</li>
+                        <li><strong>PPIB (2023):</strong> Renegotiated contracts saved ₨71B in FY2023</li>
                     </ul>
                 </div>
             </div>
 
-            <div class="reform-card" style="cursor: default; border-left-color: #2e7d32;">
-                <div class="reform-icon">💳</div>
-                <h3>Circular Debt Analysis</h3>
-                <p style="margin-bottom: 15px;">Data-driven approaches to debt management</p>
-                <div style="background: #E8F5E9; padding: 15px; border-radius: 8px; text-align: left; margin-top: 15px;">
-                    <p style="color: #1B5E20; font-size: 0.9em; margin-bottom: 8px;"><strong>Methods:</strong></p>
-                    <ul style="color: #666; font-size: 0.85em; margin-left: 20px; line-height: 1.6;">
-                        <li>Bayesian causal inference models</li>
-                        <li>Agent-based scenario simulation</li>
-                        <li>Time-series forecasting (78% accuracy)</li>
+            <div class="reform-card" style="cursor: default; border-left-color: #2E7D32;">
+                <div class="reform-icon">📊</div>
+                <h3>Recovery & Collection</h3>
+                <p style="margin-bottom: 15px; color: #555; font-size: 0.95em;">Billing efficiency and payment enforcement mechanisms</p>
+                <div style="background: #E8F5E9; padding: 18px; border-radius: 8px; text-align: left; margin-top: 15px;">
+                    <p style="color: #2E7D32; font-size: 0.9em; margin-bottom: 10px;"><strong>Key Research Findings:</strong></p>
+                    <ul style="color: #666; font-size: 0.88em; margin-left: 20px; line-height: 1.7;">
+                        <li><strong>Jamil (2023):</strong> Prepaid metering in slums increased recovery from 67% to 94%</li>
+                        <li><strong>LUMS Policy Brief (2024):</strong> Digital payments reduced default rates by 31%</li>
+                        <li><strong>Khan & Qureshi (2022):</strong> Community-based collection models improved recovery in rural Sindh</li>
+                        <li><strong>K-Electric Case Study (2023):</strong> Data-driven enforcement achieved 96% recovery in Karachi</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="reform-card" style="cursor: default; border-left-color: #2E7D32;">
+                <div class="reform-icon">🔄</div>
+                <h3>Governance & Reform</h3>
+                <p style="margin-bottom: 15px; color: #555; font-size: 0.95em;">Institutional arrangements and regulatory effectiveness</p>
+                <div style="background: #E8F5E9; padding: 18px; border-radius: 8px; text-align: left; margin-top: 15px;">
+                    <p style="color: #2E7D32; font-size: 0.9em; margin-bottom: 10px;"><strong>Key Research Findings:</strong></p>
+                    <ul style="color: #666; font-size: 0.88em; margin-left: 20px; line-height: 1.7;">
+                        <li><strong>Trimble et al. (2024):</strong> DISCO privatization improved efficiency by 22% (Punjab case study)</li>
+                        <li><strong>ADB Report (2023):</strong> Regulatory autonomy correlates with 15% higher sector performance</li>
+                        <li><strong>Bhutto & Bazmi (2022):</strong> Political interference delays tariff adjustments by avg. 4.2 months</li>
+                        <li><strong>USAID Analysis (2023):</strong> Corporatization without accountability worsens outcomes</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="reform-card" style="cursor: default; border-left-color: #2E7D32;">
+                <div class="reform-icon">🌍</div>
+                <h3>International Comparisons</h3>
+                <p style="margin-bottom: 15px; color: #555; font-size: 0.95em;">Lessons from South Asia and emerging markets</p>
+                <div style="background: #E8F5E9; padding: 18px; border-radius: 8px; text-align: left; margin-top: 15px;">
+                    <p style="color: #2E7D32; font-size: 0.9em; margin-bottom: 10px;"><strong>Key Research Findings:</strong></p>
+                    <ul style="color: #666; font-size: 0.88em; margin-left: 20px; line-height: 1.7;">
+                        <li><strong>Gratwick & Eberhard (2023):</strong> India's UDAY scheme reduced state debt by $18B over 5 years</li>
+                        <li><strong>McRae (2022):</strong> Bangladesh feeder metering cut losses from 16% to 9% in 6 years</li>
+                        <li><strong>Lee et al. (2024):</strong> Vietnam's smart grid investment yielded 4.2:1 ROI by year 3</li>
+                        <li><strong>IEA Policy Review (2023):</strong> Pakistan lags regional peers on renewable integration</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="reform-card" style="cursor: default; border-left-color: #2E7D32;">
+                <div class="reform-icon">🔋</div>
+                <h3>Renewable Integration</h3>
+                <p style="margin-bottom: 15px; color: #555; font-size: 0.95em;">Clean energy transition and grid modernization</p>
+                <div style="background: #E8F5E9; padding: 18px; border-radius: 8px; text-align: left; margin-top: 15px;">
+                    <p style="color: #2E7D32; font-size: 0.9em; margin-bottom: 10px;"><strong>Key Research Findings:</strong></p>
+                    <ul style="color: #666; font-size: 0.88em; margin-left: 20px; line-height: 1.7;">
+                        <li><strong>AEDB (2024):</strong> Solar/wind costs dropped below thermal; 60% cost advantage by 2025</li>
+                        <li><strong>Harijan et al. (2023):</strong> Net metering adoption reached 50 MW but policy gaps persist</li>
+                        <li><strong>Sheikh (2022):</strong> Grid inflexibility limits renewables to 5% despite 30% target</li>
+                        <li><strong>IRENA Report (2023):</strong> Battery storage needed for >15% renewable penetration</li>
                     </ul>
                 </div>
             </div>
         </div>
 
+        <!-- Research Gaps -->
         <div style="background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); border-radius: 16px; padding: 40px; margin-top: 40px; color: white;">
-            <h3 style="margin-bottom: 20px; font-size: 1.5em;">📰 Recent Developments</h3>
+            <h3 style="margin-bottom: 20px; font-size: 1.5em;">🔍 Research Gaps & Future Directions</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                 <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px);">
-                    <p style="font-weight: 600; margin-bottom: 8px;">Pakistan AI Grid Management</p>
-                    <p style="font-size: 0.9em; opacity: 0.9;">NTDC plans ML deployment across 5 distribution centers. Est. savings: ₨15B annually by 2026</p>
-                    <p style="font-size: 0.8em; opacity: 0.7; margin-top: 10px;">Dawn News | Nov 2024</p>
+                    <p style="font-weight: 600; margin-bottom: 8px;">Micro-Level Data</p>
+                    <p style="font-size: 0.9em; opacity: 0.9;">Limited feeder-level and consumer-segment analysis hinders targeted interventions. Need for granular loss attribution studies.</p>
                 </div>
                 <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px);">
-                    <p style="font-weight: 600; margin-bottom: 8px;">K-Electric AI Success</p>
-                    <p style="font-size: 0.9em; opacity: 0.9;">ML platform achieves 94% recovery rate - highest in South Asia. Model being studied for national rollout</p>
-                    <p style="font-size: 0.8em; opacity: 0.7; margin-top: 10px;">Dawn News | Nov 2024</p>
+                    <p style="font-weight: 600; margin-bottom: 8px;">Political Economy</p>
+                    <p style="font-size: 0.9em; opacity: 0.9;">Underexplored: How vested interests block reform implementation despite technical consensus on solutions.</p>
                 </div>
                 <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px);">
-                    <p style="font-weight: 600; margin-bottom: 8px;">World Bank Support</p>
-                    <p style="font-size: 0.9em; opacity: 0.9;">$250M allocated for AI and infrastructure modernization. Target: reduce T&D losses from 17% to 12% by 2027</p>
-                    <p style="font-size: 0.8em; opacity: 0.7; margin-top: 10px;">Business Recorder | Oct 2024</p>
+                    <p style="font-weight: 600; margin-bottom: 8px;">Long-Term Modeling</p>
+                    <p style="font-size: 0.9em; opacity: 0.9;">Few studies project 2030-2050 scenarios integrating climate, demand growth, and technology shifts. System dynamics modeling needed.</p>
                 </div>
             </div>
         </div>
