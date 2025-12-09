@@ -228,8 +228,8 @@
         .metric-row:hover {
             background: #e8f5e9;
             border-left-width: 5px;
-            transform: translateX(2px);
-            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.15);
+            transform: translateY(-3px) translateX(2px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
         }
 
         .data-cell {
@@ -285,6 +285,29 @@
             border: 2px solid #c62828;
             background: #ffebee;
             color: #c62828;
+        }
+
+        .metrics-cell {
+            transition: all 0.3s ease;
+        }
+
+        .data-cell {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover .metrics-cell {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        tbody tr:hover .data-cell {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        tbody tr:hover .metric-row {
+            background: #e8f5e9;
+            border-left-width: 5px;
         }
 
         .metric-row {

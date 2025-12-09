@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Collection Dashboard - Pakistan</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        /* Disclaimer Bar */
+        .disclaimer-bar {
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A5A 100%);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95em;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+            letter-spacing: 0.3px;
+            margin-bottom: 15px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f1f8f4 0%, #e8f5e9 100%);
+            color: #2d3e2f;
+        }
+        
+        .nav-bar {
+            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .nav-bar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-weight: 500;
+            margin: 0 5px;
+        }
+        
+        .nav-bar a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        
+        .header p {
+            margin: 0;
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9em;
+        }
+        
+        select {
+            padding: 8px 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 5px;
+            font-size: 1em;
+            min-width: 150px;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #2E7D32;
+        }
+        
+        .metric-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 5px solid #2E7D32;
+        }
+        
+        .metric-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #2E7D32;
+            margin: 10px 0;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-size: 0.95em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-change {
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+        
+        .metric-change.positive {
+            color: #2E7D32;
+        }
+        
+        .metric-change.negative {
+            color: #DC3545;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .chart-container.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #1B5E20;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #2E7D32;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Disclaimer Bar -->
+    <div class="disclaimer-bar">
+        ⚠️ DISCLAIMER: This is a mockup using fake data for local development purposes only. Not an official product. Not endorsed by the Government of Pakistan in any way.
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="../../index.html">Home</a>
+            <a href="../sectors/tax/tax_sector.html">Tax Sector</a>
+            <a href="tax_dashboards.html">Tax Dashboards Hub</a>
+            <a href="revenue_collection_dashboard.html" style="background: rgba(255,255,255,0.2);">Revenue Collection</a>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>💰 Revenue Collection Dashboard</h1>
+        <p>Track FBR tax collection, GDP ratios, tax expenditure, and revenue composition metrics</p>
+    </div>
+
+    <div class="container">
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-group">
+                <label for="yearFilter">Fiscal Year:</label>
+                <select id="yearFilter">
+                    <option value="">All Years</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="quarterFilter">Quarter:</label>
+                <select id="quarterFilter">
+                    <option value="">All Quarters</option>
+                    <option value="Q1">Q1 (Jul-Sep)</option>
+                    <option value="Q2">Q2 (Oct-Dec)</option>
+                    <option value="Q3">Q3 (Jan-Mar)</option>
+                    <option value="Q4">Q4 (Apr-Jun)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Summary Metrics -->
+        <div class="metric-cards" id="metricCards">
+            <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- Section 1: Total FBR Collection -->
+        <h2 class="section-title">📊 Total FBR Collection Breakdown</h2>
+        <div class="dashboard-grid">
+            <div class="chart-container">
+                <div id="totalCollectionPie"></div>
+            </div>
+            <div class="chart-container">
+                <div id="collectionTrend"></div>
+            </div>
+        </div>
+        
+        <div class="chart-container full-width">
+            <div id="categoryBreakdown"></div>
+        </div>
+
+        <!-- Section 2: Income Tax Analysis -->
+        <h2 class="section-title">💰 Income Tax Detailed Analysis</h2>
+        <div class="dashboard-grid">
+            <div class="chart-container">
+                <div id="incomeTaxBreakdown"></div>
+            </div>
+            <div class="chart-container">
+                <div id="incomeTaxTrend"></div>
+            </div>
+        </div>
+
+        <!-- Section 3: Salaried Class Analysis -->
+        <h2 class="section-title">👔 Salaried Class Tax Burden Analysis</h2>
+        <div class="dashboard-grid">
+            <div class="chart-container">
+                <div id="salariedTaxRate"></div>
+            </div>
+            <div class="chart-container">
+                <div id="taxableIncomeElasticity"></div>
+            </div>
+        </div>
+        
+        <div class="chart-container full-width">
+            <div id="taxRateCorrelation"></div>
+        </div>
+
+        <!-- Section 4: Laffer Curve Analysis -->
+        <h2 class="section-title">📈 Laffer Curve Analysis</h2>
+        <div class="chart-container full-width">
+            <div id="lafferCurve"></div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="chart-container">
+                <div id="reportedIncomeVsTaxRate"></div>
+            </div>
+            <div class="chart-container">
+                <div id="revenueOptimization"></div>
+            </div>
+        </div>
+
+        <!-- Footer Notes -->
+        <div style="background: #fffbf0; border: 2px solid #2E7D32; padding: 20px; border-radius: 10px; margin-top: 40px;">
+            <h3 style="margin: 0 0 15px 0; color: #1B5E20;">Data Sources & Methodology</h3>
+            <p style="margin: 8px 0; color: #666; font-size: 0.9em;">
+                <strong>*</strong> All data in this dashboard is simulated for demonstration purposes only.
+            </p>
+            <p style="margin: 8px 0; color: #666; font-size: 0.9em;">
+                <strong>**</strong> Laffer Curve analysis shows the theoretical relationship between tax rates and government revenue.
+            </p>
+            <p style="margin: 8px 0; color: #666; font-size: 0.9em;">
+                <strong>***</strong> Taxable income elasticity measures how responsive reported income is to changes in tax rates.
+            </p>
+            <p style="margin: 8px 0; color: #666; font-size: 0.9em;">
+                <strong>****</strong> A 1:1 relationship means reported income increases proportionally with tax rates. Ratios less than 1 indicate tax avoidance or evasion behaviors.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let taxData = [];
+        let currentYear = '';
+        let currentQuarter = '';
+
+        // Load tax data from CSV
+        async function loadTaxData() {
+            try {
+                console.log('Loading FBR tax data from CSV...');
+                const csvData = await d3.csv('../../data/dummy/fbr_tax_data.csv');
+                
+                taxData = csvData.map(d => ({
+                    year: d.fiscal_year,
+                    yearIndex: +d.year_index,
+                    quarter: d.quarter,
+                    quarterIndex: +d.quarter_index,
+                    month: d.month,
+                    
+                    // Total Collection
+                    totalCollection: +d.total_collection_billion,
+                    
+                    // Tax categories
+                    incomeTax: +d.income_tax_billion,
+                    salesTax: +d.sales_tax_billion,
+                    customsDuty: +d.customs_duty_billion,
+                    federalExcise: +d.federal_excise_billion,
+                    
+                    // Income tax breakdown
+                    salariedTax: +d.salaried_tax_billion,
+                    corporateTax: +d.corporate_tax_billion,
+                    businessTax: +d.business_tax_billion,
+                    capitalGainsTax: +d.capital_gains_tax_billion,
+                    
+                    // Income sources
+                    salariedIncome: +d.salaried_income_billion,
+                    corporateIncome: +d.corporate_income_billion,
+                    businessIncome: +d.business_income_billion,
+                    capitalGainsIncome: +d.capital_gains_income_billion,
+                    
+                    // Tax Rates
+                    salariedTaxRate: +d.salaried_tax_rate_percent,
+                    corporateTaxRate: +d.corporate_tax_rate_percent,
+                    businessTaxRate: +d.business_tax_rate_percent,
+                    capitalGainsTaxRate: +d.capital_gains_tax_rate_percent,
+                    
+                    // Laffer Curve metrics
+                    salariedReportedIncome: +d.salaried_reported_income_billion,
+                    lafferEffect: +d.laffer_effect,
+                    elasticity: +d.elasticity,
+                    
+                    // Burden
+                    salariedTaxBurden: +d.salaried_burden_percent,
+                    
+                    // Efficiency
+                    revenueEfficiency: +d.revenue_efficiency
+                }));
+                
+                console.log('✓ Loaded', taxData.length, 'tax records from CSV');
+                return taxData;
+                
+            } catch (error) {
+                console.error('Error loading tax data:', error);
+                alert('Failed to load tax data. Please check if ../../data/dummy/fbr_tax_data.csv exists.');
+                return [];
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadTaxData();
+            populateFilters();
+            updateDashboard();
+        });
+
+        function populateFilters() {
+            const years = [...new Set(taxData.map(d => d.year))];
+            const yearSelect = document.getElementById('yearFilter');
+            yearSelect.innerHTML = '<option value="">All Years</option>';
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+            
+            document.getElementById('yearFilter').addEventListener('change', updateDashboard);
+            document.getElementById('quarterFilter').addEventListener('change', updateDashboard);
+        }
+
+        function getFilteredData() {
+            let filtered = [...taxData];
+            
+            currentYear = document.getElementById('yearFilter').value;
+            currentQuarter = document.getElementById('quarterFilter').value;
+            
+            if (currentYear) {
+                filtered = filtered.filter(d => d.year === currentYear);
+            }
+            
+            if (currentQuarter) {
+                filtered = filtered.filter(d => d.quarter === currentQuarter);
+            }
+            
+            return filtered;
+        }
+
+        function updateDashboard() {
+            const data = getFilteredData();
+            
+            if (data.length === 0) {
+                document.getElementById('metricCards').innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px;">No data available for selected filters</div>';
+                return;
+            }
+            
+            updateMetricCards(data);
+            updateTotalCollectionCharts(data);
+            updateIncomeTaxCharts(data);
+            updateSalariedClassCharts(data);
+            updateLafferCurveCharts(data);
+        }
+
+        function updateMetricCards(data) {
+            const latest = data[data.length - 1];
+            const previous = data.length > 1 ? data[data.length - 2] : latest;
+            
+            const totalCollection = d3.sum(data, d => d.totalCollection);
+            const avgTaxRate = d3.mean(data, d => d.salariedTaxRate);
+            const avgElasticity = d3.mean(data, d => d.elasticity);
+            const salariedBurden = d3.mean(data, d => d.salariedTaxBurden);
+            
+            const collectionChange = ((latest.totalCollection - previous.totalCollection) / previous.totalCollection * 100).toFixed(1);
+            const taxRateChange = ((latest.salariedTaxRate - previous.salariedTaxRate) / previous.salariedTaxRate * 100).toFixed(1);
+            
+            document.getElementById('metricCards').innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-label">Total FBR Collection</div>
+                    <div class="metric-value">Rs ${(totalCollection / 1000).toFixed(1)}T</div>
+                    <div class="metric-change ${collectionChange >= 0 ? 'positive' : 'negative'}">
+                        ${collectionChange >= 0 ? '▲' : '▼'} ${Math.abs(collectionChange)}% from previous period
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Avg Salaried Tax Rate</div>
+                    <div class="metric-value">${avgTaxRate.toFixed(1)}%</div>
+                    <div class="metric-change ${taxRateChange >= 0 ? 'negative' : 'positive'}">
+                        ${taxRateChange >= 0 ? '▲' : '▼'} ${Math.abs(taxRateChange)}% from previous period
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Income Elasticity</div>
+                    <div class="metric-value">${avgElasticity.toFixed(2)}</div>
+                    <div class="metric-change" style="color: #666;">
+                        ${avgElasticity < 1 ? '⚠️ Below 1:1 ratio' : '✓ Healthy ratio'}
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Salaried Class Burden</div>
+                    <div class="metric-value">${salariedBurden.toFixed(1)}%</div>
+                    <div class="metric-change" style="color: #666;">
+                        of total income tax
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateTotalCollectionCharts(data) {
+            // Pie Chart - Latest period breakdown
+            const latest = data[data.length - 1];
+            
+            const pieTrace = {
+                values: [latest.incomeTax, latest.salesTax, latest.customsDuty, latest.federalExcise],
+                labels: ['Income Tax', 'Sales Tax', 'Customs Duty', 'Federal Excise'],
+                type: 'pie',
+                marker: {
+                    colors: ['#1B5E20', '#2E7D32', '#66BB6A', '#A5D6A7']
+                },
+                textinfo: 'label+percent+value',
+                texttemplate: '<b>%{label}</b><br>Rs %{value:.1f}B<br>%{percent}',
+                hovertemplate: '<b>%{label}</b><br>Amount: Rs %{value:.1f}B<br>Share: %{percent}<extra></extra>'
+            };
+            
+            const pieLayout = {
+                title: 'FBR Collection Breakdown (Latest Period)',
+                showlegend: true,
+                height: 400
+            };
+            
+            Plotly.newPlot('totalCollectionPie', [pieTrace], pieLayout, {responsive: true});
+            
+            // Trend Chart - Time series of total collection
+            const yearlyData = d3.rollup(
+                data,
+                v => d3.sum(v, d => d.totalCollection),
+                d => d.year
+            );
+            
+            const years = Array.from(yearlyData.keys()).sort();
+            const collections = years.map(y => yearlyData.get(y));
+            
+            const trendTrace = {
+                x: years,
+                y: collections,
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: {
+                    color: '#1B5E20',
+                    width: 3
+                },
+                marker: {
+                    size: 10,
+                    color: '#2E7D32'
+                },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(27, 94, 32, 0.1)'
+            };
+            
+            const trendLayout = {
+                title: 'Total FBR Collection Trend Over Time',
+                xaxis: { title: 'Fiscal Year' },
+                yaxis: { title: 'Collection (Rs Billion)' },
+                height: 400
+            };
+            
+            Plotly.newPlot('collectionTrend', [trendTrace], trendLayout, {responsive: true});
+            
+            // Stacked bar chart - All categories over time
+            const categoryData = {
+                'Income Tax': [],
+                'Sales Tax': [],
+                'Customs Duty': [],
+                'Federal Excise': []
+            };
+            
+            years.forEach(year => {
+                const yearData = data.filter(d => d.year === year);
+                categoryData['Income Tax'].push(d3.sum(yearData, d => d.incomeTax));
+                categoryData['Sales Tax'].push(d3.sum(yearData, d => d.salesTax));
+                categoryData['Customs Duty'].push(d3.sum(yearData, d => d.customsDuty));
+                categoryData['Federal Excise'].push(d3.sum(yearData, d => d.federalExcise));
+            });
+            
+            const traces = Object.keys(categoryData).map((category, i) => ({
+                x: years,
+                y: categoryData[category],
+                name: category,
+                type: 'bar',
+                marker: {
+                    color: ['#1B5E20', '#2E7D32', '#66BB6A', '#A5D6A7'][i]
+                }
+            }));
+            
+            const stackedLayout = {
+                title: 'FBR Collection by Category (Yearly Breakdown)',
+                xaxis: { title: 'Fiscal Year' },
+                yaxis: { title: 'Collection (Rs Billion)' },
+                barmode: 'stack',
+                height: 450
+            };
+            
+            Plotly.newPlot('categoryBreakdown', traces, stackedLayout, {responsive: true});
+        }
+
+        function updateIncomeTaxCharts(data) {
+            const latest = data[data.length - 1];
+            
+            // Income Tax Breakdown Table (replacing pie chart)
+            const breakdownData = [
+                { source: 'Salaried Class', amount: latest.salariedTax, percent: (latest.salariedTax / latest.incomeTax * 100).toFixed(1), color: '#DC3545' },
+                { source: 'Corporate', amount: latest.corporateTax, percent: (latest.corporateTax / latest.incomeTax * 100).toFixed(1), color: '#1B5E20' },
+                { source: 'Business', amount: latest.businessTax, percent: (latest.businessTax / latest.incomeTax * 100).toFixed(1), color: '#2E7D32' },
+                { source: 'Capital Gains', amount: latest.capitalGainsTax, percent: (latest.capitalGainsTax / latest.incomeTax * 100).toFixed(1), color: '#66BB6A' }
+            ];
+            
+            let tableHTML = `
+                <h3 style="text-align: center; color: #1B5E20; margin-bottom: 20px;">Income Tax Breakdown by Source</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); color: white;">
+                            <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Source</th>
+                            <th style="padding: 15px; text-align: right; border: 1px solid #ddd;">Amount (Rs Billion)</th>
+                            <th style="padding: 15px; text-align: right; border: 1px solid #ddd;">Share (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            breakdownData.forEach((row, index) => {
+                const bgColor = index % 2 === 0 ? '#f9f9f9' : 'white';
+                tableHTML += `
+                    <tr style="background: ${bgColor};">
+                        <td style="padding: 12px; border: 1px solid #ddd;">
+                            <span style="display: inline-block; width: 12px; height: 12px; background: ${row.color}; margin-right: 8px; border-radius: 2px;"></span>
+                            <strong>${row.source}</strong>
+                        </td>
+                        <td style="padding: 12px; text-align: right; border: 1px solid #ddd; font-weight: 600;">₨${row.amount.toFixed(1)}</td>
+                        <td style="padding: 12px; text-align: right; border: 1px solid #ddd; font-weight: 600; color: ${row.color};">${row.percent}%</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                    <tr style="background: #e8f5e9; font-weight: bold; border-top: 3px solid #2E7D32;">
+                        <td style="padding: 15px; border: 1px solid #ddd;">Total Income Tax</td>
+                        <td style="padding: 15px; text-align: right; border: 1px solid #ddd; color: #1B5E20;">₨${latest.incomeTax.toFixed(1)}</td>
+                        <td style="padding: 15px; text-align: right; border: 1px solid #ddd; color: #1B5E20;">100%</td>
+                    </tr>
+                </tbody>
+                </table>
+            `;
+            
+            document.getElementById('incomeTaxBreakdown').innerHTML = tableHTML;
+            
+            // Income Tax Trend over time
+            const yearlyData = d3.group(data, d => d.year);
+            const years = Array.from(yearlyData.keys()).sort();
+            
+            const traces = [
+                {
+                    x: years,
+                    y: years.map(y => d3.mean(yearlyData.get(y), d => d.salariedTax)),
+                    name: 'Salaried',
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    line: { color: '#DC3545', width: 3 }
+                },
+                {
+                    x: years,
+                    y: years.map(y => d3.mean(yearlyData.get(y), d => d.corporateTax)),
+                    name: 'Corporate',
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    line: { color: '#1B5E20', width: 3 }
+                },
+                {
+                    x: years,
+                    y: years.map(y => d3.mean(yearlyData.get(y), d => d.businessTax)),
+                    name: 'Business',
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    line: { color: '#2E7D32', width: 3 }
+                },
+                {
+                    x: years,
+                    y: years.map(y => d3.mean(yearlyData.get(y), d => d.capitalGainsTax)),
+                    name: 'Capital Gains',
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    line: { color: '#66BB6A', width: 3 }
+                }
+            ];
+            
+            const incomeLayout = {
+                title: 'Income Tax Collection Trends by Source',
+                xaxis: { title: 'Fiscal Year' },
+                yaxis: { title: 'Collection (Rs Billion)' },
+                height: 400
+            };
+            
+            Plotly.newPlot('incomeTaxTrend', traces, incomeLayout, {responsive: true});
+        }
+
+        function updateSalariedClassCharts(data) {
+            const yearlyData = d3.group(data, d => d.year);
+            const years = Array.from(yearlyData.keys()).sort();
+            
+            // Tax Rate Trend
+            const taxRateTrace = {
+                x: years,
+                y: years.map(y => d3.mean(yearlyData.get(y), d => d.salariedTaxRate)),
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#DC3545', width: 4 },
+                marker: { size: 12 },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(220, 53, 69, 0.2)'
+            };
+            
+            const taxRateLayout = {
+                title: 'Average Salaried Class Tax Rate Over Time',
+                xaxis: { title: 'Fiscal Year' },
+                yaxis: { 
+                    title: 'Tax Rate (%)',
+                    range: [0, Math.max(...taxRateTrace.y) * 1.2]
+                },
+                height: 400,
+                annotations: [{
+                    text: '⚠️ Tax burden increasing on salaried class',
+                    xref: 'paper',
+                    yref: 'paper',
+                    x: 0.5,
+                    y: 1.1,
+                    showarrow: false,
+                    font: { color: '#DC3545', size: 12 }
+                }]
+            };
+            
+            Plotly.newPlot('salariedTaxRate', [taxRateTrace], taxRateLayout, {responsive: true});
+            
+            // Taxable Income Elasticity
+            const elasticityTrace = {
+                x: years,
+                y: years.map(y => d3.mean(yearlyData.get(y), d => d.elasticity)),
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#2E7D32', width: 3 },
+                marker: { size: 10 }
+            };
+            
+            const elasticityLayout = {
+                title: 'Taxable Income Elasticity (Response to Tax Rate Changes)',
+                xaxis: { title: 'Fiscal Year' },
+                yaxis: { 
+                    title: 'Elasticity',
+                    zeroline: true
+                },
+                height: 400,
+                shapes: [{
+                    type: 'line',
+                    x0: years[0],
+                    x1: years[years.length - 1],
+                    y0: 1,
+                    y1: 1,
+                    line: {
+                        color: '#DC3545',
+                        width: 2,
+                        dash: 'dash'
+                    }
+                }],
+                annotations: [{
+                    text: 'Target: 1:1 ratio (100% elasticity)',
+                    x: years[Math.floor(years.length / 2)],
+                    y: 1,
+                    yshift: 20,
+                    showarrow: false,
+                    font: { color: '#DC3545', size: 11 }
+                }]
+            };
+            
+            Plotly.newPlot('taxableIncomeElasticity', [elasticityTrace], elasticityLayout, {responsive: true});
+            
+            // Tax Rate vs Reported Income Correlation
+            const reportedIncomeTrace = {
+                x: years.map(y => d3.mean(yearlyData.get(y), d => d.salariedTaxRate)),
+                y: years.map(y => d3.mean(yearlyData.get(y), d => d.salariedReportedIncome)),
+                type: 'scatter',
+                mode: 'markers+lines',
+                marker: {
+                    size: 15,
+                    color: years.map((_, i) => i),
+                    colorscale: 'RdYlGn',
+                    reversescale: true,
+                    showscale: true,
+                    colorbar: { title: 'Year' }
+                },
+                text: years,
+                hovertemplate: '<b>Year: %{text}</b><br>Tax Rate: %{x:.1f}%<br>Reported Income: Rs %{y:.1f}B<extra></extra>'
+            };
+            
+            const correlationLayout = {
+                title: 'Tax Rate vs Reported Income Correlation',
+                xaxis: { title: 'Average Tax Rate (%)' },
+                yaxis: { title: 'Reported Income (Rs Billion)' },
+                height: 400
+            };
+            
+            Plotly.newPlot('taxRateCorrelation', [reportedIncomeTrace], correlationLayout, {responsive: true});
+        }
+
+        function updateLafferCurveCharts(data) {
+            const yearlyData = d3.group(data, d => d.year);
+            const years = Array.from(yearlyData.keys()).sort();
+            
+            // Laffer Curve - Revenue vs Tax Rate
+            const avgTaxRates = years.map(y => d3.mean(yearlyData.get(y), d => d.salariedTaxRate));
+            const totalRevenues = years.map(y => d3.sum(yearlyData.get(y), d => d.salariedTax));
+            
+            // Create theoretical optimal curve
+            const theoreticalRates = d3.range(0, 60, 1);
+            const theoreticalRevenues = theoreticalRates.map(rate => {
+                // Laffer curve formula: R = rate * base * (1 - rate/100)^2
+                const base = 200;
+                return rate * base * Math.pow(1 - rate / 100, 2);
+            });
+            
+            const actualTrace = {
+                x: avgTaxRates,
+                y: totalRevenues,
+                type: 'scatter',
+                mode: 'markers+lines',
+                name: 'Actual Data',
+                marker: {
+                    size: 15,
+                    color: years.map((_, i) => i),
+                    colorscale: 'Viridis',
+                    showscale: true,
+                    colorbar: { 
+                        title: 'Year Index',
+                        tickvals: [0, years.length - 1],
+                        ticktext: [years[0], years[years.length - 1]]
+                    }
+                },
+                line: {
+                    color: '#1B5E20',
+                    width: 3
+                },
+                text: years,
+                hovertemplate: '<b>%{text}</b><br>Tax Rate: %{x:.1f}%<br>Revenue: Rs %{y:.1f}B<extra></extra>'
+            };
+            
+            const theoreticalTrace = {
+                x: theoreticalRates,
+                y: theoreticalRevenues,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Theoretical Laffer Curve',
+                line: {
+                    color: '#DC3545',
+                    width: 2,
+                    dash: 'dash'
+                },
+                hovertemplate: 'Tax Rate: %{x:.0f}%<br>Theoretical Revenue: Rs %{y:.1f}B<extra></extra>'
+            };
+            
+            const lafferLayout = {
+                title: 'Laffer Curve: Tax Rate vs Revenue Generation',
+                xaxis: { 
+                    title: 'Average Tax Rate (%)',
+                    range: [0, 60]
+                },
+                yaxis: { title: 'Total Revenue (Rs Billion)' },
+                height: 500,
+                showlegend: true,
+                annotations: [
+                    {
+                        text: '📊 Theoretical Optimal Point',
+                        x: 33,
+                        y: theoreticalRevenues[33],
+                        showarrow: true,
+                        arrowhead: 2,
+                        ax: 40,
+                        ay: -40,
+                        font: { color: '#DC3545' }
+                    },
+                    {
+                        text: '⚠️ Current Position',
+                        x: avgTaxRates[avgTaxRates.length - 1],
+                        y: totalRevenues[totalRevenues.length - 1],
+                        showarrow: true,
+                        arrowhead: 2,
+                        ax: -40,
+                        ay: 40,
+                        font: { color: '#1B5E20' }
+                    }
+                ]
+            };
+            
+            Plotly.newPlot('lafferCurve', [theoreticalTrace, actualTrace], lafferLayout, {responsive: true});
+            
+            // Reported Income vs Tax Rate (1:1 analysis)
+            const reportedIncomes = years.map(y => d3.mean(yearlyData.get(y), d => d.salariedReportedIncome));
+            
+            // Calculate 1:1 baseline
+            const baselineIncome = reportedIncomes[0];
+            const baselineRate = avgTaxRates[0];
+            const oneToOneIncomes = avgTaxRates.map((rate, i) => {
+                return baselineIncome * (1 + (rate - baselineRate) / baselineRate);
+            });
+            
+            const actualIncomeTrace = {
+                x: years,
+                y: reportedIncomes,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Actual Reported Income',
+                line: { color: '#1B5E20', width: 3 },
+                marker: { size: 10 }
+            };
+            
+            const oneToOneTrace = {
+                x: years,
+                y: oneToOneIncomes,
+                type: 'scatter',
+                mode: 'lines',
+                name: '1:1 Expected (No Avoidance)',
+                line: { 
+                    color: '#DC3545', 
+                    width: 2,
+                    dash: 'dash'
+                }
+            };
+            
+            const reportedLayout = {
+                title: 'Reported Income vs Expected (1:1 Ratio Analysis)',
+                xaxis: { title: 'Fiscal Year' },
+                yaxis: { title: 'Reported Income (Rs Billion)' },
+                height: 400,
+                showlegend: true,
+                annotations: [{
+                    text: '⚠️ Gap indicates tax avoidance/evasion behavior',
+                    xref: 'paper',
+                    yref: 'paper',
+                    x: 0.5,
+                    y: 1.1,
+                    showarrow: false,
+                    font: { color: '#DC3545', size: 12 }
+                }]
+            };
+            
+            Plotly.newPlot('reportedIncomeVsTaxRate', [oneToOneTrace, actualIncomeTrace], reportedLayout, {responsive: true});
+            
+            // Revenue Optimization Analysis
+            const efficiencies = years.map(y => {
+                const yearData = yearlyData.get(y);
+                const avgRate = d3.mean(yearData, d => d.salariedTaxRate);
+                const totalRev = d3.sum(yearData, d => d.salariedTax);
+                const reportedInc = d3.mean(yearData, d => d.salariedReportedIncome);
+                return (totalRev / (avgRate * reportedInc)) * 100;
+            });
+            
+            const efficiencyTrace = {
+                x: years,
+                y: efficiencies,
+                type: 'bar',
+                marker: {
+                    color: efficiencies,
+                    colorscale: 'RdYlGn',
+                    showscale: true,
+                    colorbar: { title: 'Efficiency %' }
+                },
+                text: efficiencies.map(e => `${e.toFixed(1)}%`),
+                textposition: 'outside'
+            };
+            
+            const efficiencyLayout = {
+                title: 'Revenue Collection Efficiency Over Time',
+                xaxis: { title: 'Fiscal Year' },
+                yaxis: { 
+                    title: 'Collection Efficiency (%)',
+                    range: [0, 100]
+                },
+                height: 400
+            };
+            
+            Plotly.newPlot('revenueOptimization', [efficiencyTrace], efficiencyLayout, {responsive: true});
+        }
+    </script>
+</body>
+</html>
