@@ -21,8 +21,8 @@
 <body>
     <div class="header">
         <div>
-            <h1>Generation — Real Time Dashboards</h1>
-            <div style="font-size:0.95rem; opacity:0.9">Time series only — Subsidies, Utilization, Feeders with load management & Tariff</div>
+            <h1>Generation Dashboard — Real Time Data</h1>
+            <div style="font-size:0.95rem; opacity:0.9">Time series analysis of electricity generation by source (Hydel, Coal, Gas, RLNG, Nuclear, Wind, Solar, etc.)</div>
             <div class="nav">
                 <a href="../../index.html">Home</a>
                 <a href="../sectors/power/power_sector.html">Power Sector</a>
@@ -53,95 +53,219 @@
             <div class="chart-title">Tariff (PKR)</div>
             <div id="tariffChart" style="height:320px;"></div>
         </div>
+
+        <div class="chart-box" id="total-generation-section" style="grid-column: 1 / -1;">
+            <div class="chart-title">Total Electricity Generation (GWh)</div>
+            <div id="totalGenerationChart" style="height:400px;"></div>
+        </div>
+
+        <div class="chart-box" id="renewable-section">
+            <div class="chart-title">Renewable Energy Generation (Hydel, Wind, Solar, Bagasse)</div>
+            <div id="renewableChart" style="height:320px;"></div>
+        </div>
+
+        <div class="chart-box" id="nuclear-section">
+            <div class="chart-title">Nuclear Generation (GWh)</div>
+            <div id="nuclearChart" style="height:320px;"></div>
+        </div>
+
+        <div class="chart-box" id="import-section">
+            <div class="chart-title">Electricity Imported from Iran (GWh)</div>
+            <div id="importChart" style="height:320px;"></div>
+        </div>
     </div>
 
     <script>
-        // Generate monthly series for the past 36 months
-        function generateMonthlyLabels(monthsBack = 36) {
-            const labels = [];
-            const now = new Date();
-            for (let i = monthsBack - 1; i >= 0; i--) {
-                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                const month = d.toLocaleString('en-US', { month: 'short' });
-                const year = String(d.getFullYear()).slice(-2);
-                labels.push(`${year}-${month}`);
+        // Load and parse NEPRA generation CSV data
+        async function loadGenerationData() {
+            try {
+                const response = await fetch('../../data/generation/nepra_generation.csv');
+                const csvText = await response.text();
+                
+                // Parse CSV - NEPRA format has quoted fields
+                const lines = csvText.trim().split('\n');
+                const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+                
+                const data = [];
+                for (let i = 1; i < lines.length; i++) {
+                    // Handle quoted CSV fields properly
+                    const matches = lines[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+                    if (!matches) continue;
+                    
+                    const values = matches.map(v => v.replace(/^"|"$/g, '').trim());
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header] = values[index] || '';
+                    });
+                    data.push(row);
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('Error loading CSV data:', error);
+                return null;
             }
-            return labels;
         }
 
-        function randomRange(min, max) { return Math.random() * (max - min) + min; }
+        // Parse and organize generation data by date and source
+        function organizeGenerationData(rawData) {
+            if (!rawData || rawData.length === 0) return null;
+            
+            const dataByDate = {};
+            
+            rawData.forEach(row => {
+                const date = row['Observation Date'];
+                const seriesName = row['Series name'];
+                const value = parseFloat(row['Observation Value']) || 0;
+                
+                if (!date || !seriesName) return;
+                
+                if (!dataByDate[date]) {
+                    dataByDate[date] = {};
+                }
+                
+                dataByDate[date][seriesName] = value;
+            });
+            
+            // Sort dates chronologically
+            const sortedDates = Object.keys(dataByDate).sort((a, b) => new Date(a) - new Date(b));
+            
+            return {
+                dates: sortedDates,
+                data: dataByDate
+            };
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const months = generateMonthlyLabels(36);
+        // Format date for display
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const month = date.toLocaleString('en-US', { month: 'short' });
+            const year = date.getFullYear().toString().slice(-2);
+            return `${month}-${year}`;
+        }
 
-            // Subsidies: 50 - 300 PKR Billion
-            const subsidies = months.map(() => +(randomRange(50, 300)).toFixed(1));
-
-            // Utilization: 50 - 95 %
-            const utilization = months.map(() => +(randomRange(50, 95)).toFixed(1));
-
-            // Feeders with load mgmt >3h: 2 - 30 %
-            const feeders = months.map(() => +(randomRange(2, 30)).toFixed(1));
-
-            // Tariff: 12 - 30 PKR
-            const tariff = months.map(() => +(randomRange(12, 30)).toFixed(2));
-
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load real NEPRA data
+            const rawData = await loadGenerationData();
+            
+            if (!rawData || rawData.length === 0) {
+                console.error('Failed to load generation data');
+                return;
+            }
+            
+            const organized = organizeGenerationData(rawData);
+            if (!organized) {
+                console.error('Failed to organize generation data');
+                return;
+            }
+            
+            const { dates, data } = organized;
+            const formattedDates = dates.map(formatDate);
+            
+            // Extract data for each source
+            const totalGen = dates.map(d => data[d]['Total Electricity Generation by all sources'] || 0);
+            const hydel = dates.map(d => data[d]['Electricity Generation by Hydel'] || 0);
+            const coal = dates.map(d => data[d]['Electricity Generation by Coal'] || 0);
+            const hsd = dates.map(d => data[d]['Electricity Generation by High Speed Diesel (HSD)'] || 0);
+            const rfo = dates.map(d => data[d]['Electricity Generation by Residual Fuel Oil (RFO)'] || 0);
+            const gas = dates.map(d => data[d]['Electricity Generation by Gas'] || 0);
+            const rlng = dates.map(d => data[d]['Electricity Generation by Regasification Liquefied Natural Gas(RLNG)'] || 0);
+            const nuclear = dates.map(d => data[d]['Electricity Generation by Nuclear'] || 0);
+            const iran = dates.map(d => data[d]['Electricity Imported from Iran'] || 0);
+            const mixed = dates.map(d => data[d]['Electricity Generation by Mixed'] || 0);
+            const wind = dates.map(d => data[d]['Electricity Generation by Wind'] || 0);
+            const bagasse = dates.map(d => data[d]['Electricity Generation by bagasse'] || 0);
+            const solar = dates.map(d => data[d]['Electricity Generation by Solar'] || 0);
+            
+            // Store all data globally for period filtering
+            window.generationData = {
+                dates: formattedDates,
+                rawDates: dates,
+                hydel, coal, hsd, rfo, gas, rlng, nuclear, iran, mixed, wind, bagasse, solar, totalGen
+            };
+            
             const commonLayout = (title, yTitle) => ({
-                margin: {t:40, b:40, l:60, r:20},
+                margin: {t:40, b:60, l:60, r:20},
                 xaxis: { title: 'Month', tickangle: -45 },
                 yaxis: { title: yTitle },
-                title: title,
+                hovermode: 'x unified',
             });
 
-            Plotly.newPlot('subsidiesChart', [{ x: months, y: subsidies, type: 'scatter', mode: 'lines+markers', line: {color: '#1f77b4'} }], commonLayout('Subsidies (PKR Billion)', 'PKR Billion'), {responsive:true});
+            // Generate random data for old metrics (subsidies, utilization, feeders, tariff)
+            function randomRange(min, max) { return Math.random() * (max - min) + min; }
+            const subsidies = formattedDates.map(() => +(randomRange(50, 300)).toFixed(1));
+            const utilization = formattedDates.map(() => +(randomRange(50, 95)).toFixed(1));
+            const feeders = formattedDates.map(() => +(randomRange(2, 30)).toFixed(1));
+            const tariff = formattedDates.map(() => +(randomRange(12, 30)).toFixed(2));
 
-            Plotly.newPlot('utilizationChart', [{ x: months, y: utilization, type: 'scatter', mode: 'lines+markers', line: {color: '#2ca02c'} }], commonLayout('Utilization of Average Available Capacity','%'), {responsive:true});
+            // Plot old metrics
+            Plotly.newPlot('subsidiesChart', [{ x: formattedDates, y: subsidies, type: 'scatter', mode: 'lines+markers', line: {color: '#1f77b4'} }], 
+                commonLayout('Subsidies', 'PKR Billion'), {responsive:true});
 
-            Plotly.newPlot('feedersChart', [{ x: months, y: feeders, type: 'scatter', mode: 'lines+markers', line: {color: '#ff7f0e'} }], commonLayout('% Feeders with Load Management > 3 hrs','%'), {responsive:true});
+            Plotly.newPlot('utilizationChart', [{ x: formattedDates, y: utilization, type: 'scatter', mode: 'lines+markers', line: {color: '#2ca02c'} }], 
+                commonLayout('Utilization', '%'), {responsive:true});
 
-            Plotly.newPlot('tariffChart', [{ x: months, y: tariff, type: 'scatter', mode: 'lines+markers', line: {color: '#d62728'} }], commonLayout('Tariff (PKR)','PKR'), {responsive:true});
-            
-            // Check for URL parameters to scroll to specific metric
-            const urlParams = new URLSearchParams(window.location.search);
-            const metricParam = urlParams.get('metric');
-            
-            if (metricParam) {
-                let sectionId = null;
-                
-                // Map metric parameter to section ID
-                switch(metricParam) {
-                    case 'subsidies':
-                        sectionId = 'subsidies-section';
-                        break;
-                    case 'utilization':
-                        sectionId = 'utilization-section';
-                        break;
-                    case 'feeders_load_mgmt':
-                        sectionId = 'feeders-section';
-                        break;
-                    case 'tariff':
-                        sectionId = 'tariff-section';
-                        break;
-                }
-                
-                // Scroll to the section and highlight it
-                if (sectionId) {
-                    setTimeout(() => {
-                        const section = document.getElementById(sectionId);
-                        if (section) {
-                            section.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            section.style.border = '3px solid #2E7D32';
-                            section.style.boxShadow = '0 4px 20px rgba(46, 125, 50, 0.3)';
-                            
-                            // Remove highlight after 3 seconds
-                            setTimeout(() => {
-                                section.style.border = '';
-                                section.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
-                            }, 3000);
-                        }
-                    }, 500);
-                }
-            }
+            Plotly.newPlot('feedersChart', [{ x: formattedDates, y: feeders, type: 'scatter', mode: 'lines+markers', line: {color: '#ff7f0e'} }], 
+                commonLayout('Feeders with Load Management', '%'), {responsive:true});
+
+            Plotly.newPlot('tariffChart', [{ x: formattedDates, y: tariff, type: 'scatter', mode: 'lines+markers', line: {color: '#d62728'} }], 
+                commonLayout('Tariff', 'PKR'), {responsive:true});
+
+            // 1. Total Generation Chart
+            Plotly.newPlot('totalGenerationChart', [{
+                x: formattedDates,
+                y: totalGen,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Total Generation',
+                line: { color: '#1B5E20', width: 3 },
+                marker: { size: 6 }
+            }], {
+                ...commonLayout('Total Electricity Generation Over Time', 'Generation (GWh)'),
+                title: { text: 'Total Electricity Generation Over Time', font: { size: 16 } }
+            }, {responsive: true});
+
+            // 2. Renewable Energy Chart
+            Plotly.newPlot('renewableChart', [
+                { x: formattedDates, y: hydel, name: 'Hydel', type: 'scatter', mode: 'lines+markers', line: { color: '#2196F3' } },
+                { x: formattedDates, y: wind, name: 'Wind', type: 'scatter', mode: 'lines+markers', line: { color: '#4CAF50' } },
+                { x: formattedDates, y: solar, name: 'Solar', type: 'scatter', mode: 'lines+markers', line: { color: '#FFC107' } },
+                { x: formattedDates, y: bagasse, name: 'Bagasse', type: 'scatter', mode: 'lines+markers', line: { color: '#8BC34A' } }
+            ], {
+                ...commonLayout('Renewable Energy Sources', 'Generation (GWh)'),
+                showlegend: true,
+                legend: { x: 0.02, y: 0.98 }
+            }, {responsive: true});
+
+            // 3. Nuclear Chart
+            Plotly.newPlot('nuclearChart', [{
+                x: formattedDates,
+                y: nuclear,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Nuclear',
+                line: { color: '#9C27B0', width: 2 },
+                marker: { size: 6 },
+                fill: 'tozeroy'
+            }], {
+                ...commonLayout('Nuclear Generation', 'Generation (GWh)'),
+                showlegend: false
+            }, {responsive: true});
+
+            // 4. Iran Import Chart
+            Plotly.newPlot('importChart', [{
+                x: formattedDates,
+                y: iran,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Iran Import',
+                line: { color: '#00BCD4', width: 2 },
+                marker: { size: 6 },
+                fill: 'tozeroy'
+            }], {
+                ...commonLayout('Electricity Imported from Iran', 'Generation (GWh)'),
+                showlegend: false
+            }, {responsive: true});
         });
     </script>
 </body>
