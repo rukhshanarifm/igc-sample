@@ -429,6 +429,98 @@
             border: 3px solid #c62828;
         }
 
+        /* Summary Section Styles */
+        .summary-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #2e7d32;
+        }
+
+        .summary-title {
+            font-size: 1.4em;
+            color: #1B5E20;
+            margin-bottom: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-stat {
+            background: #f8faf9;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .summary-stat.warning {
+            border-left-color: #FF9800;
+        }
+
+        .summary-stat.danger {
+            border-left-color: #f44336;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #1B5E20;
+            margin-bottom: 5px;
+        }
+
+        .stat-trend {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .summary-text {
+            font-size: 1em;
+            line-height: 1.6;
+            color: #555;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 6px;
+        }
+
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .trend-indicator.improving {
+            color: #4CAF50;
+        }
+
+        .trend-indicator.declining {
+            color: #f44336;
+        }
+
+        .trend-indicator.stable {
+            color: #FF9800;
+        }
+
         @media (max-width: 1200px) {
             .header-content {
                 flex-direction: column;
@@ -485,6 +577,41 @@
         
         <div class="page-title">Real Time Dashboards for Power Sector Reforms</div>
         <div class="page-subtitle">Select a dashboard to explore power sector metrics and analytics</div>
+
+        <div class="summary-section">
+            <div class="summary-title">
+                <span>📊</span> Overall Performance Summary
+            </div>
+            <div class="summary-content">
+                <div class="summary-stat">
+                    <div class="stat-label">Circular Debt</div>
+                    <div class="stat-value">2,310</div>
+                    <div class="stat-trend">PKR Bn (Current Period)</div>
+                    <div class="trend-indicator improving">↓ Decreasing (down 5.7% from baseline)</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="stat-label">Recovery</div>
+                    <div class="stat-value">90.2%</div>
+                    <div class="stat-trend">Current Period</div>
+                    <div class="trend-indicator improving">↑ Improving (up 1.7% from baseline)</div>
+                </div>
+                <div class="summary-stat warning">
+                    <div class="stat-label">T&D Losses</div>
+                    <div class="stat-value">16.5%</div>
+                    <div class="stat-trend">Current Period</div>
+                    <div class="trend-indicator declining">↑ Increasing (target missed by 0.4%)</div>
+                </div>
+                <div class="summary-stat danger">
+                    <div class="stat-label">Share of Imported Fuel</div>
+                    <div class="stat-value">63.8%</div>
+                    <div class="stat-trend">Current Period</div>
+                    <div class="trend-indicator declining">↑ Rising (target missed by 5.8%)</div>
+                </div>
+            </div>
+            <div class="summary-text">
+                <strong>Status:</strong> Power sector shows mixed progress. <strong>Positive trends:</strong> Circular debt declining (-5.7%) and recovery rates improving (+1.7%). <strong>Challenges:</strong> T&D losses remain above target despite reduction efforts, and dependence on imported fuel continues to increase, posing fiscal risks. Accelerated action needed to meet FY2027 targets.
+            </div>
+        </div>
 
         <div class="legend">
             <div class="legend-title">Performance Status Legend</div>
